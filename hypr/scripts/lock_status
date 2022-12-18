@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+battery_dir="/sys/class/power_supply/BAT0"
+battery=""
+
+if [[ -r "$battery_dir/capacity" ]]; then
+    capacity=$(cat "$battery_dir/capacity")
+    status=""
+    [[ -r "$battery_dir/status" ]] && status=$(cat "$battery_dir/status")
+
+    if [[ "$status" == "Charging" ]]; then
+        battery="󰂄 ${capacity}%"
+    else
+        battery="󰁹 ${capacity}%"
+    fi
+fi
+
+route=$(ip route get 1.1.1.1 2>/dev/null || true)
+dev=$(awk '{ for (i = 1; i <= NF; i++) if ($i == "dev") { print $(i + 1); exit } }' <<<"$route")
+network="󰖪 offline"
+
+if [[ -n "$dev" ]]; then
+    case "$dev" in
+        wl*) network=" ${dev}" ;;
+        *) network="󰈀 wired" ;;
+    esac
+fi
+
+if [[ -n "$battery" ]]; then
+    printf '%s  •  %s\n' "$battery" "$network"
+else
+    printf '%s\n' "$network"
+fi

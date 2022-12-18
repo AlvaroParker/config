@@ -1,0 +1,17 @@
+#!/bin/sh
+set -eu
+
+case "${1:-}" in
+    on|enable)
+        action="enable"
+        ;;
+    off|disable)
+        action="disable"
+        ;;
+    *)
+        printf 'usage: %s {on|off|enable|disable}\n' "$0" >&2
+        exit 2
+        ;;
+esac
+
+exec hyprctl dispatch "hl.dsp.dpms({ action = \"${action}\" })"

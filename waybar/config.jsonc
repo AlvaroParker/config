@@ -1,0 +1,165 @@
+{
+  "layer": "top",
+  "position": "top",
+  "height": 28,
+  "margin-top": 4,
+  "margin-left": 6,
+  "margin-right": 6,
+  "margin-bottom": 4,
+  "spacing": 6,
+  "modules-left": [
+    "custom/launcher",
+    "cpu",
+    // "temperature",
+    "memory",
+    "hyprland/window",
+    "custom/pacman-update",
+    "tray",
+  ],
+  "modules-center": ["hyprland/workspaces"],
+  "modules-right": [
+    "idle_inhibitor",
+    "power-profiles-daemon",
+    "custom/music",
+    "battery",
+    "backlight",
+    "pulseaudio",
+    "network",
+    "clock",
+  ],
+  "hyprland/workspaces": {
+    "all-outputs": true,
+    "active-only": false,
+    "format": "{icon}",
+    "on-scroll-up": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e+1\" })'",
+    "on-scroll-down": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e-1\" })'",
+    "format-icons": {
+      "1": "",
+      "2": "",
+      "3": "",
+      "4": "",
+      "5": "",
+      "6": "",
+      "urgent": "",
+      "active": "",
+      "default": "",
+    },
+  },
+  "tray": {
+    "icon-size": 20,
+    "spacing": 8,
+  },
+
+  "idle_inhibitor": {
+    "format": "{icon}",
+    "format-icons": {
+      "activated": " ",
+      "deactivated": " ",
+    },
+  },
+
+  "power-profiles-daemon": {
+    "format": "{icon} {profile}",
+    "tooltip-format": "Power profile: {profile}",
+    "tooltip": true,
+    "format-icons": {
+      "default": "",
+      "performance": "",
+      "balanced": "",
+      "power-saver": "",
+    },
+  },
+
+  "clock": {
+    "interval": 1,
+    "format": "󱑅 <b>{:%I:%M:%S %p}</b>",
+    "format-alt": "󱑅 <b>{:%a.%d,%b}</b>",
+    "tooltip-format": "<big>{:%B %Y}</big>\n<tt><small>{calendar}</small></tt>",
+  },
+  "temperature": {
+    "thermal-zone": 8,
+    "critical-threshold": 90,
+    "format": " {temperatureC}°C",
+    "format-critical": " {temperatureC}°C",
+    "interval": 5,
+    "tooltip": false,
+  },
+  "cpu": {
+    "interval": 5,
+    "format": " {usage}%",
+    "max-length": 10,
+    "tooltip": false,
+  },
+  "memory": {
+    "interval": 30,
+    "format-alt": " {used}GiB",
+    "format": " {used:0.1f}G",
+    "max-length": 10,
+  },
+  "backlight": {
+    "format": "{icon} {percent}",
+    "tooltip": false,
+    "format-icons": ["󰃚 ", "󰃛 ", "󰃜 ", "󰃝 ", "󰃞 ", "󰃟 ", "󰃠 "],
+  },
+  "network": {
+    "format-wifi": "  {essid}",
+    "max-length": 16,
+    "on-click": "iwgtk",
+    "format-ethernet": "󰈀 wired",
+    "tooltip": true,
+    "tooltip-format-wifi": "  {essid}\n  {ipaddr}/{cidr}\n󰕒  {bandwidthUpBits}\n󰇚  {bandwidthDownBits}",
+    "tooltip-format-ethernet": "󰈀  {ipaddr}/{cidr}\n󰕒  {bandwidthUpBits}\n󰇚  {bandwidthDownBits}",
+    "tooltip-format-disconnected": "Disconnected",
+    "format-disconnected": "󰖪",
+  },
+  "pulseaudio": {
+    "format": "{icon} <b>{volume}</b>",
+    "format-bluetooth": " <b>{volume}</b>",
+    "format-bluetooth-muted": " ",
+    "tooltip": false,
+    "format-muted": " ",
+    "format-icons": {
+      "default": ["󰕿 ", "󰖀 ", "󰕾 "],
+    },
+    "on-click": "pavucontrol",
+  },
+  "battery": {
+    "bat": "BAT0",
+    "interval": 30,
+    "states": {
+      "warning": 30,
+      "critical": 15,
+    },
+    "format": "{icon} {capacity}%",
+    "format-charging": " {icon} {capacity}%",
+    // "format-icons": [" ", " ", " ", " "],
+    "format-icons": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
+    "max-length": 25,
+    "tooltip": false,
+  },
+
+  "custom/launcher": {
+    "format": "",
+    "on-click": "rofi -show drun",
+  },
+
+  "hyprland/window": {
+    "format": "<b>{class}</b>",
+    "separate-outputs": false,
+  },
+
+  "custom/pacman-update": {
+    "format": "󰏔 {}",
+    "interval": 3600,
+    "exec": "$HOME/.config/waybar/scripts/pacman-update-icon.sh",
+    "hide-empty-text": true,
+    "signal": 8,
+  },
+
+  "custom/music": {
+    "format": "{}",
+    "exec": "$HOME/.config/waybar/scripts/caway",
+    "hide-empty-text": true,
+    "on-click": "playerctl play-pause",
+  },
+}

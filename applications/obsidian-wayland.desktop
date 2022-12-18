@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Obsidian (Wayland)
+Comment=Knowledge base
+Exec=/usr/bin/obsidian --ozone-platform-hint=auto
+Icon=obsidian
+Type=Application
+Categories=Office;
+MimeType=x-scheme-handler/obsidian;

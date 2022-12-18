@@ -1,0 +1,366 @@
+{
+  "outline_panel": {
+    "dock": "right",
+  },
+  "code_lens": "menu",
+  "cli_default_open_behavior": "new_window",
+  "search": {
+    "include_ignored": false,
+  },
+  "diff_view_style": "split",
+  "word_diff_enabled": true,
+  "git_panel": {
+    "dock": "left",
+    "tree_view": true,
+  },
+  "calls": {
+    "mute_on_join": true,
+  },
+  "ui_font_weight": 500.0,
+  "confirm_quit": false,
+  "redact_private_values": false,
+  "zoomed_padding": false,
+  "profiles": {
+    "rust-no-clippy": {
+      "settings": {
+        "lsp": {
+          "rust-analyzer": {
+            "initialization_options": {
+              "completion": {
+                "snippets": {
+                  "custom": {
+                    "Arc::new": {
+                      "postfix": "arc",
+                      "body": ["Arc::new(${receiver})"],
+                      "requires": "std::sync::Arc",
+                      "scope": "expr",
+                    },
+                    "Some": {
+                      "postfix": "some",
+                      "body": ["Some(${receiver})"],
+                      "scope": "expr",
+                    },
+                    "Ok": {
+                      "postfix": "ok",
+                      "body": ["Ok(${receiver})"],
+                      "scope": "expr",
+                    },
+                    "Rc::new": {
+                      "postfix": "rc",
+                      "body": ["Rc::new(${receiver})"],
+                      "requires": "std::rc::Rc",
+                      "scope": "expr",
+                    },
+                    "Box::pin": {
+                      "postfix": "boxpin",
+                      "body": ["Box::pin(${receiver})"],
+                      "requires": "std::boxed::Box",
+                      "scope": "expr",
+                    },
+                    "vec!": {
+                      "postfix": "vec",
+                      "body": ["vec![${receiver}]"],
+                      "description": "vec![]",
+                      "scope": "expr",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+  // "use_system_path_prompts": false,
+  "load_direnv": "shell_hook",
+  "agent_servers": {
+    "claude-acp": {
+      "type": "registry",
+    },
+    "opencode": {
+      "type": "registry",
+    },
+    // "opencode-test": {
+    //   "type": "custom",
+    //   "command": "bash",
+    //   "args": ["/home/parker/github/opencode/test.sh"],
+    // },
+    "codex-acp": {
+      "favorite_config_option_values": {
+        "mode": ["auto"],
+      },
+      "default_config_options": {
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "xhigh",
+        "fast-mode": true,
+        "mode": "agent",
+      },
+      "type": "registry",
+    },
+  },
+  "collaboration_panel": {
+    "dock": "left",
+    "button": true,
+  },
+  "telemetry": {
+    "diagnostics": false,
+    "metrics": false,
+  },
+  "disable_ai": false,
+  // ssh_connections live in ~/.config/zed/global_settings.json (not committed).
+  "minimap": {
+    "current_line_highlight": "all",
+    "thumb_border": "left_open",
+    "show": "always",
+    "display_in": "active_editor",
+    "thumb": "always",
+  },
+
+  "active_pane_modifiers": {
+    // "border_size": 5
+  },
+  "icon_theme": {
+    "mode": "light",
+    "light": "Catppuccin Mocha",
+    "dark": "Catppuccin Mocha",
+  },
+  "soft_wrap": "editor_width",
+  "file_types": {
+    "XML": ["*.csproj"],
+  },
+  "diagnostics": {
+    "inline": {
+      "enabled": true,
+      "update_debounce_ms": 150,
+      "padding": 4,
+      "min_column": 0,
+      "max_severity": null,
+    },
+  },
+  "show_edit_predictions": true,
+  "edit_predictions": {
+    "provider": "zed",
+    "mode": "subtle",
+  },
+  "experimental.theme_overrides": {
+    // "panel.background": "#00000000",
+    // "background": "#ffffff"
+  },
+  "theme": {
+    "mode": "dark",
+    "light": "One Light",
+    "dark": "Vercel Dark",
+  },
+  "toolbar": {
+    "breadcrumbs": true,
+    "quick_actions": true,
+  },
+  "agent": {
+    // "default_view": "text_thread",
+    "threads_sidebar": {
+      "position": "right"
+    },
+    "notify_when_agent_waiting": "primary_screen",
+    "profiles": {},
+    "dock": "right",
+    "tool_permissions": {
+      "default": "allow",
+    },
+    "use_modifier_to_send": false,
+    "play_sound_when_agent_done": "always",
+    "default_profile": "write",
+    "default_model": {
+      "speed": "fast",
+      "effort": "low",
+      "enable_thinking": true,
+      "provider": "openai-subscribed",
+      "model": "gpt-6.1-sol",
+    },
+  },
+
+  "git": {
+    "inline_blame": {
+      "enabled": true,
+    },
+  },
+  "tab_bar": {
+    "show": true,
+  },
+  "tabs": {
+    "git_status": true,
+    "file_icons": true,
+    "show_diagnostics": "all",
+  },
+  "terminal": {
+    "bell": "off",
+    "scrollbar": {
+      "show": "always",
+    },
+    "dock": "bottom",
+    "default_height": 250,
+  },
+  "indent_guides": {
+    "coloring": "indent_aware",
+  },
+  "languages": {
+    "Python": {
+      "language_servers": [
+        // ty handles Python semantics; ruff handles linting and formatting.
+        // Omitting "..." prevents Zed from enabling pylsp/pyright/basedpyright.
+        "ty",
+        "ruff",
+      ],
+      "code_actions_on_format": {
+        "source.organizeImports.ruff": true,
+      },
+      "formatter": {
+        "language_server": {
+          "name": "ruff",
+        },
+      },
+      "format_on_save": "on",
+    },
+    "Markdown": {
+      "soft_wrap": "editor_width",
+    },
+    "TypeScript": {
+      "tab_size": 4,
+      "language_servers": ["typescript-language-server", "!vtsls", "..."],
+    },
+    "JavaScript": {
+      "tab_size": 4,
+      "language_servers": ["typescript-language-server", "!vtsls", "..."],
+    },
+    "TSX": {
+      "tab_size": 4,
+      "language_servers": ["typescript-language-server", "!vtsls", "..."],
+    },
+    "CSS": {
+      "language_servers": [
+        "tailwindcss-intellisense-css",
+        "!vscode-css-language-server",
+      ],
+    },
+    "C": {
+      "formatter": {
+        "external": {
+          "command": "bash",
+          "arguments": ["-c", "clang-format"],
+        },
+      },
+      "format_on_save": "off",
+    },
+    "C++": {
+      "formatter": {
+        "external": {
+          "command": "bash",
+          "arguments": ["-c", "clang-format"],
+        },
+      },
+      "tab_size": 2,
+      "format_on_save": "off",
+    },
+  },
+  "vim_mode": true,
+  "base_keymap": "VSCode",
+  "ui_font_family": ".ZedSans",
+  "ui_font_size": 16,
+  "buffer_font_family": "JetBrainsMono Nerd Font Mono",
+  "buffer_font_weight": 500,
+  "buffer_font_size": 12.5,
+  "title_bar": {
+    "show_branch_status_icon": true,
+    "show_user_picture": true,
+    "show_menus": false,
+    "show_onboarding_banner": false,
+  },
+  "scrollbar": {
+    "show": "never",
+  },
+
+  "format_on_save": "on",
+  "file_scan_exclusions": [
+    "**/.next",
+    "**/.turbo",
+    "**/node_modules",
+    "**/dist",
+    "**/.git",
+  ],
+  "project_panel": {
+    "hide_hidden": false,
+    "drag_and_drop": true,
+    "sticky_scroll": false,
+    "dock": "left",
+    "indent_size": 15,
+    "scrollbar": {
+      "show": "never",
+    },
+    "hide_gitignore": true,
+  },
+  "lsp": {
+    "rust-analyzer": {
+      "initialization_options": {
+        "check": {
+          "command": "clippy",
+        },
+        "completion": {
+          "snippets": {
+            "custom": {
+              "Arc::new": {
+                "postfix": "arc",
+                "body": ["Arc::new(${receiver})"],
+                "requires": "std::sync::Arc",
+                "scope": "expr",
+              },
+              "Some": {
+                "postfix": "some",
+                "body": ["Some(${receiver})"],
+                "scope": "expr",
+              },
+              "Ok": {
+                "postfix": "ok",
+                "body": ["Ok(${receiver})"],
+                "scope": "expr",
+              },
+              "Rc::new": {
+                "postfix": "rc",
+                "body": ["Rc::new(${receiver})"],
+                "requires": "std::rc::Rc",
+                "scope": "expr",
+              },
+              "Box::pin": {
+                "postfix": "boxpin",
+                "body": ["Box::pin(${receiver})"],
+                "requires": "std::boxed::Box",
+                "scope": "expr",
+              },
+              "vec!": {
+                "postfix": "vec",
+                "body": ["vec![${receiver}]"],
+                "description": "vec![]",
+                "scope": "expr",
+              },
+            },
+          },
+        },
+      },
+    },
+    // "clangd": {
+    // "binary": {
+    // "path": "/home/parker/github/llvm-project/build/bin/clangd",
+    // "arguments": ["--clang-tidy"],
+    // },
+    // },
+    "pyright": {
+      "settings": {
+        "analysis": {
+          "autoSearchPaths": true,
+          "useLibraryCodeForTypes": true,
+          "typeCheckingMode": "strict",
+          "reportUnusedVariable": "warning",
+        },
+      },
+    },
+  },
+}

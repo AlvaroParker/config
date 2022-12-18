@@ -1,0 +1,9 @@
+# Only publish explicitly reviewed configuration and documentation.
+# Ignore runtime state, logs, sockets, snapshots, locks, and config backups.
+/*
+!/.gitignore
+!/config.toml
+!/README.md
+!/plugins/
+/plugins/*/*
+!/plugins/*/config.toml

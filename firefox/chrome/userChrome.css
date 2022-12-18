@@ -1,0 +1,557 @@
+/* Remove shadows/borders between webpage area, navbar, and sidebars */
+
+:root {
+    --chrome-content-separator-color: transparent !important;
+
+    /* Color palette */
+    --uc-bg: #1c1b22;
+    --uc-bg-2: #3b3948; /* active tab */
+    --uc-bg-hover: color-mix(in srgb, var(--uc-bg), white 7%);
+    --uc-fg: #fbfbfe;
+    --uc-muted: #cfcfd8;
+    --uc-accent: #8aadf4;
+
+    /* Firefox chrome/theme colors */
+    --toolbar-bgcolor: var(--uc-bg) !important;
+    --toolbar-color: var(--uc-fg) !important;
+    --lwt-accent-color: var(--uc-bg) !important;
+    --lwt-text-color: var(--uc-fg) !important;
+    --tab-selected-bgcolor: var(--uc-bg-2) !important;
+    --arrowpanel-background: var(--uc-bg) !important;
+    --arrowpanel-color: var(--uc-fg) !important;
+    --arrowpanel-border-color: transparent !important;
+
+    /* Context menu colors */
+    --uc-menu-bg: #24222d;
+    --uc-menu-bg-hover: #343140;
+    --uc-menu-bg-active: #3b3948;
+    --uc-menu-border: color-mix(in srgb, var(--uc-menu-bg), white 10%);
+    --uc-menu-separator: color-mix(in srgb, var(--uc-menu-bg), white 14%);
+    --uc-menu-disabled: color-mix(in srgb, var(--uc-fg), transparent 55%);
+
+    /* Shared sizing / shape tokens */
+    --uc-radius-small: 7px;
+    --uc-radius-medium: 10px;
+    --uc-radius-large: 12px;
+
+    --uc-toolbarbutton-radius: 8px;
+    --uc-urlbar-radius: 10px;
+
+    --uc-toolbarbutton-hover-bg: color-mix(in srgb, var(--uc-bg), white 9%);
+    --uc-toolbarbutton-active-bg: color-mix(in srgb, var(--uc-bg), white 14%);
+
+    --uc-focus-ring: color-mix(in srgb, var(--uc-accent), transparent 35%);
+    --uc-panel-shadow: 0 12px 32px color-mix(in srgb, black, transparent 55%);
+    --uc-panel-shadow-margin: 16px;
+}
+
+* {
+    scrollbar-width: thin !important;
+    scrollbar-color: color-mix(in srgb, var(--uc-bg), white 26%) transparent !important;
+}
+
+#navigator-toolbox,
+#nav-bar,
+#TabsToolbar,
+#PersonalToolbar {
+    border: none !important;
+    box-shadow: none !important;
+}
+
+#browser,
+#appcontent,
+#tabbrowser-tabbox,
+#tabbrowser-tabpanels,
+.browserContainer {
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+#sidebar-box,
+#sidebar-main,
+#sidebar-splitter,
+#sidebar-launcher-splitter {
+    border: none !important;
+    box-shadow: none !important;
+}
+
+#sidebar-splitter,
+#sidebar-launcher-splitter,
+.sidebar-splitter {
+    min-width: 1px !important;
+    width: 1px !important;
+    background: transparent !important;
+    border: none !important;
+}
+
+/* =========================================================
+   Toolbar buttons
+   ========================================================= */
+
+.toolbarbutton-1,
+#TabsToolbar .toolbarbutton-1,
+#PersonalToolbar .toolbarbutton-1 {
+    border-radius: var(--uc-toolbarbutton-radius) !important;
+    color: var(--uc-fg) !important;
+    fill: currentColor !important;
+}
+
+.toolbarbutton-1:hover,
+#TabsToolbar .toolbarbutton-1:hover,
+#PersonalToolbar .toolbarbutton-1:hover {
+    background-color: var(--uc-toolbarbutton-hover-bg) !important;
+}
+
+.toolbarbutton-1:hover:active,
+.toolbarbutton-1[open="true"],
+.toolbarbutton-1[open] {
+    background-color: var(--uc-toolbarbutton-active-bg) !important;
+}
+
+.toolbarbutton-1[disabled="true"],
+.toolbarbutton-1[disabled] {
+    opacity: 0.45 !important;
+}
+
+/* =========================================================
+   URL bar / address bar
+   ========================================================= */
+
+.urlbar-background {
+    background-color: color-mix(in srgb, var(--uc-bg), white 5%) !important;
+    border: 1px solid color-mix(in srgb, var(--uc-bg), white 10%) !important;
+    border-radius: var(--uc-urlbar-radius) !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+#urlbar:hover > .urlbar-background {
+    background-color: color-mix(in srgb, var(--uc-bg), white 7%) !important;
+    border-color: color-mix(in srgb, var(--uc-bg), white 15%) !important;
+}
+
+#urlbar:not([open])[focused] > .urlbar-background,
+#searchbar:focus-within {
+    border-color: var(--uc-accent) !important;
+    outline: none !important;
+    box-shadow: 0 0 0 1px var(--uc-focus-ring) !important;
+}
+
+#urlbar[open] > .urlbar-background {
+    background-color: var(--uc-menu-bg) !important;
+    border-color: var(--uc-menu-border) !important;
+    border-radius: var(--uc-radius-large) !important;
+    outline: none !important;
+    box-shadow: var(--uc-panel-shadow) !important;
+}
+
+#urlbar-input,
+.urlbar-input {
+    color: var(--uc-fg) !important;
+}
+
+#identity-box,
+#tracking-protection-icon-container,
+#page-action-buttons {
+    color: var(--uc-muted) !important;
+    fill: currentColor !important;
+}
+
+/* URL bar dropdown */
+#urlbar-results {
+    background-color: transparent !important;
+    color: var(--uc-fg) !important;
+}
+
+.urlbarView {
+    background-color: transparent !important;
+    color: var(--uc-fg) !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+.urlbarView-row {
+    border-radius: var(--uc-radius-small) !important;
+    margin-inline: 6px !important;
+}
+
+.urlbarView-row:hover,
+.urlbarView-row[selected] {
+    background-color: var(--uc-menu-bg-hover) !important;
+}
+
+.urlbarView-title,
+.urlbarView-url,
+.urlbarView-action {
+    color: var(--uc-fg) !important;
+}
+
+.urlbarView-url,
+.urlbarView-secondary,
+.urlbarView-explanation,
+.urlbarView-row-body-description,
+.urlbarView-row-body-bottom {
+    color: var(--uc-muted) !important;
+}
+
+/* =========================================================
+   Tabs
+   ========================================================= */
+
+.tabbrowser-tab .tab-background {
+    border-radius: var(--uc-radius-medium) !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
+.tabbrowser-tab:not([selected]):not([visuallyselected]):hover .tab-background {
+    background-color: var(--uc-bg-hover) !important;
+}
+
+.tabbrowser-tab[selected] .tab-background,
+.tabbrowser-tab[visuallyselected] .tab-background {
+    background-color: var(--uc-bg-2) !important;
+}
+
+.tabbrowser-tab[selected] .tab-label,
+.tabbrowser-tab[visuallyselected] .tab-label {
+    color: var(--uc-fg) !important;
+}
+
+.tabbrowser-tab:not([selected]):not([visuallyselected]) .tab-label {
+    color: var(--uc-muted) !important;
+}
+
+/* Loading / attention indication */
+.tabbrowser-tab[busy] .tab-label,
+.tabbrowser-tab .tab-content[attention] .tab-label,
+.tabbrowser-tab .tab-label[attention],
+.tabbrowser-tab .tab-content[titlechanged] .tab-label {
+    color: var(--uc-accent) !important;
+}
+
+/* Audio icon */
+.tab-icon-overlay[soundplaying],
+.tab-icon-overlay[muted],
+.tab-icon-overlay[activemedia-blocked] {
+    color: var(--uc-accent) !important;
+    fill: currentColor !important;
+    border-radius: 999px !important;
+}
+
+/* =========================================================
+   Updated sidebar / vertical tabs
+   Firefox 136+
+   ========================================================= */
+
+#sidebar-main,
+#sidebar-box,
+#sidebar-header {
+    background-color: var(--uc-bg) !important;
+    color: var(--uc-fg) !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+#sidebar-header {
+    border-bottom: 1px solid color-mix(in srgb, var(--uc-bg), white 8%) !important;
+}
+
+#sidebar {
+    background-color: var(--uc-bg) !important;
+    color: var(--uc-fg) !important;
+}
+
+#sidebar-main toolbarbutton,
+#sidebar-box toolbarbutton {
+    border-radius: var(--uc-toolbarbutton-radius) !important;
+}
+
+#sidebar-main toolbarbutton:hover,
+#sidebar-box toolbarbutton:hover {
+    background-color: var(--uc-toolbarbutton-hover-bg) !important;
+}
+
+/* Background colors */
+@-moz-document url("about:blank"),
+               url("about:newtab"),
+               url("about:home"),
+               url("about:privatebrowsing") {
+    html,
+    body {
+        background: var(--uc-bg) !important;
+    }
+}
+
+#browser,
+#appcontent,
+#tabbrowser-tabbox,
+#tabbrowser-tabpanels,
+.browserContainer,
+browser[type="content"] {
+    background: var(--uc-bg) !important;
+}
+
+/* =========================================================
+   Modern Firefox context menus
+   Keep the wrapper transparent and style only the visible popup part.
+   ========================================================= */
+
+menupopup {
+    appearance: none !important;
+    -moz-default-appearance: none !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+
+    --panel-background: var(--uc-menu-bg) !important;
+    --panel-color: var(--uc-fg) !important;
+    --panel-border-color: var(--uc-menu-border) !important;
+    --panel-border-radius: var(--uc-radius-medium) !important;
+    --panel-padding: 6px !important;
+    --panel-shadow: none !important;
+    --panel-shadow-margin: 0px !important;
+
+    color: var(--uc-fg) !important;
+}
+
+/* Style the actual visible popup surface, not both wrapper and surface */
+menupopup::part(content) {
+    appearance: none !important;
+    -moz-default-appearance: none !important;
+
+    background: var(--uc-menu-bg) !important;
+    color: var(--uc-fg) !important;
+    border: 1px solid var(--uc-menu-border) !important;
+    border-radius: var(--uc-radius-medium) !important;
+    padding: 6px !important;
+    box-shadow: none !important;
+}
+
+/* Menu rows */
+menupopup > menu,
+menupopup > menuitem {
+    appearance: none !important;
+    -moz-default-appearance: none !important;
+
+    min-height: 30px !important;
+    padding-block: 6px !important;
+    padding-inline: 10px 14px !important;
+
+    color: var(--uc-fg) !important;
+    background-color: transparent !important;
+    border-radius: var(--uc-radius-small) !important;
+}
+
+/* Hover / keyboard-selected row */
+menupopup > menu:not([disabled="true"])[_moz-menuactive="true"],
+menupopup > menuitem:not([disabled="true"])[_moz-menuactive="true"] {
+    color: var(--uc-fg) !important;
+    background-color: var(--uc-menu-bg-hover) !important;
+}
+
+/* Active/open submenu row */
+menupopup > menu[open="true"],
+menupopup > menu[_moz-menuactive="true"][open="true"] {
+    background-color: var(--uc-menu-bg-active) !important;
+}
+
+/* Disabled rows */
+menupopup > menu[disabled="true"],
+menupopup > menuitem[disabled="true"] {
+    color: var(--uc-menu-disabled) !important;
+}
+
+/* Separators */
+menupopup menuseparator {
+    appearance: none !important;
+    -moz-default-appearance: none !important;
+
+    margin-block: 5px !important;
+    margin-inline: 8px !important;
+    padding: 0 !important;
+    border: none !important;
+    border-top: 1px solid var(--uc-menu-separator) !important;
+}
+
+/* Submenu arrows */
+menupopup .menu-right {
+    color: var(--uc-muted) !important;
+    fill: currentColor !important;
+}
+
+/* Menu icons, where Firefox exposes them */
+menupopup .menu-iconic-icon {
+    opacity: 0.9 !important;
+}
+
+menupopup
+    menuitem:not([disabled="true"])[_moz-menuactive="true"]
+    .menu-iconic-icon,
+menupopup
+    menu:not([disabled="true"])[_moz-menuactive="true"]
+    .menu-iconic-icon {
+    opacity: 1 !important;
+}
+
+/* =========================================================
+   App panels / downloads / extensions / protections
+   ========================================================= */
+
+panel,
+panelview,
+.panel-viewstack,
+panelmultiview {
+    --panel-background: var(--uc-menu-bg) !important;
+    --panel-color: var(--uc-fg) !important;
+    --panel-border-color: var(--uc-menu-border) !important;
+    --panel-border-radius: var(--uc-radius-large) !important;
+    --panel-shadow: none !important;
+    --panel-shadow-margin: 0px !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    color: var(--uc-fg) !important;
+}
+
+panel::part(content) {
+    background: var(--uc-menu-bg) !important;
+    color: var(--uc-fg) !important;
+    border: 1px solid var(--uc-menu-border) !important;
+    border-radius: var(--uc-radius-large) !important;
+    box-shadow: none !important;
+}
+
+.panel-viewcontainer,
+.panel-viewstack,
+panelmultiview,
+panelview {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+.panel-subview-body,
+.panel-header,
+.panel-footer,
+#downloadsListBox {
+    background-color: transparent !important;
+    color: var(--uc-fg) !important;
+}
+
+#appMenu-popup,
+#unified-extensions-panel {
+    background: transparent !important;
+    color: var(--uc-fg) !important;
+}
+
+.subviewbutton,
+.panel-banner-item {
+    border-radius: var(--uc-radius-small) !important;
+    color: var(--uc-fg) !important;
+}
+
+.subviewbutton:hover,
+.subviewbutton:hover:active,
+.subviewbutton[open="true"],
+.subviewbutton[open],
+.panel-banner-item:hover {
+    background-color: var(--uc-menu-bg-hover) !important;
+}
+
+.subviewbutton[disabled="true"],
+.subviewbutton[disabled] {
+    color: var(--uc-menu-disabled) !important;
+}
+
+/* =========================================================
+   Find bar
+   ========================================================= */
+
+findbar {
+    background-color: var(--uc-bg) !important;
+    color: var(--uc-fg) !important;
+    border-top: 1px solid color-mix(in srgb, var(--uc-bg), white 8%) !important;
+    box-shadow: none !important;
+}
+
+findbar textbox,
+findbar .findbar-textbox {
+    appearance: none !important;
+    background-color: color-mix(in srgb, var(--uc-bg), white 5%) !important;
+    color: var(--uc-fg) !important;
+    border: 1px solid color-mix(in srgb, var(--uc-bg), white 12%) !important;
+    border-radius: var(--uc-radius-small) !important;
+}
+
+findbar textbox:focus,
+findbar .findbar-textbox:focus {
+    border-color: var(--uc-accent) !important;
+    box-shadow: 0 0 0 2px var(--uc-focus-ring) !important;
+}
+
+/* =========================================================
+   Private browsing indicator
+   ========================================================= */
+
+.private-browsing-indicator-with-label {
+    background-color: color-mix(
+        in srgb,
+        var(--uc-accent),
+        transparent 82%
+    ) !important;
+    color: var(--uc-fg) !important;
+    border-radius: 999px !important;
+    padding-inline: 8px !important;
+}
+
+/* =========================================================
+   Compact density refinements
+   ========================================================= */
+
+:root[uidensity="compact"] {
+    --toolbarbutton-inner-padding: 6px !important;
+    --tab-min-height: 30px !important;
+}
+
+:root[uidensity="compact"] #urlbar-container {
+    --urlbar-container-height: 32px !important;
+}
+
+:root[uidensity="compact"] menupopup > menu,
+:root[uidensity="compact"] menupopup > menuitem {
+    min-height: 26px !important;
+    padding-block: 4px !important;
+}
+
+/* =========================================================
+   Subtle UI transitions
+   ========================================================= */
+
+.toolbarbutton-1,
+.tabbrowser-tab .tab-background,
+menupopup > menu,
+menupopup > menuitem,
+.subviewbutton,
+.urlbarView-row,
+.urlbar-background {
+    transition:
+        background-color 120ms ease,
+        border-color 120ms ease,
+        box-shadow 120ms ease,
+        opacity 120ms ease !important;
+}
+
+/* =========================================================
+   Reduced motion safety
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        transition-duration: 0.001ms !important;
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+    }
+}

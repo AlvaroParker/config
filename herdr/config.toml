@@ -1,0 +1,63 @@
+onboarding = false
+
+# Built-in catppuccin (mocha) is the default theme; only the accent is overridden.
+[theme.custom]
+accent = "#cba6f7"
+
+[ui]
+status_indicators = "symbols"
+sidebar_width = 32
+agent_panel_sort = "priority"
+hide_tab_bar_when_single_tab = true
+pane_scrollbars = false
+
+[ui.sidebar.agents]
+# $limit_* and $context come from the Agent Usage plugin; exactly one $limit_*
+# token is set at a time, so the colour follows how much of the window is left.
+rows = [
+  ["state_icon", "terminal_title_stripped"],
+  ["machine", "workspace", "agent"],
+  ["$limit_high", { token = "$limit_mid", fg = "#f9e2af" }, { token = "$limit_low", fg = "#f38ba8" }, "$context"],
+]
+
+[ui.toast]
+delivery = "system"
+delay_seconds = 2
+
+[ui.sound]
+enabled = false
+
+# New worktrees land in <directory>/<repo>/<branch>, next to the existing ones.
+[worktrees]
+directory = "~/github/worktrees"
+
+[[keys.command]]
+key = "prefix+f"
+type = "plugin_action"
+command = "sessionizer.open"
+description = "find project / workspace"
+
+[[keys.command]]
+key = "prefix+shift+f"
+type = "plugin_action"
+command = "sessionizer.worktree-open"
+description = "open or create worktree"
+
+[[keys.command]]
+key = "prefix+d"
+type = "plugin_action"
+command = "persiyanov.reviewr.toggle"
+description = "toggle reviewr (diff review)"
+
+[[keys.command]]
+key = "prefix+u"
+type = "plugin_action"
+command = "usagebar.open-limits"
+description = "agent usage / limits pane"
+
+# Open the focused pane's checkout (worktree root) in Zed.
+[[keys.command]]
+key = "prefix+shift+e"
+type = "shell"
+command = 'zed "$(git -C "$HERDR_ACTIVE_PANE_CWD" rev-parse --show-toplevel 2>/dev/null || echo "$HERDR_ACTIVE_PANE_CWD")"'
+description = "open checkout in Zed"

@@ -1,0 +1,11 @@
+# Agent Usage (usagebar). Single default account per agent; everything not
+# listed here uses the plugin defaults.
+
+[notify]
+enabled = true
+# Toast when this much of a limit window is left (once per window).
+remaining_thresholds = [20, 10, 5]
+
+[ui]
+limit_percent = "remaining"
+sidebar_windows = "shortest"

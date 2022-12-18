@@ -1,0 +1,7 @@
+# theme defaults to catppuccin, matching herdr.
+default_scope = "last-turn"
+diff_view = "unified"
+toggle_placement = "overlay"
+auto_open = false
+# Zed stays the code editor here; $EDITOR (nvim) is left alone for terminal edits.
+editor = "zed {file}:{line}"

@@ -1,0 +1,10 @@
+# No [layout]/[tabs]: new workspaces open with a plain shell.
+[projects]
+roots = ["~/github", "~/repos"]
+git_only = true
+depth = 1
+
+[ui]
+placement = "popup"
+width = "80%"
+height = "80%"

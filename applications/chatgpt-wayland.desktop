@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=ChatGPT (Wayland)
+Comment=ChatGPT by OpenAI
+GenericName=AI assistant
+Exec=/usr/bin/chatgpt --ozone-platform=wayland %U
+Icon=chatgpt
+Type=Application
+StartupNotify=true
+Categories=Utility;Development;
+MimeType=x-scheme-handler/codex;x-scheme-handler/http;x-scheme-handler/https;text/csv;application/vnd.openxmlformats-officedocument.wordprocessingml.document;application/vnd.openxmlformats-officedocument.presentationml.presentation;text/tab-separated-values;application/vnd.ms-excel;application/vnd.ms-excel.sheet.macroEnabled.12;application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;

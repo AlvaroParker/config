@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+    printf 'Usage: copen [FILE|URL]\n' >&2
+    exit 2
+}
+
+if (($# > 1)); then
+    usage
+fi
+
+if (($# == 0)); then
+    if ! command -v fzf >/dev/null 2>&1; then
+        printf 'copen: fzf is required to choose a file interactively\n' >&2
+        exit 1
+    fi
+    IFS= read -r -d '' target < <(fzf --walker=file,hidden --walker-skip=.git --print0 --prompt='Open> ') || exit 0
+else
+    target=$1
+fi
+
+if [[ -z $target ]]; then
+    usage
+fi
+
+if [[ -e $target || -L $target ]]; then
+    if [[ $target != /* ]]; then
+        target=$PWD/$target
+    fi
+elif [[ ! $target =~ ^[[:alpha:]][[:alnum:]+.-]*: ]]; then
+    printf 'copen: file not found: %s\n' "$target" >&2
+    exit 1
+fi
+
+if ! command -v xdg-open >/dev/null 2>&1; then
+    printf 'copen: xdg-open is required\n' >&2
+    exit 1
+fi
+
+# Give the opener a new session and close all three terminal streams.
+setsid --fork -- xdg-open "$target" </dev/null >/dev/null 2>&1

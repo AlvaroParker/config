@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if selection="$(cliphist list | fzf --no-sort --delimiter=$'\t' --with-nth=2.. --prompt='Clipboard> ')" && [[ -n "$selection" ]]; then
+    printf '%s\n' "$selection" | cliphist decode | wl-copy
+fi

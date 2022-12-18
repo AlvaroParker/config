@@ -1,0 +1,145 @@
+* {
+    /* Muted midnight glass palette */
+    bg0:    rgba(10, 16, 36, 0.92);
+    bg1:    rgba(15, 25, 55, 0.82);
+    bg2:    rgba(24, 42, 78, 0.52);
+    bg3:    rgba(52, 76, 126, 0.86);
+    bg-glass: rgba(24, 42, 78, 0.28);
+    fg0:    #aebbd8;
+    fg1:    #c58d74;
+    fg2:    #98a9cb;
+    fg3:    #5d6f96;
+    fg-selected: #bdcbea;
+
+    /* Glass border colors */
+    border-light: rgba(67, 88, 140, 0.32);
+    border-accent: rgba(92, 118, 174, 0.48);
+}
+
+* {
+    font:   "Inter 13";
+
+    background-color:   transparent;
+    text-color:         @fg0;
+
+    margin:     0px;
+    padding:    0px;
+    spacing:    0px;
+}
+
+window {
+    location:       north;
+    y-offset:       calc(50%- 180px);
+    width:          680;
+    border-radius:  22px;
+    border:         1px;
+    border-color:   @border-light;
+
+    background-color:   @bg0;
+}
+
+mainbox {
+    padding:    16px;
+}
+
+inputbar {
+    background-color:   @bg1;
+    border-color:       @border-accent;
+
+    border:         1px;
+    border-radius:  16px;
+
+    padding:    12px 20px;
+    spacing:    12px;
+    children:   [ prompt, entry ];
+}
+
+prompt {
+    text-color: @fg2;
+    font: "Inter 13";
+}
+
+entry {
+    placeholder:        "Search";
+    placeholder-color:  @fg3;
+    font: "Inter 13";
+}
+
+message {
+    margin:             16px 0 0;
+    border-radius:      16px;
+    border:             1px;
+    border-color:       @border-light;
+    background-color:   @bg2;
+}
+
+textbox {
+    padding:    12px 24px;
+}
+
+listview {
+    background-color:   transparent;
+
+    margin:     16px 0 0;
+    lines:      6;
+    columns:    1;
+
+    fixed-height: false;
+    spacing:    2px;
+}
+
+element {
+    padding:        8px 20px;
+    spacing:        12px;
+    border-radius:  14px;
+    border:         1px;
+    border-color:   transparent;
+
+    background-color: transparent;
+}
+
+element normal active {
+    text-color: @fg1;
+}
+
+element alternate active {
+    text-color: @fg1;
+}
+
+element selected normal, element selected active {
+    background-color:   @bg3;
+    border-color:       @border-accent;
+}
+
+element selected element-icon,
+element selected element-text {
+    text-color: @fg-selected;
+}
+
+element-icon {
+    size:           1.2em;
+    vertical-align: 0.5;
+}
+
+element-text {
+    text-color: inherit;
+    vertical-align: 0.5;
+}
+
+element selected {
+    text-color: @fg-selected;
+}
+
+element selected element-text {
+    text-color: @fg-selected;
+    font: "Inter 13";
+}
+
+scrollbar {
+    width:        4px;
+    border:       0;
+    handle-color: @border-accent;
+    handle-width: 4px;
+    padding:      0;
+    margin:       0 4px 0 0;
+}
