@@ -1,0 +1,194 @@
+{
+  "exclusions_gitignore": true, // Custom setting see my PR draft: https://github.com/zed-industries/zed/pull/17544
+  "outline_panel": {
+    "dock": "right"
+  },
+  "show_inline_completions": true,
+  "theme": "Catppuccin Mocha",
+  "assistant": {
+    "default_model": {
+      "provider": "copilot_chat",
+      "model": "gpt-4o"
+    },
+    "version": "2"
+  },
+  "git": {
+    "inline_blame": {
+      "enabled": true
+    }
+  },
+  "auto_update_extensions": {
+    "catppuccin": false
+  },
+  "tab_bar": {
+    "show": true
+  },
+  "tabs": {
+    "git_status": true,
+    "file_icons": true
+  },
+  "terminal": {
+    "dock": "bottom",
+    "default_height": 250
+  },
+  "languages": {
+    "Shell Script": {
+      "show_inline_completions": true
+    },
+    "TSX": {
+      "show_inline_completions": true
+    },
+    "Java": {
+      "show_inline_completions": false
+    },
+    "Python": {
+      "show_inline_completions": true,
+      "language_servers": ["ruff", "pyright"],
+      "format_on_save": "on",
+      "formatter": [
+        {
+          "language_server": {
+            "name": "ruff"
+          }
+        },
+        {
+          "code_actions": {
+            "source.fixAll.ruff": true,
+            "source.organizeImports.ruff": true
+          }
+        }
+      ]
+    },
+    "Markdown": {
+      "soft_wrap": "editor_width"
+    },
+    "Go": {
+      "show_inline_completions": false
+    },
+    "TypeScript": {
+      "show_inline_completions": true,
+      "tab_size": 4
+    },
+    "Rust": {
+      "show_inline_completions": false
+    },
+    "C": {
+      "show_inline_completions": false,
+      "formatter": {
+        "external": {
+          "command": "bash",
+          "arguments": ["-c", "clang-format"]
+        }
+      },
+      "format_on_save": "on"
+    },
+    "C++": {
+      "show_inline_completions": true,
+      "formatter": {
+        "external": {
+          "command": "bash",
+          "arguments": ["-c", "clang-format"]
+        }
+      },
+      "tab_size": 2,
+      "format_on_save": "off"
+    }
+  },
+  "vim_mode": true,
+  "base_keymap": "VSCode",
+  "ui_font_family": "Inter",
+  "ui_font_weight": 600,
+  "buffer_font_family": "FiraCode Nerd Font",
+  "buffer_font_weight": 500,
+  "ui_font_size": 16,
+  "buffer_font_size": 12,
+  "scrollbar": {
+    "show": "never"
+  },
+  "format_on_save": "on",
+  "file_scan_exclusions": [".git", ".next", ".turbo", "node_modules", "dist"],
+  "project_panel": {
+    "scrollbar": {
+      "show": "never"
+    }
+  },
+  "lsp": {
+    "rust-analyzer": {
+      "initialization_options": {
+        "completion": {
+          "snippets": {
+            "custom": {
+              "Arc::new": {
+                "postfix": "arc",
+                "body": ["Arc::new(${receiver})"],
+                "requires": "std::sync::Arc",
+                "scope": "expr"
+              },
+              "Some": {
+                "postfix": "some",
+                "body": ["Some(${receiver})"],
+                "scope": "expr"
+              },
+              "Ok": {
+                "postfix": "ok",
+                "body": ["Ok(${receiver})"],
+                "scope": "expr"
+              },
+              "Rc::new": {
+                "postfix": "rc",
+                "body": ["Rc::new(${receiver})"],
+                "requires": "std::rc::Rc",
+                "scope": "expr"
+              },
+              "Box::pin": {
+                "postfix": "boxpin",
+                "body": ["Box::pin(${receiver})"],
+                "requires": "std::boxed::Box",
+                "scope": "expr"
+              },
+              "vec!": {
+                "postfix": "vec",
+                "body": ["vec![${receiver}]"],
+                "description": "vec![]",
+                "scope": "expr"
+              }
+            }
+          }
+        }
+      }
+    },
+    "pyright": {
+      "settings": {
+        "analysis": {
+          "autoSearchPaths": true,
+          "useLibraryCodeForTypes": true,
+          "typeCheckingMode": "strict",
+          "reportUnusedVariable": "warning"
+        }
+      }
+    },
+    "ruff": {
+      "initialization_options": {
+        "settings": {
+          // Ruff server settings goes here
+          // "lineLength": 120,
+          "lint": {
+            "extendSelect": [
+              // Recommended rules for Python linting
+              "I", // isort (sorts imports)
+              "ARG", // flake8-unused-arguments detects unused arguments in functions
+              "F841", // Warn about unused variables
+              "E", // Pycodestyle errors (style issues like indentation, whitespace, etc.)
+              "F", // Pyflakes rules (includes F841 for unused variables, and other common Python errors)
+              "W", // Pycodestyle warnings (like line breaks before binary operators)
+              "C90", // Pylint rules for cyclomatic complexity and code structure
+              "N", // PEP8 Naming conventions
+              "B", // Bugbear (detects potential code issues like mutable default arguments)
+              "A" // flake8-builtins (detects misuse of Python built-ins like `list`, `dict`, etc.)
+            ]
+          }
+        }
+      }
+    }
+  }
+}

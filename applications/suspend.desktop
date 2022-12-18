@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Name=Suspend
+Comment=Suspend your computer
+GenericName=Suspend
+Keywords=Suspend;
+Exec=systemctl suspend
+Icon=gnome-power-manager
+Terminal=false
+Type=Application

@@ -1,0 +1,34 @@
+#!/bin/bash
+set -e
+
+size=$1
+
+# If size == --help
+if [ "$size" == "--help" ]; then
+    echo "Usage: genswap <size>"
+    echo "size: the size of the swap file in GB"
+    exit 0
+fi
+
+isuint_Regx() { [[ $1 =~ ^[0-9]+$ ]] ;}
+
+if isuint_Regx $size; then
+    echo "The argument is an integer."
+else
+    echo "Usage: genswap <size>"
+    echo "size: the size of the swap file in GB"
+    exit 1
+fi
+
+sudo mkswap -U clear --size "${size}G" --file /swapfile
+sudo swapon /swapfile
+
+echo "/swapfile none swap defaults 0 0" | sudo tee -a /etc/fstab
+
+offset=$(sudo filefrag -v /swapfile | awk '$1=="0:" {print substr($4, 1, length($4)-2)}')
+dev_path=$(df -h /swapfile | awk 'NR>1 {print $1}')
+uuid=$(sudo blkid ${dev_path} | awk -F'"' '{print $2}')
+
+echo "Done, now add this to /etc/dracut.conf.d/cmdline.conf"
+echo "resume=UUID=${uuid} resume_offset=${offset}"
+

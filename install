@@ -1,0 +1,217 @@
+#!/bin/bash
+current_dir=$(pwd)
+create_symlinks() {
+    local source_directory="$1"
+    local target_directory="$2"
+    local full_source_directory="${current_dir}/$source_directory"
+
+    # Ensure the target directory exists
+    mkdir -p "$target_directory"
+
+    # Loop through each file in the source directory
+    for file in "$full_source_directory"/*; do
+        if [ -f "$file" ]; then
+            ln -s "$file" "$target_directory"
+        fi
+    done
+}
+
+packages=("wget" "ranger" "tmux" "curl" "unzip" "rustup" "base-devel" "hyprland" "xdg-desktop-portal-hyprland" "alacritty" "nautilus" "flatpak" "gammastep" "grim" "wl-clipboard" "slurp" "swaync" "waybar" "blueman" "btop" "zsh" "neovim" "zathura" "lsd" "fastfetch" "bat" "picom" "i3" "polybar" "ttf-jetbrains-mono-nerd" "ttf-firacode-nerd" "qemu-system-x86" "qemu-system-x86-firmware" "libvirt" "bridge-utils" "virt-manager" "qemu-hw-display-virtio-gpu-gl" "qemu-hw-display-virtio-gpu" "qemu-hw-display-virtio-gpu-pci" "qemu-hw-display-virtio-gpu-pci-gl" "dnsmasq" "qemu-img" "docker" "docker-compose" "hyprpaper" "hyprlock" "ripgrep" "qt5-wayland" "qt6-wayland" "lib32-glibc" "lib32-gcc-libs" "easyeffects" "network-manager-applet" "feh" "xorg-server" "lxappearance" "zathura-pdf-poppler" "gnome-tweaks" "gnome-themes-extra" "plymouth" "obsidian" "polkit-kde-agent" "qemu-full" "gdb" "vlc" "jq" "man-pages" "hypridle" "vulkan-radeon" "exa" "rsync" "firefox")
+# Filter out already installed packages
+to_install=()
+for pkg in "${packages[@]}"; do
+    if ! pacman -Qq $pkg &>/dev/null; then
+        to_install+=("$pkg")
+    fi
+done
+if (( ${#to_install[@]} > 0 )); then
+    sudo pacman -S --noconfirm "${to_install[@]}"
+else
+    echo "Dependencies already installed."
+fi
+
+mkdir -p "$HOME/.cargo"
+rm -rf "$HOME/.cargo/config.toml"
+ln -s "${current_dir}/cargo/config.toml" "$HOME/.cargo/config.toml"
+
+# Install paru
+if ! pacman -Qq paru &>/dev/null; then
+    mkdir -p ~/aur
+    cd ~/aur
+    git clone https://aur.archlinux.org/paru-bin.git
+    cd paru-bin
+    makepkg -si --noconfirm
+else
+    echo "Paru already installed."
+fi
+
+# Remove xdg-desktop-portal-gnome
+# if pacman -Qq xdg-desktop-portal-gnome &>/dev/null; then
+    # sudo pacman -Rs --noconfirm xdg-desktop-portal-gnome
+# fi
+
+# Install AUR packages
+aur_packages=("light" "hyprpicker" "rate-mirrors-bin" "swayosd-git" "zen-browser-avx2-bin" "visual-studio-code-bin" "rofi-lbonn-wayland-git" "wl-gammarelay-rs" "proton-vpn-gtk-app" "clipse-bin")
+aur_to_install=()
+
+for pkg in "${aur_packages[@]}"; do
+    if ! pacman -Qq $pkg &>/dev/null; then
+        aur_to_install+=("$pkg")
+    fi
+done
+if (( ${#aur_to_install[@]} > 0 )); then
+    paru -S --noconfirm --skipreview "${aur_to_install[@]}"
+else
+    echo "AUR dependencies already installed."
+fi
+
+cd $current_dir
+
+# Enable tap to click on i3
+sudo mkdir -p /etc/X11/xorg.conf.d && sudo tee <<'EOF' /etc/X11/xorg.conf.d/90-touchpad.conf 1> /dev/null
+Section "InputClass"
+        Identifier "touchpad"
+        MatchIsTouchpad "on"
+        Driver "libinput"
+        Option "Tapping" "on"
+EndSection
+
+EOF
+
+# Install AstroNvim
+rm -rf ~/.config/nvim ~/.local/share/nvim ~/.local/state/nvim ~/.cache/nvim
+ln -s  "${current_dir}/nvim" ~/.config/nvim
+
+
+# Install tmux plugin manager
+rm -rf ~/.tmux.conf
+ln "${current_dir}/tmux.conf" ~/.tmux.conf
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+
+# Install alacritty config
+rm -rf ~/.config/alacritty
+ln -s "${current_dir}/alacritty" ~/.config/alacritty
+
+# Install dunst config
+rm -rf ~/.config/swaync
+ln -s "${current_dir}/swaync" ~/.config/swaync
+
+# Install hyprland config
+rm -rf ~/.config/hypr
+ln -s "${current_dir}/hypr" ~/.config/hypr
+
+# Install neofetch config
+rm -rf ~/.config/fastfetch
+ln -s "${current_dir}/fastfetch" ~/.config/fastfetch
+
+# Install rofi config
+rm -rf ~/.config/rofi
+ln -s "${current_dir}/rofi" ~/.config/rofi
+
+# Install waybar config
+rm -rf ~/.config/waybar
+ln -s "${current_dir}/waybar" ~/.config/waybar
+
+# Install zathura config
+rm -rf ~/.config/zathura
+ln -s "${current_dir}/zathura" ~/.config/zathura
+
+# Install polybar config
+rm -rf ~/.config/polybar
+ln -s "${current_dir}/polybar" ~/.config/polybar
+
+# Install picom config
+rm -rf ~/.config/picom
+ln -s "${current_dir}/picom" ~/.config/picom
+
+# Install i3 config
+rm -rf ~/.config/i3
+ln -s "${current_dir}/i3" ~/.config/i3
+
+# Install fonts
+# Needed for waybar
+unzip ./icomoon.zip
+mkdir -p ~/.local/share/fonts
+cp -r ./icomoon/fonts ~/.local/share/fonts/icomoon
+
+# https://github.com/rsms/inter/releases/download/v4.0/Inter-4.0.zip
+wget https://github.com/rsms/inter/releases/download/v4.0/Inter-4.0.zip
+unzip -d Inter Inter-4.0.zip
+mv "./Inter/extras/otf" ~/.local/share/fonts/Inter
+rm -rf Inter Inter-4.0.zip
+
+# Reload cache
+fc-cache
+
+# Install code config
+mkdir -p ~/.config/Code/User
+rm -rf ~/.config/Code/User/settings.json ~/.config/Code/User/keybinds.json
+ln -s "${current_dir}/Code/User/keybinds.json" ~/.config/Code/User/keybinds.json
+ln -s "${current_dir}/Code/User/settings.json" ~/.config/Code/User/settings.json
+
+# Install zed config
+mkdir -p ~/.config/zed
+rm -rf ~/.config/zed/settings.json
+ln -s "${current_dir}/zed/settings.json" ~/.config/zed/settings.json
+ln -s "${current_dir}/zed/keymap.json" ~/.config/zed/keymap.json
+ln -s "${current_dir}/zed/themes" ~/.config/zed/themes
+
+# Install bin
+create_symlinks "bin" "$HOME/.local/bin/"
+
+
+~/.local/bin/set_wallpaper ~/.config/hypr/wallpapers/wallpaper.png
+
+# Install pacman config
+sudo cp ./pacman.conf /etc/pacman.conf
+
+# Ranger dev icons
+git clone https://github.com/alexanderjeurissen/ranger_devicons ~/.config/ranger/plugins/ranger_devicons
+rm -rf ~/.config/ranger/rc.conf
+rm -rf ~/.config/ranger/scope.sh
+rm -rf ~/.config/ranger/rifle.conf
+ln -s "${current_dir}/ranger/rc.conf" ~/.config/ranger/rc.conf
+ln -s "${current_dir}/ranger/scope.sh" ~/.config/ranger/scope.sh
+ln -s "${current_dir}/ranger/rifle.conf" ~/.config/ranger/rifle.conf
+
+# Webcord flags
+rm -f ~/.config/code-flags.conf
+ln -s "${current_dir}/electron-flags.conf" ~/.config/code-flags.conf
+
+# Webcord flags
+rm -f ~/.config/webcord-flags.conf
+ln -s "${current_dir}/electron-flags.conf" ~/.config/webcord-flags.conf
+
+# Obsidian flags
+rm -f ~/.config/obsidian/user-flags.conf
+ln -s "${current_dir}/electron-flags.conf" ~/.config/obsidian/user-flags.conf
+
+# Add shutdown, hibernate and suspend desktop entries for rofi
+ln -sf "${current_dir}/applications/suspend.desktop" ~/.local/share/applications/suspend.desktop
+ln -sf "${current_dir}/applications/shutdown.desktop" ~/.local/share/applications/shutdown.desktop
+ln -sf "${current_dir}/applications/hibernate.desktop" ~/.local/share/applications/hibernate.desktop
+
+# Enable bluetooth
+sudo systemctl enable bluetooth.service --now
+
+# Configure virtual machines
+sudo systemctl enable libvirtd.service --now
+sudo virsh net-start default
+sudo virsh net-autostart default
+
+sudo usermod -aG libvirt $USER
+sudo usermod -aG libvirt-qemu $USER
+sudo usermod -aG kvm $USER
+sudo usermod -aG docker $USER
+
+flatpak override --filesystem=~/.themes:ro --filesystem=~/.icons:ro --user
+mkdir -p ~/.icons
+
+# Install zed
+curl -f https://zed.dev/install.sh | ZED_CHANNEL=preview sh
+
+ln -sf "${current_dir}/zshrc" ~/.zshrc
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc
+
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions

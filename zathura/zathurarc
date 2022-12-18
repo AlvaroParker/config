@@ -1,0 +1,16 @@
+map <C-i> zoom in
+map <C-o> zoom out
+# Tokyo Night color scheme for Zathura.
+# Original color scheme: https://github.com/enkia/tokyo-night-vscode-theme
+# Provided for Zathura by https://github.com/CondensedMilk7
+# Copy these lines into your ~/.config/zathura/zathurarc
+
+include catppuccin-mocha
+
+
+set recolor                     "true"
+set recolor-keephue             "false"
+
+# This somehow changes the background 
+# set font "JetBrainsMono NF Medium"
+set selection-clipboard clipboard

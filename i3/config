@@ -1,0 +1,146 @@
+set $mod Mod4
+exec --no-startup-id dex --autostart --environment i3
+exec --no-startup-id picom
+
+exec_always --no-startup-id xset s off -dpms
+
+exec_always --no-startup-id autotiling
+
+# Set font
+font pango:JetBrainsMonoNL Nerd Font 0
+
+# Set wallpaper
+exec --no-startup-id feh --bg-scale ~/.config/hypr/wallpapers/wallpaper_street.png
+exec --no-startup-id ~/.config/i3/setoutput
+
+
+# Floating #
+floating_modifier $mod
+bindsym $mod+Shift+space floating toggle
+default_floating_border pixel 0
+for_window [class="zoom"] floating enable
+
+# Media control 
+bindsym XF86AudioRaiseVolume exec --no-startup-id  pactl set-sink-volume 0 +5%
+bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume 0 -5% 
+bindsym XF86AudioMute exec --no-startup-id amixer -D pulse sset Master toggle-mute 
+bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle 
+
+# Navigation #
+set $up k
+set $down j
+set $left h
+set $right l
+
+bindsym $mod+Shift+q kill
+
+bindsym $mod+$left focus left
+bindsym $mod+$down focus down
+bindsym $mod+$up focus up
+bindsym $mod+$right focus right
+
+bindsym $mod+Shift+$left move left
+bindsym $mod+Shift+$down move down
+bindsym $mod+Shift+$up move up
+bindsym $mod+Shift+$right move right
+
+
+bindsym $mod+g split h
+bindsym $mod+v split v
+
+bindsym $mod+f fullscreen toggle
+
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+
+# Workspaces #
+set $ws1 "1"
+set $ws2 "2"
+set $ws3 "3"
+set $ws4 "4"
+set $ws5 "5"
+set $ws6 "6"
+set $ws7 "7"
+set $ws8 "8"
+set $ws9 "9"
+set $ws10 "10"
+
+bindsym $mod+1 workspace number $ws1
+bindsym $mod+2 workspace number $ws2
+bindsym $mod+3 workspace number $ws3
+bindsym $mod+4 workspace number $ws4
+bindsym $mod+5 workspace number $ws5
+bindsym $mod+6 workspace number $ws6
+bindsym $mod+7 workspace number $ws7
+bindsym $mod+8 workspace number $ws8
+bindsym $mod+9 workspace number $ws9
+bindsym $mod+0 workspace number $ws10
+bindsym $mod+Tab workspace next
+
+
+bindsym $mod+Shift+1 move container to workspace number $ws1
+bindsym $mod+Shift+2 move container to workspace number $ws2
+bindsym $mod+Shift+3 move container to workspace number $ws3
+bindsym $mod+Shift+4 move container to workspace number $ws4
+bindsym $mod+Shift+5 move container to workspace number $ws5
+bindsym $mod+Shift+6 move container to workspace number $ws6
+bindsym $mod+Shift+7 move container to workspace number $ws7
+bindsym $mod+Shift+8 move container to workspace number $ws8
+bindsym $mod+Shift+9 move container to workspace number $ws9
+bindsym $mod+Shift+0 move container to workspace number $ws10
+
+# Refresh/Restart/Logout
+bindsym $mod+Shift+c reload
+bindsym $mod+Shift+e exec --no-startup-id i3-msg exit
+bindsym $mod+Shift+a exec --no-startup-id "i3-nagbar -t warning -m 'You pressed the hibernation shortcut. Do you really want to hibernate your PC?' -B 'Yes, hibernate' 'systemctl hibernate'"
+
+# Resize 
+mode "resize" {
+        bindsym h resize shrink width 5 px or 5 ppt
+        bindsym j resize grow height 5 px or 5 ppt
+        bindsym k resize shrink height 5 px or 5 ppt
+        bindsym l resize grow width 5 px or 5 ppt
+
+        bindsym Left resize shrink width 5 px or 5 ppt
+        bindsym Down resize grow height 5 px or 5 ppt
+        bindsym Up resize shrink height 5 px or 5 ppt
+        bindsym Right resize grow width 5 px or 5 ppt
+
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+        bindsym $mod+r mode "default"
+}
+bindsym $mod+r mode "resize"
+
+# Border/Gaps/Titlebars
+##################################### BORDERS/GAPS/TITLEBARS #####################################
+client.focused          #6272A4 #6272A4 #6272A4 #6272A4   #6272A4
+client.focused_inactive #44475A #44475A #44475A #44475A   #44475A
+client.unfocused        #282A36 #282A36 #282A36 #282A36   #282A36
+client.urgent           #44475A #FF5555 #FF5555 #FF5555   #FF5555
+client.placeholder      #282A36 #282A36 #282A36 #282A36   #282A36
+
+gaps inner 5
+gaps outer 5
+default_border pixel 3
+smart_borders on
+
+# Autostart polkit
+exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+
+# Execute alacritty
+bindsym $mod+Return exec --no-startup-id alacritty
+bindsym $mod+d exec --no-startup-id rofi -show drun
+
+# Execute polybar
+exec --no-startup-id ~/.config/polybar/scripts/polybarstart.sh
+bindsym $mod+Shift+b exec --no-startup-id polybar-msg cmd toggle
+
+# Night light
+bindsym $mod+Shift+n exec --no-startup-id redshift -P -O 4500
+bindsym $mod+Shift+m exec --no-startup-id redshift -x && killall redshift 
+bindsym $mod+Shift+s exec --no-startup-id flameshot gui
+bindsym $mod+Shift+w exec --no-startup-id i3lock -i ~/.config/hypr/wallpapers/lock.png
+bindsym $mod+Shift+Return exec --no-startup-id alacritty -e ~/.local/bin/auto_tmux
+bindsym $mod+Shift+o exec --no-startup-id ~/.local/bin/toggle_monitor

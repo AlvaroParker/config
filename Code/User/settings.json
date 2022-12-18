@@ -1,0 +1,158 @@
+{
+  "zenMode.hideLineNumbers": false,
+  "zenMode.centerLayout": false,
+  "zenMode.hideStatusBar": false,
+  "editor.fontFamily": "FiraCode Nerd Font",
+  "explorer.confirmDelete": false,
+  "terminal.integrated.cursorStyle": "line",
+  "git.confirmSync": false,
+  "workbench.startupEditor": "none",
+  "workbench.preferredDarkColorTheme": "Catppuccin Mocha",
+  "telemetry.telemetryLevel": "off",
+  "vim.leader": " ",
+  "vim.hlsearch": true,
+  "vim.useSystemClipboard": true,
+  "vim.smartRelativeLine": true,
+  "vim.insertModeKeyBindingsNonRecursive": [
+    {
+      "before": ["<C-e>"],
+      "commands": ["editor.action.inlineSuggest.hide"]
+    }
+  ],
+  "vim.normalModeKeyBindingsNonRecursive": [
+    {
+      "before": ["<leader>", "o"],
+      "commands": ["workbench.action.toggleSidebarVisibility"]
+    },
+    {
+      "before": ["<leader>", "l", "b"],
+      "commands": ["workbench.action.toggleActivityBarVisibility"]
+    },
+    {
+      "before": ["<leader>", "e"],
+      "commands": ["workbench.view.explorer"]
+    },
+    {
+      "before": ["<leader>", "h"],
+      "commands": ["outline.focus"]
+    },
+    {
+      "before": ["<leader>", "r", "r"],
+      "commands": ["editor.action.rename"]
+    },
+    {
+      "before": ["<leader>", "l", "a"],
+      "commands": ["editor.action.quickFix"]
+    },
+    {
+      "before": ["<leader>", "c"],
+      "commands": ["workbench.action.closeActiveEditor"]
+    },
+    {
+      "before": ["<leader>", "/"],
+      "commands": ["editor.action.commentLine"]
+    },
+    {
+      "before": ["<leader>", "t", "v"],
+      "commands": ["workbench.action.terminal.toggleTerminal"]
+    },
+    {
+      "before": ["K"],
+      "commands": ["editor.action.showHover"]
+    },
+    {
+      "before": ["<leader>", "f", "f"],
+      "commands": ["workbench.action.showCommands"]
+    },
+    {
+      "before": ["<leader>", "f", "o"],
+      "commands": ["workbench.action.quickOpen"]
+    },
+    {
+      "before": ["<leader>", "p", "s"],
+      "commands": ["extension.fuzzySearch"]
+    },
+    {
+      "before": ["<leader>", "n"],
+      "commands": ["workbench.action.files.newUntitledFile"]
+    },
+    {
+      "before": ["<leader>", "d", "b"],
+      "commands": ["editor.debug.action.toggleBreakpoint"]
+    },
+    {
+      "before": ["<leader>", "d", "c"],
+      "commands": ["workbench.action.debug.start"]
+    },
+    {
+      "before": ["<leader>", "d", "n"],
+      "commands": ["workbench.action.debug.continue"]
+    },
+    {
+      "before": ["<leader>", "d", "r"],
+      "commands": ["workbench.action.debug.run"]
+    },
+    {
+      "before": ["<leader>", "g"],
+      "commands": ["workbench.view.scm"]
+    },
+    {
+      "before": ["<leader>", "a", "f"],
+      "commands": ["explorer.newFolder"]
+    },
+    {
+      "before": ["<leader>", "a", "a"],
+      "commands": ["explorer.newFile"]
+    },
+    {
+      "before": ["<leader>", "/"],
+      "commands": ["editor.action.commentLine"]
+    }
+  ],
+  "[rust]": {
+    "editor.defaultFormatter": "rust-lang.rust-analyzer",
+    "editor.formatOnSave": true
+  },
+  "search.useGlobalIgnoreFiles": true,
+  "notebook.output.textLineLimit": 100,
+  "editor.fontWeight": "600",
+  "editor.inlineSuggest.enabled": true,
+  "github.copilot.enable": {
+    "*": true,
+    "plaintext": false,
+    "markdown": true,
+    "scminput": false,
+    "yaml": false,
+    "python": true,
+    "typescript": true,
+    "rust": true,
+    "vue": false
+  },
+  "svelte.enable-ts-plugin": true,
+  "update.showReleaseNotes": false,
+  "git.openRepositoryInParentFolders": "always",
+  "github.copilot.editor.enableAutoCompletions": true,
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "workbench.editor.tabActionCloseVisibility": false,
+  "workbench.experimental.enableNewProfilesUI": true,
+  "window.dialogStyle": "custom",
+  "window.titleBarStyle": "custom",
+  "editor.minimap.enabled": false,
+  "notebook.lineNumbers": "on",
+  "editor.fontSize": 12,
+  "workbench.colorTheme": "Catppuccin Macchiato",
+  "workbench.iconTheme": "eq-material-theme-icons-darker",
+  "workbench.productIconTheme": "material-product-icons",
+  "cmake.pinnedCommands": [
+    "workbench.action.tasks.configureTaskRunner",
+    "workbench.action.tasks.runTask"
+  ],
+  "extensions.ignoreRecommendations": true,
+  "explorer.excludeGitIgnore": true,
+  "catppuccin.italicComments": false,
+  "catppuccin.italicKeywords": false,
+  "cmake.showOptionsMovedNotification": false,
+  "window.menuBarVisibility": "compact",
+  "chat.editor.fontFamily": "FiraCode Nerd Font",
+  "debug.console.fontFamily": "FiraCode Nerd Font"
+}

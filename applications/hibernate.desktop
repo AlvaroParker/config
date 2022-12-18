@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Name=Hibernate
+Comment=Hibernate your computer
+GenericName=Hibernate
+Keywords=Hibernate;
+Exec=systemctl hibernate
+Icon=gnome-power-manager
+Terminal=false
+Type=Application
