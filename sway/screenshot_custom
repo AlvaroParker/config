@@ -1,0 +1,10 @@
+#! /bin/python3
+
+from datetime import datetime
+import os
+
+a = datetime.now()
+path = f"""\'{os.environ['HOME']}/Pictures/Screenshots/Screenshot from
+ {a.year}-{a.month}-{a.day} {a.hour}-{a.minute}-{a.second}.png\'"""
+command = f"grim {path}"
+os.system(command)

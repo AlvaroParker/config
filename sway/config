@@ -1,0 +1,198 @@
+
+font pango:SF Mono Regular 0
+set $mod Mod4
+
+set $WS1 1:
+set $WS2 2:
+set $WS3 3:
+set $WS4 4:磊
+set $WS5 5:
+set $WS6 6:ﴬ
+set $WS8 8:ﭮ 
+set $WS9 9:阮
+set $WS10 10:
+
+for_window [app_id="evince"] move container to workspace $WS1, workspace $WS1
+for_window [app_id="Alacritty"] move container to workspace $WS2, workspace $WS2
+for_window [app_id="code-url-handler"] move container to workspace $WS3, workspace $WS3
+for_window [app_id="io.github.celluloid_player.Celluloid"] move container to workspace $WS4, workspace $WS4
+for_window [app_id="org.gnome.Nautilus"] move container to workspace $WS5, workspace $WS5
+for_window [title="Joplin"] move container to workspace $WS6, workspace $WS6
+for_window [class="discord"] move container to workspace $WS8, workspace $WS8
+for_window [class="Spotify"] move container to workspace $WS9, workspace $WS9
+for_window [app_id="firefox"] move container to workspace $WS10, workspace $WS10
+for_window [app_id="zathura"] move container to workspace $WS1, workspace $WS1
+
+
+set $left h
+set $down j
+set $up k
+set $right l
+set $term alacritty
+
+exec_always --no-startup-id autotiling
+
+################################################ VOLUME ################################################
+bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume 0 +2% && bash ~/.config/sway/changeVolume #&& $refresh_i3statu
+bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume 0 -2% && bash ~/.config/sway/changeVolume #&& $refresh_i3status
+bindsym XF86AudioMute exec --no-startup-id amixer -D pipewire sset Master toggle-mute && bash ~/.config/sway/changeVolume #&& $refresh_i3status
+bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle
+
+################################################ DISPLAY/BRIGHTNESS ################################################
+bindsym XF86MonBrightnessUp exec --no-startup-id light -A 5 && bash ~/.config/sway/changeBright  # increase screen brightness
+bindsym XF86MonBrightnessDown exec --no-startup-id light -U 5 && bash ~/.config/sway/changeBright # decrease screen brightness
+bindsym $mod+XF86MonBrightnessUp exec --no-startup-id light -S 100 && bash ~/.config/sway/changeBright # increase screen brightness
+bindsym $mod+XF86MonBrightnessDown exec --no-startup-id light -S 0 && bash ~/.config/sway/changeBright # increase screen brightness
+bindsym Print exec --no-startup-id python ~/.config/sway/screenshot_custom  # Screenshot
+output eDP-1 scale 1.25
+exec_always --no-startup-id kanshi
+output * bg ~/.config/sway/wallpaper4.jpg fill
+
+################################################ KEYBOARD LAYOUT ################################################
+input * {
+	xkb_layout "us,us"
+	xkb_variant ",intl"
+	xkb_options "grp:win_space_toggle"
+}
+bindsym $mod+Shift+b exec swaymsg input "1:1:AT_Translated_Set_2_keyboard" xkb_switch_layout next
+################################################ TOUCHPAD ################################################
+input type:touchpad {
+    tap enabled
+    natural_scroll enabled
+}
+
+################################################ CURSOR THEME ################################################
+seat seat0 xcursor_theme Vimix-cursors
+bar {
+	    swaybar_command waybar
+}
+
+################################################ LOGOUT/SHUTDOWN ################################################
+bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -B 'Yes, exit sway' 'swaymsg exit'
+#bindsym $mod+Shift+p exec swaynag -t warning -m 'You pressed the shutdown shortcut. Do you really want to shutdown? This will end your Wayland session.' -B 'Yes, shutdown' 'shutdown 0'
+bindsym $mod+Shift+p exec ~/.local/bin/shutdown_gui
+
+
+################################################ SHORTCUTS ################################################
+bindsym $mod+Return exec alacritty
+bindsym $mod+Shift+q kill
+bindsym $mod+d exec ~/.config/rofi/launchers/type-1/launcher.sh
+floating_modifier $mod normal
+bindsym $mod+Shift+c reload
+bindsym $mod+plus gaps inner current plus 5, gaps outer current plus 5
+bindsym $mod+minus gaps inner current minus 5, gaps outer current minus 5
+bindsym $mod+Shift+n exec --no-startup-id gammastep -P -O 4000
+bindsym $mod+Shift+m exec --no-startup-id killall gammastep
+bindsym $mod+Shift+o exec --no-startup-id swaylock --image ~/.config/sway/wallpaper4Blured.jpg
+
+################################################ MOVING ################################################
+    bindsym $mod+$left focus left
+    bindsym $mod+$down focus down
+    bindsym $mod+$up focus up
+    bindsym $mod+$right focus right
+    # Or use $mod+[up|down|left|right]
+    bindsym $mod+Left focus left
+    bindsym $mod+Down focus down
+    bindsym $mod+Up focus up
+    bindsym $mod+Right focus right
+
+    # Move the focused window with the same, but add Shift
+    bindsym $mod+Shift+$left move left
+    bindsym $mod+Shift+$down move down
+    bindsym $mod+Shift+$up move up
+    bindsym $mod+Shift+$right move right
+    # Ditto, with arrow keys
+    bindsym $mod+Shift+Left move left
+    bindsym $mod+Shift+Down move down
+    bindsym $mod+Shift+Up move up
+    bindsym $mod+Shift+Right move right
+#
+# Workspaces:
+#
+    # Switch to workspace
+    bindsym $mod+1 workspace $WS1
+    bindsym $mod+2 workspace $WS2
+    bindsym $mod+3 workspace $WS3
+    bindsym $mod+4 workspace $WS4
+    bindsym $mod+5 workspace $WS5
+    bindsym $mod+6 workspace $WS6
+    bindsym $mod+7 workspace number 7
+    bindsym $mod+8 workspace $WS8
+    bindsym $mod+9 workspace $WS9
+    bindsym $mod+0 workspace $WS10
+    # Move focused container to workspace
+    bindsym $mod+Shift+1 move container to workspace $WS1
+    bindsym $mod+Shift+2 move container to workspace $WS2
+    bindsym $mod+Shift+3 move container to workspace $WS3
+    bindsym $mod+Shift+4 move container to workspace $WS4
+    bindsym $mod+Shift+5 move container to workspace $WS5
+    bindsym $mod+Shift+6 move container to workspace $WS6
+    bindsym $mod+Shift+7 move container to workspace number 7
+    bindsym $mod+Shift+8 move container to workspace $WS8
+    bindsym $mod+Shift+9 move container to workspace $WS9
+    bindsym $mod+Shift+0 move container to workspace $WS10
+
+
+################################################ LAYOUT ################################################
+    bindsym $mod+b splith
+    bindsym $mod+v splitv
+    bindsym $mod+s layout stacking
+    bindsym $mod+w layout tabbed
+    bindsym $mod+e layout toggle split
+
+    bindsym $mod+f fullscreen
+
+    # Toggle the current focus between tiling and floating mode
+    bindsym $mod+Shift+space floating toggle
+
+    # Swap focus between the tiling area and the floating area
+    bindsym $mod+space focus mode_toggle
+
+    # Move focus to the parent container
+    bindsym $mod+a focus parent
+
+
+################################################ RESIZE ################################################
+mode "resize" {
+    bindsym $left resize shrink width 10px
+    bindsym $down resize grow height 10px
+    bindsym $up resize shrink height 10px
+    bindsym $right resize grow width 10px
+
+    # Ditto, with arrow keys
+    bindsym Left resize shrink width 10px
+    bindsym Down resize grow height 10px
+    bindsym Up resize shrink height 10px
+    bindsym Right resize grow width 10px
+
+    # Return to default mode
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+bindsym $mod+r mode "resize"
+
+##############################BORDERS/GAPS/TITLEBARS #####################################
+# class                 border  backgr. text    indicator child_border
+client.focused          #54577C #7856a1 #7856a1 #7856a1   #7856a1
+client.focused_inactive #44475A #44475A #44475A #44475A   #44475A
+client.unfocused        #1A1B26 #282A36 #282A36 #282A36   #282A36
+client.urgent           #44475A #FF5555 #FF5555 #FF5555   #FF5555
+client.placeholder      #282A36 #282A36 #282A36 #282A36   #282A36
+gaps inner 5
+gaps outer 5
+default_border pixel 2
+#smart_borders onxwininfo -display :0
+smart_borders on
+
+include /etc/sway/config.d/*
+exec_always --no-startup-id gsettings set org.gnome.desktop.interface text-scaling-factor 1
+exec_always --no-startup-id gsettings set org.gnome.desktop.wm.preferences button-layout ":"
+exec_always --no-startup-id swaymsg workspace $WS1
+corner_radius 10
+exec_always --no-startup-id blueman-applet
+for_window [app_id = "shutdown_gui"] floating enable
+for_window [app_id =  "org.gtk_rs.shutdown" ] floating enable
+bindsym $mod+Shift+i exec --no-startup-id nautilus
+bindsym $mod+Shift+u exec --no-startup-id flatpak run org.mozilla.firefox
+exec_always --no-startup-id swayidle before-sleep "swaylock --image /home/parker/.config/sway/wallpaper4Blured.jpg"
+bindsym $mod+Shift+d bar hidden_state toggle

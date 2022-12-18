@@ -1,0 +1,5 @@
+set recolor   
+set recolor-lightcolor \#222222
+set default-bg \#1A1B26
+map <C-i> zoom in
+map <C-o> zoom out

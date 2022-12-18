@@ -1,0 +1,117 @@
+* {
+    border: none;
+    font-family: 'SF Mono', Consolas, 'Font Awesome 5 Free Solid', Roboto;
+  }
+  
+  window#waybar {
+    /* background-color: rgba(18, 21, 29, 0.98); */
+    background-color: rgba(49, 50, 68, 0.8);
+    /* background-color: rgba(0, 0, 0, 0); */
+border-bottom: 0px solid #181825;
+    border-radius: 80px;
+    color: #CBA6F7;
+    transition-property: background-color;
+    transition-duration: .5s;
+  }
+  
+  window#waybar.hidden {
+    opacity: 0.5;
+  }
+  
+  #workspaces,
+  #cpu,
+  #memory,
+  #pulseaudio,
+  #clock,
+  #backlight,
+  #battery,
+  #network,
+  #tray {
+    background-color: rgba(69, 71, 90, 1);
+    padding: 0 10;
+    color: #CDD6F4;
+    border-color: #11111B;
+    margin: 0px 2px 0px 2px;
+    border: 2px solid rgba(0, 0, 0, 0);
+    border-radius: 80px;
+    background-clip: padding-box;
+  }
+  
+  #workspaces button {
+    border-radius: 80px;
+    padding: 0 5px;
+    min-width: 25px;
+    color: #74C7EC;
+    font-size: 16px;
+  }
+  
+  #workspaces button:hover {
+    background-color: #7F849C;
+  }
+  
+  #workspaces button.focused {
+    background-color: #616578;
+    color: #F38BA8;
+
+    font-weight: bolder;
+  }
+  
+  #workspaces button.urgent {
+    color: #F80000;
+  }
+  
+  #cpu {
+    color: #74C7EC;
+  }
+  
+  #memory {
+    color: #EBA0AC;
+  }
+  
+  #pulseaudio {
+      color: #89DCEB;
+  }
+  
+  #clock {
+    color: #EBA0AC;
+  }
+  
+  #backlight {
+    color: #F9E2AF;
+  }
+  
+  #battery {
+    color: #A6E3A1;
+  }
+  
+  #battery.charging, #battery.plugged {
+    background-color: #98c379;
+    color: #1e222a;
+  }
+  
+  @keyframes blink {
+      to {
+          background-color: #1e222a;
+          color: #e06c75;
+      }
+  }
+  
+  #battery.critical:not(.charging) {
+      background-color: #F38BA8;
+      color: #1e222a;
+      animation-name: blink;
+      animation-duration: 0.5s;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+      animation-direction: alternate;
+  }
+  
+  #network {
+      color: #A6E3A1
+  }
+  
+  #network.disconnected {
+      background-color: #F38BA8;
+      color: #1e222a;
+  }
+  
