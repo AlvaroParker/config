@@ -1,0 +1,91 @@
+{
+    "workbench.colorTheme": "Tokyo Night AltSynt",
+    "editor.minimap.enabled": false,
+    "window.menuBarVisibility": "toggle",
+    "workbench.iconTheme": "material-icon-theme",
+    "workbench.productIconTheme": "fluent-icons",
+    "editor.fontFamily": "'SF Mono', 'Consolas', 'CaskaydiaCove Nerd Font'",
+    "explorer.confirmDelete": false,
+    "terminal.integrated.cursorStyle": "line",
+    "git.confirmSync": false,
+    "python.venvPath": "~/Documents/env",
+    "workbench.startupEditor": "none",
+    "workbench.preferredDarkColorTheme": "Tokyo Night Gogh",
+    "telemetry.telemetryLevel": "off",
+  "vim.leader": " ",
+  "vim.hlsearch": true,
+  "vim.useSystemClipboard": true,
+  "vim.smartRelativeLine": true,
+  "vim.normalModeKeyBindingsNonRecursive": [
+    {
+      "before": ["<leader>", "o"],
+      "commands": ["workbench.action.toggleSidebarVisibility"]
+    },
+    {
+      "before": ["<leader>", "e"],
+      "commands": ["workbench.view.explorer"]
+    },
+    {
+      "before": ["<leader>", "r", "r"],
+      "commands": ["editor.action.rename"]
+    },
+    {
+      "before": ["<leader>", "l", "a"],
+      "commands": ["editor.action.quickFix"]
+      
+    },
+    {
+        "before": ["<leader>", "c"],
+        "commands": ["workbench.action.closeActiveEditor"]
+    },
+    {
+        "before": ["<leader>", "/"],
+        "commands": ["editor.action.commentLine"]
+    },
+    {
+        "before":["<leader>", "t", "v"],
+        "commands":["workbench.action.terminal.toggleTerminal"]
+    },
+    {
+      "before": ["K"],
+      "commands": ["editor.action.showHover"]
+    },
+    {
+      "before": ["<leader>", "f", "f"],
+      "commands": ["workbench.action.quickOpen"]
+    },
+    {
+      "before": ["<leader>", "p", "s"],
+      "commands": ["extension.fuzzySearch"]
+    },
+    {
+      "before": ["<leader>", "n"],
+      "commands": ["workbench.action.files.newUntitledFile"]
+    },
+    {
+      "before": ["<leader>", "d", "b"],
+      "commands": ["editor.debug.action.toggleBreakpoint"]
+    },
+    {
+      "before": ["<leader>", "d", "c"],
+      "commands": ["workbench.action.debug.start"]
+    },
+    {
+      "before": ["<leader>", "d", "n"],
+      "commands": ["workbench.action.debug.continue"]
+    },
+    {
+      "before": ["<leader>", "d", "r"],
+      "commands": ["workbench.action.debug.run"]
+    }
+
+  ],
+  "[rust]": {
+    "editor.defaultFormatter": "rust-lang.rust-analyzer",
+    "editor.formatOnSave": true
+  },
+  "search.useGlobalIgnoreFiles": true,
+  "editor.fontSize": 15,
+  "notebook.output.textLineLimit": 100,
+  "editor.fontWeight": "500",
+}
