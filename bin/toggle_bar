@@ -1,0 +1,9 @@
+#! /bin/bash
+
+status=$(dconf read /org/gnome/shell/extensions/just-perfection/panel)
+
+if [ "$status" == "true" ]; then
+	dconf write /org/gnome/shell/extensions/just-perfection/panel false
+elif [ "$status" == "false" ]; then
+	dconf write /org/gnome/shell/extensions/just-perfection/panel true
+fi

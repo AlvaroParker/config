@@ -1,0 +1,13 @@
+#! /bin/bash
+mkas(){
+	name=$(echo "$1" | awk -F'.' '{print $1}') || exit 1
+	as "$name.s" -o "$name.o" || exit 1
+	ld "$name.o" -o "$name" || exit 1
+	./$name
+	echo $?
+}
+if [ $# -eq 0 ];then
+    echo "No arguments supplied"
+else
+	mkas "$1"
+fi

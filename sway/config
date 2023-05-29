@@ -1,6 +1,7 @@
-
 font pango:SF Mono Regular 0
 set $mod Mod4
+
+exec_always --no-startup-id dex-autostart --autostart --environment sway
 
 set $WS1 1:
 set $WS2 2:
@@ -46,7 +47,7 @@ bindsym $mod+XF86MonBrightnessDown exec --no-startup-id light -S 0 && bash ~/.co
 bindsym Print exec --no-startup-id python ~/.config/sway/screenshot_custom  # Screenshot
 output eDP-1 scale 1.25
 exec_always --no-startup-id kanshi
-output * bg ~/.config/sway/wallpaper4.jpg fill
+output * bg ~/Documents/utilities/Tokyo-Night-GTK-Theme/wallpapers/tokyo-night36.svg fill
 
 ################################################ KEYBOARD LAYOUT ################################################
 input * {
@@ -65,6 +66,8 @@ input type:touchpad {
 seat seat0 xcursor_theme Vimix-cursors
 bar {
 	    swaybar_command waybar
+	    mode dock
+	    modifier none
 }
 
 ################################################ LOGOUT/SHUTDOWN ################################################
@@ -79,11 +82,11 @@ bindsym $mod+Shift+q kill
 bindsym $mod+d exec ~/.config/rofi/launchers/type-1/launcher.sh
 floating_modifier $mod normal
 bindsym $mod+Shift+c reload
-bindsym $mod+plus gaps inner current plus 5, gaps outer current plus 5
-bindsym $mod+minus gaps inner current minus 5, gaps outer current minus 5
+# bindsym $mod+plus gaps inner current plus 5, gaps outer current plus 5
+# bindsym $mod+minus gaps inner current minus 5, gaps outer current minus 5
 bindsym $mod+Shift+n exec --no-startup-id gammastep -P -O 4000
 bindsym $mod+Shift+m exec --no-startup-id killall gammastep
-bindsym $mod+Shift+o exec --no-startup-id swaylock --image ~/.config/sway/wallpaper4Blured.jpg
+bindsym $mod+Shift+o exec --no-startup-id swaylock --image ~/.config/sway/lock.jpg
 
 ################################################ MOVING ################################################
     bindsym $mod+$left focus left
@@ -188,11 +191,18 @@ include /etc/sway/config.d/*
 exec_always --no-startup-id gsettings set org.gnome.desktop.interface text-scaling-factor 1
 exec_always --no-startup-id gsettings set org.gnome.desktop.wm.preferences button-layout ":"
 exec_always --no-startup-id swaymsg workspace $WS1
-corner_radius 10
+# corner_radius 10
 exec_always --no-startup-id blueman-applet
 for_window [app_id = "shutdown_gui"] floating enable
 for_window [app_id =  "org.gtk_rs.shutdown" ] floating enable
 bindsym $mod+Shift+i exec --no-startup-id nautilus
 bindsym $mod+Shift+u exec --no-startup-id flatpak run org.mozilla.firefox
-exec_always --no-startup-id swayidle before-sleep "swaylock --image /home/parker/.config/sway/wallpaper4Blured.jpg"
-bindsym $mod+Shift+d bar hidden_state toggle
+exec_always --no-startup-id swayidle before-sleep "swaylock --image /home/parker/.config/sway/lock.jpg"
+bindsym $mod+Shift+d bar mode toggle
+bindsym $mod+Shift+r reload
+bindsym Control+Shift+Escape exec --no-startup-id alacritty -e btop
+bindsym $mod+Shift+w exec --no-startup-id 'flatpak run md.obsidian.Obsidian --enable-features=UseOzonePlatform,WaylandWindowDecorations --ozone-platform=wayland'
+bindsym $mod+Ctrl+greater move workspace to output right
+bindsym $mod+Ctrl+less move workspace to output left
+exec_always --no-startup-id ~/.local/bin/GalaxyBudsClient_Linux_64bit_Portable.bin
+exec --no-startup-id /usr/lib/polkit-1/polkit-agent-helper-1 &

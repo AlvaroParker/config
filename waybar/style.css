@@ -1,11 +1,12 @@
 * {
     border: none;
-    font-family: 'SF Mono', Consolas, 'Font Awesome 5 Free Solid', Roboto;
+    font-family: 'JetBrainsMonoNL Nerd Font', 'SF Mono', Consolas, 'Font Awesome 5 Free Solid', Roboto;
+    font-size: 16px;
   }
   
   window#waybar {
     /* background-color: rgba(18, 21, 29, 0.98); */
-    background-color: rgba(49, 50, 68, 0.8);
+    background-color: rgba(49, 50, 68, 0);
     /* background-color: rgba(0, 0, 0, 0); */
 border-bottom: 0px solid #181825;
     border-radius: 80px;
