@@ -39,7 +39,6 @@ window:
   dimensions:
     columns: 106
     lines: 26
-  decorations: none
 font:
   normal:
     family: JetBrainsMonoNL Nerd Font
@@ -48,3 +47,5 @@ font:
 cursor:
   style:
     shape: Beam
+env:
+  TERM: xterm-256color
