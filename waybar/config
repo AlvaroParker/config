@@ -1,95 +1,153 @@
 {
-    "height": 20,
-    "id": "bar-0",
-    "ipc":true,
-    "margin-top":5,
-    "margin-left":5,
-    "margin-right":5,
-    "spacing": 1,
-    "modules-left": ["sway/workspaces","custom/media" ,"sway/mode"],
-    "modules-center": [],
-    "modules-right": ["pulseaudio", "network", "cpu", "memory", "backlight", "battery", "clock", "tray"],
-    "sway/mode": {
-        "format": "<span style=\"italic\">{}</span>"
+  "layer": "top",
+  "height": 35,
+  "margin-top": 10,
+  "margin-left": 10,
+  "margin-bottom": 0,
+  "margin-right": 10,
+  "spacing": 0,
+
+  "modules-left": [
+    "custom/launcher",
+    "custom/separator",
+    "cpu",
+    "memory",
+    "custom/separator",
+    "custom/window-name",
+    "custom/pacman-update-icon",
+    "custom/pacman-update",
+    "tray"
+  ],
+
+  "modules-center": ["wlr/workspaces"],
+  "modules-right": [
+    "battery",
+    "backlight",
+    "pulseaudio",
+    "custom/right-arr",
+    "network",
+    "custom/clock-icon",
+    "clock"
+  ],
+
+  "wlr/workspaces": {
+    "all-outputs": true,
+    "active-only": false,
+    "on-click": "activate",
+    "format": "{icon}",
+    "on-scroll-up": "hyprctl dispatch workspace e+1",
+    "on-scroll-down": "hyprctl dispatch workspace e-1",
+    "format-icons": {
+      "1": "",
+      "2": "",
+      "3": "",
+      "4": "",
+      "5": "",
+      "6": "",
+      "urgent": "",
+      "active": "",
+      "default": ""
+    }
+  },
+
+  "tray": {
+    "icon-size": 20,
+    "spacing": 8
+  },
+
+  "custom/clock-icon": {
+    "format": ""
+  },
+
+  "clock": {
+    "format": "<b>{:%I:%M %p}</b>",
+    "format-alt": "<b>{:%a.%d,%b}</b>",
+    "tooltip-format": "<big>{:%B %Y}</big>\n<tt><small>{calendar}</small></tt>"
+  },
+
+  "cpu": {
+    "interval": 10,
+    "format": " {usage}%",
+    "max-length": 10,
+    "tooltip": false
+  },
+  "memory": {
+    "interval": 30,
+    "format": " {used}GiB",
+    "format-alt": " {used:0.1f}G",
+    "max-length": 10
+  },
+  "backlight": {
+    "device": "amdgpu_bl1",
+    "format": "{icon} {percent}",
+    "tooltip": false,
+    "format-icons": ["", "", ""]
+  },
+  "network": {
+    "format-wifi": " {essid}",
+    "on-click": "iwgtk",
+    "format-ethernet": " wired",
+    "tooltip": false,
+    "format-disconnected": ""
+  },
+
+  "pulseaudio": {
+    "format": "{icon} <b>{volume}</b>",
+    "format-bluetooth": " ",
+    "format-bluetooth-muted": " ",
+    "tooltip": false,
+    "format-muted": "",
+    "format-icons": {
+      "default": ["", "", ""]
     },
-    "idle_inhibitor": {
-        "format": "{icon}",
-        "format-icons": {
-            "activated": "",
-            "deactivated": ""
-        }
+    "on-click": "pavucontrol"
+  },
+  "battery": {
+    "bat": "BAT1",
+    "interval": 30,
+    "states": {
+      "warning": 30,
+      "critical": 15
     },
-    "tray": {
-        "spacing": 5
-    },
-    "clock": {
-        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
-        "format-alt": "{:%Y-%m-%d}"
-    },
-    "cpu": {
-        "format": "{usage}% ",
-        "tooltip": false
-    },
-    "memory": {
-        "interval": 30,
-        "format": "{used:0.1f}G/{total:0.1f}G "
-    },
-    "backlight": {
-        // "device": "acpi_video1",
-        "format": "{percent}% {icon}",
-        "format-icons": ["🌑","🌒","🌒","🌓","🌓","🌔","🌔","🌕","🌕"]
-    },
-    "battery": {
-        "states": {
-            // "good": 95,
-            "warning": 30,
-            "critical": 15
-        },
-        "format": "{capacity}% {icon}",
-        "format-charging": "{capacity}% ",
-        "format-plugged": "{capacity}% ",
-        "format-alt": "{time} {icon}",
-        //"format-icons": [" ", " ", " ", " ", " "]
-        "format-icons": ["", "", "", "", "","", "", "", "", ""]
-    },
-    "network": {
-        "format-wifi": "{essid} ({signalStrength}%) ",
-        "format-ethernet": "{ifname} ",
-        "tooltip-format": "{ifname} via {gwaddr}",
-        "format-linked": "{ifname} (No IP) ",
-        "format-disconnected": "Disconnected ⚠",
-        "format-alt": "{ifname}: {ipaddr}/{cidr}"
-    },
-    "pulseaudio": {
-        "format": "{volume}% {icon}",
-        "format-bluetooth": "{volume}% ",
-        "format-bluetooth-muted": " {icon}",
-        "format-muted": " ",
-        "format-source": "{volume}% ",
-        "format-source-muted": "",
-        "format-icons": {
-            "headphone": "",
-            "hands-free": "",
-            "headset": "",
-            "phone": "",
-            "portable": "",
-            "car": "",
-            "default": ["", "", ""]
-        },
-        "on-click": "amixer -D pipewire sset Master toggle-mute"
-    },
-    "sway/workspaces": {
-        "format":" {name} ",
-        "persistent_workspaces": {
-            "1:": [],
-            "2:": [],
-            "3:": [],
-            "4:磊": [],
-            "5:": [],
-            "6:ﴬ":[],
-            "8:ﭮ":[],
-            "9:阮": [],            
-            "10:": []
-        }
-    },
+    "format": "{icon} {capacity}%",
+    "format-charging": " {icon} {capacity}%",
+    "format-icons": [" ", " ", " ", " "],
+    "max-length": 25,
+    "tooltip": false
+  },
+  "custom/right-arr": {
+    "format": "  "
+  },
+  "custom/launcher": {
+    "format": ""
+  },
+  "custom/separator": {
+    "format": " "
+  },
+  "custom/window-name": {
+    "format": "<b>{}</b>",
+    "interval": 1,
+    "exec": "hyprctl activewindow | grep class | awk '{print $2}' | sed 's/\\([[:alpha:]]\\)/\\U\\1/'"
+  },
+
+  "custom-pacman-update-icon-background": {
+    "format": ""
+  },
+  "custom/pacman-update-icon": {
+    "format": ""
+  },
+  "custom/pacman-update": {
+    "format": " {}",
+    "interval": 3600,
+    "exec": "$HOME/.config/waybar/scripts/checkupdates | wc -l",
+    "signal": 8
+  },
+  "custom/window-icon": {},
+  "custom/wrap-left": {
+    "format": "<b>[</b>"
+  },
+
+  "custom/wrap-right": {
+    "format": "<b>]</b>"
+  }
 }

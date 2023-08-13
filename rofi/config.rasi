@@ -1,11 +1,3 @@
-/**
- *
- * Author : Aditya Shakya (adi1090x)
- * Github : @adi1090x
- * 
- * Configuration For Rofi Version: 1.7.3
- **/
-
 configuration {
 	/*---------- General setting ----------*/
 	modi: "drun,run,filebrowser";
@@ -16,9 +8,7 @@ configuration {
 	normalize-match: true;
 	show-icons: true;
 	icon-theme: "Reversal-dark";
-/*	cache-dir: ;*/
 	steal-focus: false;
-/*	dpi: -1;*/
 
 	/*---------- Matching setting ----------*/
 	matching: "normal";
@@ -83,7 +73,7 @@ configuration {
 
 	/*---------- Misc setting ----------*/
 	terminal: "rofi-sensible-terminal";
-	font: "Mono 11";
+	font: "Inter-V 12";
 	sort: false;
 	threads: 0;
 	click-to-exit: true;
@@ -179,3 +169,4 @@ configuration {
 	me-accept-custom: "Control+MouseDPrimary";
 */
 }
+@theme "TokyoNight"

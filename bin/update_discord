@@ -1,8 +1,0 @@
-#! /bin/sh
-killall Discord
-bash -c "$(curl https://raw.githubusercontent.com/fuwwy/Discord-Screenshare-Linux/main/scripts/install.sh -sSfL)"
-
-wget https://github.com/BetterDiscord/Installer/releases/latest/download/BetterDiscord-Linux.AppImage -O /tmp/BetterDiscord.AppImage
-chmod +x /tmp/BetterDiscord.AppImage
-/tmp/BetterDiscord.AppImage
-

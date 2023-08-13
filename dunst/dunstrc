@@ -8,24 +8,24 @@ progress_bar_height = 10
 progress_bar_frame_width = 1
 progress_bar_min_width = 150
 progress_bar_max_width = 300
-highlight = "#74be88"
+highlight = "#8BD5CA"
+frame_color = "#4287f5"
 indicate_hidden = true
 shrink = true
 transparency = 0
-corner_radius= 10
+corner_radius= 5
 separator_height = 10
 horizontal_padding = 18
-text_icon_padding = 8
+text_icon_padding = 4
 gap_size = 2
 frame_width = 0
-frame_color = "#1a1a1d"
 sort = true
 idle_threshold = 0
-font = SF Mono 10
+font = JetBrainsMono NF Medium 10
 line_height = 3
 markup = full
 origin = "top-left"
-offset = "9x46"
+offset = "20x30"
 format = "<b>%s</b>\n%b"
 alignment = left
 show_age_threshold = 60
@@ -54,15 +54,15 @@ ellipsize = end
 
 [urgency_low]
 timeout = 4
-background = "#313244"
-frame_color = "#313244"
-foreground = "#CBA6F7"
+background = "#1E2030" 
+frame_color = "#1E2030"
+foreground = "#C0CAF5"
 
 [urgency_normal]
 timeout = 8
-background = "#313244"
-frame_color = "#313244"
-foreground = "#CBA6F7"
+background = "#1E2030"
+frame_color = "#1E2030"
+foreground = "#C0CAF5"
 
 [urgency_critical]
 timeout = 30

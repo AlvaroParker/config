@@ -35,7 +35,7 @@ theme: Breeze
 window:
   padding:
     x: 5
-  opacity: 0.95
+  opacity: 0.85
   dimensions:
     columns: 106
     lines: 26

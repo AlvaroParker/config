@@ -1,8 +1,0 @@
-#! /bin/bash
-status=$(cat /sys/class/drm/card0-HDMI-A-1/status)
-if [ "$status" == "connected" ]; then
-	gsettings set org.gnome.desktop.interface text-scaling-factor 1
-elif [ "$status" == "disconnected" ]; then
-	gsettings set org.gnome.desktop.interface text-scaling-factor 1.25
-fi
-gsettings set org.gnome.desktop.wm.preferences button-layout "close,minimize,maximize:"
