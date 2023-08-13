@@ -19,3 +19,6 @@ fish
 neovim
 zathura
 lsd
+tpm (Tmux package manager)
+omg (oh my fish)
+astronvim (AstroNvim)
