@@ -15,7 +15,7 @@ create_symlinks() {
 }
 current_dir=$(pwd)
 
-packages=("rustup" "base-devel" "hyprland" "xdg-desktop-portal-hyprland" "alacritty" "nautilus" "rofi" "flatpak" "gammastep" "light" "grim" "wl-clipboard" "slurp" "dunst" "waybar" "blueman" "btop" "fish" "neovim" "zathura" "lsd")
+packages=("rustup" "base-devel" "hyprland" "xdg-desktop-portal-hyprland" "alacritty" "nautilus" "rofi" "flatpak" "gammastep" "light" "grim" "wl-clipboard" "slurp" "dunst" "waybar" "blueman" "btop" "fish" "neovim" "zathura" "lsd" "neofetch" "bat")
 # Filter out already installed packages
 to_install=()
 for pkg in "${packages[@]}"; do
@@ -24,7 +24,7 @@ for pkg in "${packages[@]}"; do
     fi
 done
 if (( ${#to_install[@]} > 0 )); then
-    sudo pacman -S "${to_install[@]}"
+    sudo pacman -S --noconfirm "${to_install[@]}"
 else
     echo "Dependencies already installed."
 fi
@@ -40,6 +40,11 @@ else
     echo "Paru already installed."
 fi
 
+# Remove xdg-desktop-portal-gnome
+if pacman - Qq xdg-desktop-portal-gnome &>/dev/null; then
+    sudo pacman -Rs --noconfirm xdg-desktop-portal-gnome
+fi
+
 # Install AUR packages
 aur_packages=("hyprpicker-git" "nerd-fonts-meta" "rate-mirrors" "swayosd-git" "visual-studio-code-bin")
 aur_to_install=()
@@ -50,14 +55,14 @@ for pkg in "${aur_packages[@]}"; do
     fi
 done
 if (( ${#aur_to_install[@]} > 0 )); then
-    paru -S "${aur_to_install[@]}"
+    paru -S --noconfirm --skipreview "${aur_to_install[@]}"
 else
     echo "AUR dependencies already installed."
 fi
 
 cd $current_dir
 # Install AstroNvim
-rm rf ~/.config/nvim ~/.local/share/nvim ~/.local/state/nvim ~/.cache/nvim
+rm -rf ~/.config/nvim ~/.local/share/nvim ~/.local/state/nvim ~/.cache/nvim
 git clone --depth 1 https://github.com/AstroNvim/AstroNvim ~/.config/nvim
 mkdir -p ~/.config/nvim/lua/user
 ln -s ./nvim/lua/user/init.lua ~/.config/nvim/lua/user/init.lua
@@ -98,7 +103,7 @@ ln -s ./zathura ~/.config/zathura
 
 unzip ./icomoon.zip
 mkdir -p ~/.local/share/fonts
-cp ./icomoon/fonts ~/.local/share/fonts
+cp -r ./icomoon/fonts ~/.local/share/fonts/icomoon
 
 # Install code config
 mkdir -p ~/.config/Code/User
@@ -115,4 +120,6 @@ create_symlinks "./bin" "~/.local/bin"
 rm -rf ~/.config/fish
 create_symlinks "./fish" "~/.config/fish"
 ln -s ./omf ~/.config/omf
+sudo cp ./pacman.conf /etc/pacman.conf
+
 curl https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install | fish
