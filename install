@@ -31,6 +31,10 @@ else
     echo "Dependencies already installed."
 fi
 
+mkdir -p "$HOME/.cargo"
+rm -rf "$HOME/.cargo/config.toml"
+ln -s "${current_dir}/cargo/config.toml" "$HOME/.cargo/config.toml"
+
 # Install paru
 if ! pacman -Qq paru &>/dev/null; then
     mkdir -p ~/aur
