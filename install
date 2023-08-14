@@ -1,5 +1,18 @@
 #! /bin/bash
+create_symlinks() {
+    local source_directory="$1"
+    local target_directory="$2"
 
+    # Ensure the target directory exists
+    mkdir -p "$target_directory"
+
+    # Loop through each file in the source directory
+    for file in "$source_directory"/*; do
+        if [ -f "$file" ]; then
+            ln -s "$file" "$target_directory"
+        fi
+    done
+}
 current_dir=$(pwd)
 
 packages=("rustup" "base-devel" "hyprland" "xdg-desktop-portal-hyprland" "alacritty" "nautilus" "rofi" "flatpak" "gammastep" "light" "grim" "wl-clipboard" "slurp" "dunst" "waybar" "blueman" "btop" "fish" "neovim" "zathura" "lsd")
@@ -47,57 +60,59 @@ cd $current_dir
 rm rf ~/.config/nvim ~/.local/share/nvim ~/.local/state/nvim ~/.cache/nvim
 git clone --depth 1 https://github.com/AstroNvim/AstroNvim ~/.config/nvim
 mkdir -p ~/.config/nvim/lua/user
-cp -r ./nvim/lua/user/init.lua ~/.config/nvim/lua/user/init.lua
+ln -s ./nvim/lua/user/init.lua ~/.config/nvim/lua/user/init.lua
 
 
 # Install tmux plugin manager
-cp ./tmux.conf ~/.tmux.conf
+rm -rf ~/.tmux.conf
+ln ./tmux.conf ~/.tmux.conf
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
 # Install alacritty config
-mkdir -p ~/.config/alacritty
-cp ./alacritty/alacritty.yml ~/.config/alacritty/alacritty.yml
+rm -rf ~/.config/alacritty
+ln -s ./alacritty ~/.config/alacritty
 
 # Install dunst config
-mkdir -p ~/.config/dunst
-cp -r ./dunst ~/.config/dunst
+rm -rf ~/.config/dunst
+ln -s ./dunst ~/.config/dunst
 
 # Install hyprland config
-mkdir -p ~/.config/hypr
-cp -r ./hypr ~/.config/hypr
+rm -rf ~/.config/hypr
+ln -s ./hypr ~/.config/hypr
 
 # Install neofetch config
-mkdir -p ~/.config/neofetch
-cp -r ./neofetch ~/.config/neofetch
+rm -rf ~/.config/neofetch
+ln -s ./neofetch ~/.config/neofetch
 
 # Install rofi config
-mkdir -p ~/.config/rofi
-cp -r ./rofi ~/.config/rofi
+rm -rf ~/.config/rofi
+ln -s ./rofi ~/.config/rofi
 
 # Install waybar config
-mkdir -p ~/.config/waybar
-cp -r ./waybar ~/.config/waybar
+rm -rf ~/.config/waybar
+ln -s ./waybar ~/.config/waybar
 
 # Install zathura config
-mkdir -p ~/.config/zathura
-cp -r ./zathura ~/.config/zathura
+rm -rf ~/.config/zathura
+ln -s ./zathura ~/.config/zathura
 
 unzip ./icomoon.zip
 mkdir -p ~/.local/share/fonts
 cp ./icomoon/fonts ~/.local/share/fonts
 
 # Install code config
-mkdir -p ~/.config/Code
-cp -r ./Code ~/.config/Code
+mkdir -p ~/.config/Code/User
+rm -rf ~/.config/Code/User/settings.json ~/.config/Code/User/keybinds.json
+ln -s ./Code/User/keybinds.json ~/.config/Code/User/keybinds.json
+ln -s ./Code/User/settings.json ~/.config/Code/User/settings.json
 
 # Install bin
-mkdir -p ~/.local/bin
-cp -r ./bin ~/.local/bin
+create_symlinks "./bin" "~/.local/bin"
+
 
 ~/.local/bin/set_wallpaper ~/.config/hypr/wallpapers/wallpaper.png
-
 # Install omf
 rm -rf ~/.config/fish
-cp -r ./fish ~/.config/fish
-cp -r ./omf ~/.config/omf
+create_symlinks "./fish" "~/.config/fish"
+ln -s ./omf ~/.config/omf
 curl https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install | fish
