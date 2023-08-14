@@ -1,0 +1,103 @@
+#! /bin/bash
+
+current_dir=$(pwd)
+
+packages=("rustup" "base-devel" "hyprland" "xdg-desktop-portal-hyprland" "alacritty" "nautilus" "rofi" "flatpak" "gammastep" "light" "grim" "wl-clipboard" "slurp" "dunst" "waybar" "blueman" "btop" "fish" "neovim" "zathura" "lsd")
+# Filter out already installed packages
+to_install=()
+for pkg in "${packages[@]}"; do
+    if ! pacman -Qq $pkg &>/dev/null; then
+        to_install+=("$pkg")
+    fi
+done
+if (( ${#to_install[@]} > 0 )); then
+    sudo pacman -S "${to_install[@]}"
+else
+    echo "Dependencies already installed."
+fi
+
+# Install paru
+if ! pacman -Qq paru &>/dev/null; then
+    mkdir -p ~/aur
+    cd ~/aur
+    git clone https://aur.archlinux.org/paru-bin.git
+    cd paru-bin
+    makepkg -si --noconfirm
+else
+    echo "Paru already installed."
+fi
+
+# Install AUR packages
+aur_packages=("hyprpicker-git" "nerd-fonts-meta" "rate-mirrors" "swayosd-git" "visual-studio-code-bin")
+aur_to_install=()
+
+for pkg in "${aur_packages[@]}"; do
+    if ! pacman -Qq $pkg &>/dev/null; then
+        aur_to_install+=("$pkg")
+    fi
+done
+if (( ${#aur_to_install[@]} > 0 )); then
+    paru -S "${aur_to_install[@]}"
+else
+    echo "AUR dependencies already installed."
+fi
+
+cd $current_dir
+# Install AstroNvim
+rm rf ~/.config/nvim ~/.local/share/nvim ~/.local/state/nvim ~/.cache/nvim
+git clone --depth 1 https://github.com/AstroNvim/AstroNvim ~/.config/nvim
+mkdir -p ~/.config/nvim/lua/user
+cp -r ./nvim/lua/user/init.lua ~/.config/nvim/lua/user/init.lua
+
+
+# Install tmux plugin manager
+cp ./tmux.conf ~/.tmux.conf
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+
+# Install alacritty config
+mkdir -p ~/.config/alacritty
+cp ./alacritty/alacritty.yml ~/.config/alacritty/alacritty.yml
+
+# Install dunst config
+mkdir -p ~/.config/dunst
+cp -r ./dunst ~/.config/dunst
+
+# Install hyprland config
+mkdir -p ~/.config/hypr
+cp -r ./hypr ~/.config/hypr
+
+# Install neofetch config
+mkdir -p ~/.config/neofetch
+cp -r ./neofetch ~/.config/neofetch
+
+# Install rofi config
+mkdir -p ~/.config/rofi
+cp -r ./rofi ~/.config/rofi
+
+# Install waybar config
+mkdir -p ~/.config/waybar
+cp -r ./waybar ~/.config/waybar
+
+# Install zathura config
+mkdir -p ~/.config/zathura
+cp -r ./zathura ~/.config/zathura
+
+unzip ./icomoon.zip
+mkdir -p ~/.local/share/fonts
+cp ./icomoon/fonts ~/.local/share/fonts
+
+# Install code config
+mkdir -p ~/.config/Code
+cp -r ./Code ~/.config/Code
+
+# Install bin
+mkdir -p ~/.local/bin
+cp -r ./bin ~/.local/bin
+
+~/.local/bin/set_wallpaper ~/.config/hypr/wallpapers/wallpaper.png
+
+# Install omf
+rm -rf ~/.config/fish
+cp -r ./fish ~/.config/fish
+cp -r ./omf ~/.config/omf
+curl https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install | fish
