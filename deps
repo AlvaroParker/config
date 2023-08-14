@@ -1,0 +1,33 @@
+hyprland
+xdg-desktop-portal-hyprland
+alacritty
+nautilus
+rofi
+flatpak
+hyprpicker (AUR)
+gammastep
+swayosd (AUR)
+light
+grim
+wl-clipboard
+slurp
+dunst
+waybar
+blueman
+btop
+fish
+neovim
+zathura
+lsd
+tpm (Tmux package manager) 
+omg (oh my fish)
+astronvim (AstroNvim)
+
+GDM:
+Orchis-Dark(shell theme)
+Reversal-Dark (Icons)
+Vimix Cursors (Cursors)
+GTK: 
+Tokyo Night Dark (Gtk theme)
+Vimix Cursors
+Reversal-dark (icons)

@@ -1,3 +1,34 @@
+@use "sass:list";
+// This file followed by catppuccin color scheme
+
+// Color definition
+$Rosewater: #f4dbd6;
+$Flamingo: #f0c6c6;
+$Pink: #f5bde6;
+$Mauve: #c6a0f6;
+$Red: #ed8796;
+$Maroon: #ee99a0;
+$Peach: #f5a97f;
+$Yellow: #eed49f;
+$Green: #a6da95;
+$Teal: #8bd5ca;
+$Sky: #91d7e3;
+$Sapphire: #7dc4e4;
+$Blue: #8aadf4;
+$Lavender: #b7bdf8;
+$Text: #cad3f5;
+$Subtext1: #b8c0e0;
+$Subtext0: #a5adcb;
+$Overlay2: #939ab7;
+$Overlay1: #8087a2;
+$Overlay0: #6e738d;
+$Surface2: #5b6078;
+$Surface1: #494d64;
+$Surface0: #363a4f;
+$Base: #24273a;
+$Mantle: #1e2030;
+$Crust: #181926;
+
 * {
   padding: 0;
   margin: 0;
@@ -6,25 +37,25 @@
 }
 
 window#waybar {
-  background-color: rgba(0, 0, 0, 0);
+  background-color: #00000000;
 }
 
 .modules-left {
-  background-color: #1e2030;
+  background-color: $Mantle;
   border-radius: 8px;
   padding-right: 15px;
   padding-left: 15px;
 }
 
 .modules-center {
-  background-color: #1e2030;
+  background-color: $Mantle;
   border-radius: 8px;
   padding-right: 10px;
   padding-left: 10px;
 }
 
 .modules-right {
-  background-color: #1e2030;
+  background-color: $Mantle;
   border-radius: 8px;
   padding-right: 15px;
   padding-left: 15px;
@@ -40,24 +71,24 @@ window#waybar {
 #memory,
 #temperature {
   font-size: 14px;
-  background: #363a4f;
+  background: $Surface0;
   margin-top: 5px;
   margin-bottom: 5px;
 }
 
 #cpu {
-  color: #eed49f;
+  color: $Yellow;
   padding: 0px 10px 0px 12px;
   border-radius: 5px 0px 0px 5px;
 }
 
 #memory {
-  color: #a6da95;
+  color: $Green;
   padding: 0px 10px 0px 0px;
 }
 
 #temperature {
-  color: #8aadf4;
+  color: $Blue;
   padding: 0px 12px 0px 0px;
   border-radius: 0px 5px 5px 0px;
 }
@@ -67,8 +98,8 @@ window#waybar {
 }
 
 #custom-pacman-update-icon {
-  background-color: #8bd5ca;
-  color: #181926;
+  background-color: $Teal;
+  color: $Crust;
   padding-left: 5px;
   padding-right: 5px;
   margin-top: 5px;
@@ -77,89 +108,66 @@ window#waybar {
 }
 
 #custom-pacman-update {
-  color: #8bd5ca;
+  color: $Teal;
   margin: 5px 10px 5px 0px;
 }
 
-#workspaces button:nth-child(1) label {
-  color: #8aadf4;
-  margin: 0px 8px;
-}
-
-#workspaces button:nth-child(2) label {
-  color: #ed8796;
-  margin: 0px 8px;
-}
-
-#workspaces button:nth-child(3) label {
-  color: #a6da95;
-  margin: 0px 8px;
-}
-
-#workspaces button:nth-child(4) label {
-  color: #c6a0f6;
-  margin: 0px 8px;
-}
-
-#workspaces button:nth-child(5) label {
-  color: #f4dbd6;
-  margin: 0px 8px;
-}
-
-#workspaces button:nth-child(6) label {
-  color: #f5a97f;
-  margin: 0px 8px;
+$workspaces-color: $Blue, $Red, $Green, $Mauve, $Rosewater, $Peach;
+@each $color in $workspaces-color {
+  $index: list.index($workspaces-color, $color);
+  #workspaces button:nth-child(#{$index}) label {
+    color: $color;
+    margin: 0px 8px;
+  }
 }
 
 #battery {
-  color: #a6da95;
+  color: $Green;
   margin: 0px 10px 0px 0px;
 }
 
 #pulseaudio,
 #backlight {
   font-size: 14px;
-  background: #363a4f;
+  background: $Surface0;
   margin-top: 5px;
   margin-bottom: 5px;
 }
 
 #backlight {
-  color: #eed49f;
+  color: $Yellow;
   padding: 0px 10px 0px 10px;
   border-radius: 5px 0px 0px 5px;
 }
 
 #pulseaudio {
-  color: #91d7e3;
+  color: $Sky;
   padding: 0px 10px 0px 0px;
   border-radius: 0px 5px 5px 0px;
 }
-
 #custom-right-arr {
-  color: #8aadf4;
+  color: $Blue;
 }
 
 #network {
-  color: #c6a0f6;
+  color: $Mauve;
   margin-right: 10px;
 }
 
 #custom-dot {
-  color: #6e738d;
+  color: $Overlay0;
   padding-left: 10px;
   padding-right: 10px;
 }
-
 #custom-dot-alt {
-  color: #a5adcb;
+  color: $Subtext0;
   padding-left: 10px;
   padding-right: 10px;
 }
 
 #custom-clock-icon {
-  background-color: #cad3f5;
-  color: #181926;
+  background-color: $Text;
+  color: $Crust;
   padding-left: 10px;
   padding-right: 10px;
   margin-top: 5px;
@@ -170,5 +178,3 @@ window#waybar {
 #clock {
   padding-left: 10px;
 }
-
-/*# sourceMappingURL=style.css.map */

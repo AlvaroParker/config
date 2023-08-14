@@ -1,0 +1,7 @@
+#! /bin/bash
+
+# get path form args
+path=$1
+sudo cp $path /usr/share/hyprland/wall_2K.png
+sudo cp $path /usr/share/hyprland/wall_anime_2K.png
+sudo cp $path /usr/share/hyprland/wall_anime2_2K.png
