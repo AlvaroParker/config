@@ -2,7 +2,7 @@
 
 current_dir=$(pwd)
 
-packages=("rustup" "base-devel" "hyprland" "xdg-desktop-portal-hyprland" "alacritty" "nautilus" "rofi" "flatpak" "gammastep" "light" "grim" "wl-clipboard" "slurp" "dunst" "waybar" "blueman" "btop" "fish" "neovim" "zathura" "lsd")
+packages=("rustup" "base-devel" "hyprland" "xdg-desktop-portal-hyprland" "alacritty" "nautilus" "rofi" "flatpak" "gammastep" "light" "grim" "wl-clipboard" "slurp" "dunst" "waybar" "blueman" "btop" "fish" "neovim" "zathura" "lsd" "neofetch")
 # Filter out already installed packages
 to_install=()
 for pkg in "${packages[@]}"; do
