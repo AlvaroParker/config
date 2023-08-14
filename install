@@ -2,7 +2,7 @@
 
 current_dir=$(pwd)
 
-packages=("rustup" "base-devel" "hyprland" "xdg-desktop-portal-hyprland" "alacritty" "nautilus" "rofi" "flatpak" "gammastep" "light" "grim" "wl-clipboard" "slurp" "dunst" "waybar" "blueman" "btop" "fish" "neovim" "zathura" "lsd" "neofetch")
+packages=("rustup" "base-devel" "hyprland" "xdg-desktop-portal-hyprland" "alacritty" "nautilus" "rofi" "flatpak" "gammastep" "light" "grim" "wl-clipboard" "slurp" "dunst" "waybar" "blueman" "btop" "fish" "neovim" "zathura" "lsd" "neofetch" "bat")
 # Filter out already installed packages
 to_install=()
 for pkg in "${packages[@]}"; do
@@ -27,6 +27,11 @@ else
     echo "Paru already installed."
 fi
 
+# Remove xdg-desktop-portal-gnome
+if pacman - Qq xdg-desktop-portal-gnome &>/dev/null; then
+    sudo pacman -Rs --noconfirm xdg-desktop-portal-gnome
+fi
+
 # Install AUR packages
 aur_packages=("hyprpicker-git" "nerd-fonts-meta" "rate-mirrors" "swayosd-git" "visual-studio-code-bin")
 aur_to_install=()
@@ -44,7 +49,7 @@ fi
 
 cd $current_dir
 # Install AstroNvim
-rm rf ~/.config/nvim ~/.local/share/nvim ~/.local/state/nvim ~/.cache/nvim
+rm -rf ~/.config/nvim ~/.local/share/nvim ~/.local/state/nvim ~/.cache/nvim
 git clone --depth 1 https://github.com/AstroNvim/AstroNvim ~/.config/nvim
 mkdir -p ~/.config/nvim/lua/user
 cp -r ./nvim/lua/user/init.lua ~/.config/nvim/lua/user/init.lua
@@ -84,7 +89,7 @@ cp -r ./zathura ~/.config/
 
 unzip ./icomoon.zip
 mkdir -p ~/.local/share/fonts
-cp ./icomoon/fonts ~/.local/share/fonts/icomoon
+cp -r ./icomoon/fonts ~/.local/share/fonts/icomoon
 
 # Install code config
 mkdir -p ~/.config/Code
@@ -103,3 +108,4 @@ rm -rf ~/.config/fish
 cp -r ./fish ~/.config/
 cp -r ./omf ~/.config/
 curl https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install | fish
+
