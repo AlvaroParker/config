@@ -1,21 +1,23 @@
-#! /bin/bash
+#!/bin/bash
+current_dir=$(pwd)
 create_symlinks() {
     local source_directory="$1"
     local target_directory="$2"
+    local full_source_directory="${current_dir}/$source_directory"
 
     # Ensure the target directory exists
     mkdir -p "$target_directory"
 
     # Loop through each file in the source directory
-    for file in "$source_directory"/*; do
+    for file in "$full_source_directory"/*; do
         if [ -f "$file" ]; then
             ln -s "$file" "$target_directory"
         fi
     done
 }
-current_dir=$(pwd)
 
-packages=("rustup" "base-devel" "hyprland" "xdg-desktop-portal-hyprland" "alacritty" "nautilus" "rofi" "flatpak" "gammastep" "light" "grim" "wl-clipboard" "slurp" "dunst" "waybar" "blueman" "btop" "fish" "neovim" "zathura" "lsd" "neofetch" "bat")
+
+packages=("curl" "unzip" "rustup" "base-devel" "hyprland" "xdg-desktop-portal-hyprland" "alacritty" "nautilus" "rofi" "flatpak" "gammastep" "light" "grim" "wl-clipboard" "slurp" "dunst" "waybar" "blueman" "btop" "fish" "neovim" "zathura" "lsd" "neofetch" "bat")
 # Filter out already installed packages
 to_install=()
 for pkg in "${packages[@]}"; do
@@ -41,7 +43,7 @@ else
 fi
 
 # Remove xdg-desktop-portal-gnome
-if pacman - Qq xdg-desktop-portal-gnome &>/dev/null; then
+if pacman -Qq xdg-desktop-portal-gnome &>/dev/null; then
     sudo pacman -Rs --noconfirm xdg-desktop-portal-gnome
 fi
 
@@ -65,41 +67,41 @@ cd $current_dir
 rm -rf ~/.config/nvim ~/.local/share/nvim ~/.local/state/nvim ~/.cache/nvim
 git clone --depth 1 https://github.com/AstroNvim/AstroNvim ~/.config/nvim
 mkdir -p ~/.config/nvim/lua/user
-ln -s ./nvim/lua/user/init.lua ~/.config/nvim/lua/user/init.lua
+ln -s  "${current_dir}/nvim/lua/user/init.lua" ~/.config/nvim/lua/user/init.lua
 
 
 # Install tmux plugin manager
 rm -rf ~/.tmux.conf
-ln ./tmux.conf ~/.tmux.conf
+ln "${current_dir}/tmux.conf" ~/.tmux.conf
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
 # Install alacritty config
 rm -rf ~/.config/alacritty
-ln -s ./alacritty ~/.config/alacritty
+ln -s "${current_dir}/alacritty" ~/.config/alacritty/
 
 # Install dunst config
 rm -rf ~/.config/dunst
-ln -s ./dunst ~/.config/dunst
+ln -s "${current_dir}/dunst" ~/.config/dunst/
 
 # Install hyprland config
 rm -rf ~/.config/hypr
-ln -s ./hypr ~/.config/hypr
+ln -s "${current_dir}/hypr" ~/.config/hypr
 
 # Install neofetch config
 rm -rf ~/.config/neofetch
-ln -s ./neofetch ~/.config/neofetch
+ln -s "${current_dir}/neofetch" ~/.config/neofetch
 
 # Install rofi config
 rm -rf ~/.config/rofi
-ln -s ./rofi ~/.config/rofi
+ln -s "${current_dir}/rofi" ~/.config/rofi
 
 # Install waybar config
 rm -rf ~/.config/waybar
-ln -s ./waybar ~/.config/waybar
+ln -s "${current_dir}/waybar" ~/.config/waybar
 
 # Install zathura config
 rm -rf ~/.config/zathura
-ln -s ./zathura ~/.config/zathura
+ln -s "${current_dir}/zathura" ~/.config/zathura
 
 unzip ./icomoon.zip
 mkdir -p ~/.local/share/fonts
@@ -108,18 +110,18 @@ cp -r ./icomoon/fonts ~/.local/share/fonts/icomoon
 # Install code config
 mkdir -p ~/.config/Code/User
 rm -rf ~/.config/Code/User/settings.json ~/.config/Code/User/keybinds.json
-ln -s ./Code/User/keybinds.json ~/.config/Code/User/keybinds.json
-ln -s ./Code/User/settings.json ~/.config/Code/User/settings.json
+ln -s "${current_dir}/Code/User/keybinds.json" ~/.config/Code/User/keybinds.json
+ln -s "${current_dir}/Code/User/settings.json" ~/.config/Code/User/settings.json
 
 # Install bin
-create_symlinks "./bin" "~/.local/bin"
+create_symlinks "bin" "~/.local/bin"
 
 
 ~/.local/bin/set_wallpaper ~/.config/hypr/wallpapers/wallpaper.png
 # Install omf
 rm -rf ~/.config/fish
-create_symlinks "./fish" "~/.config/fish"
-ln -s ./omf ~/.config/omf
+create_symlinks "fish" "~/.config/fish"
+ln -s "${current_dir}/omf" ~/.config/omf
 sudo cp ./pacman.conf /etc/pacman.conf
 
 curl https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install | fish
