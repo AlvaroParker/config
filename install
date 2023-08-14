@@ -77,11 +77,11 @@ git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
 # Install alacritty config
 rm -rf ~/.config/alacritty
-ln -s "${current_dir}/alacritty" ~/.config/alacritty/
+ln -s "${current_dir}/alacritty" ~/.config/alacritty
 
 # Install dunst config
 rm -rf ~/.config/dunst
-ln -s "${current_dir}/dunst" ~/.config/dunst/
+ln -s "${current_dir}/dunst" ~/.config/dunst
 
 # Install hyprland config
 rm -rf ~/.config/hypr
@@ -114,13 +114,13 @@ ln -s "${current_dir}/Code/User/keybinds.json" ~/.config/Code/User/keybinds.json
 ln -s "${current_dir}/Code/User/settings.json" ~/.config/Code/User/settings.json
 
 # Install bin
-create_symlinks "bin" "~/.local/bin"
+create_symlinks "bin" "$HOME/.local/bin/"
 
 
 ~/.local/bin/set_wallpaper ~/.config/hypr/wallpapers/wallpaper.png
 # Install omf
 rm -rf ~/.config/fish
-create_symlinks "fish" "~/.config/fish"
+create_symlinks "fish" "$HOME/.config/fish"
 ln -s "${current_dir}/omf" ~/.config/omf
 sudo cp ./pacman.conf /etc/pacman.conf
 
