@@ -11,7 +11,7 @@ for pkg in "${packages[@]}"; do
     fi
 done
 if (( ${#to_install[@]} > 0 )); then
-    sudo pacman -S "${to_install[@]}"
+    sudo pacman -S --noconfirm "${to_install[@]}"
 else
     echo "Dependencies already installed."
 fi
@@ -37,7 +37,7 @@ for pkg in "${aur_packages[@]}"; do
     fi
 done
 if (( ${#aur_to_install[@]} > 0 )); then
-    paru -S "${aur_to_install[@]}"
+    paru -S --noconfirm --skipreview "${aur_to_install[@]}"
 else
     echo "AUR dependencies already installed."
 fi
@@ -60,44 +60,46 @@ cp ./alacritty/alacritty.yml ~/.config/alacritty/alacritty.yml
 
 # Install dunst config
 mkdir -p ~/.config/dunst
-cp -r ./dunst ~/.config/dunst
+cp -r ./dunst ~/.config/
 
 # Install hyprland config
 mkdir -p ~/.config/hypr
-cp -r ./hypr ~/.config/hypr
+cp -r ./hypr ~/.config/
 
 # Install neofetch config
 mkdir -p ~/.config/neofetch
-cp -r ./neofetch ~/.config/neofetch
+cp -r ./neofetch ~/.config/
 
 # Install rofi config
 mkdir -p ~/.config/rofi
-cp -r ./rofi ~/.config/rofi
+cp -r ./rofi ~/.config/
 
 # Install waybar config
 mkdir -p ~/.config/waybar
-cp -r ./waybar ~/.config/waybar
+cp -r ./waybar ~/.config/
 
 # Install zathura config
 mkdir -p ~/.config/zathura
-cp -r ./zathura ~/.config/zathura
+cp -r ./zathura ~/.config/
 
 unzip ./icomoon.zip
 mkdir -p ~/.local/share/fonts
-cp ./icomoon/fonts ~/.local/share/fonts
+cp ./icomoon/fonts ~/.local/share/fonts/icomoon
 
 # Install code config
 mkdir -p ~/.config/Code
-cp -r ./Code ~/.config/Code
+cp -r ./Code ~/.config
 
 # Install bin
 mkdir -p ~/.local/bin
-cp -r ./bin ~/.local/bin
+cp -r ./bin ~/.local/
 
 ~/.local/bin/set_wallpaper ~/.config/hypr/wallpapers/wallpaper.png
 
+sudo cp ./pacman.conf /etc/pacman.conf
+chsh -s /bin/fish
 # Install omf
 rm -rf ~/.config/fish
-cp -r ./fish ~/.config/fish
-cp -r ./omf ~/.config/omf
+cp -r ./fish ~/.config/
+cp -r ./omf ~/.config/
 curl https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install | fish
