@@ -35,6 +35,7 @@ return {
     { import = "astrocommunity.pack.rust" },
     { import = "astrocommunity.pack.go" },
     { import = "astrocommunity.completion.copilot-lua" },
+    { import = "astrocommunity.pack.dart" },
     { import = "astrocommunity.pack.python" },
     { import = "astrocommunity.pack.cpp" },
   },

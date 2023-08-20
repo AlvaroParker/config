@@ -5,7 +5,6 @@
     "window.menuBarVisibility": "compact",
     "zenMode.centerLayout": false,
     "zenMode.hideStatusBar": false,
-    "workbench.iconTheme": "material-icon-theme",
     "editor.fontFamily": "JetBrainsMonoNL Nerd Font",
     "explorer.confirmDelete": false,
     "terminal.integrated.cursorStyle": "line",
@@ -120,8 +119,8 @@
     "vue": false
   },
 "svelte.enable-ts-plugin": true,
-"workbench.productIconTheme": "material-product-icons",
 "window.dialogStyle": "custom",
 "window.titleBarStyle": "custom",
 "update.showReleaseNotes": false,
+"workbench.productIconTheme": "material-product-icons",
 }

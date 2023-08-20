@@ -52,7 +52,7 @@ if pacman -Qq xdg-desktop-portal-gnome &>/dev/null; then
 fi
 
 # Install AUR packages
-aur_packages=("hyprpicker-git" "nerd-fonts-meta" "rate-mirrors" "swayosd-git" "visual-studio-code-bin")
+aur_packages=("hyprpicker-git" "nerd-fonts-meta" "rate-mirrors-bin" "swayosd-git" "visual-studio-code-bin")
 aur_to_install=()
 
 for pkg in "${aur_packages[@]}"; do
