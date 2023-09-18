@@ -123,4 +123,6 @@
 "window.titleBarStyle": "custom",
 "update.showReleaseNotes": false,
 "workbench.productIconTheme": "material-product-icons",
+"git.openRepositoryInParentFolders": "always",
+"workbench.iconTheme": "material-icon-theme",
 }

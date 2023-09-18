@@ -17,7 +17,7 @@ create_symlinks() {
 }
 
 
-packages=("tmux" "curl" "unzip" "rustup" "base-devel" "hyprland" "xdg-desktop-portal-hyprland" "alacritty" "nautilus" "rofi" "flatpak" "gammastep" "light" "grim" "wl-clipboard" "slurp" "dunst" "waybar" "blueman" "btop" "fish" "neovim" "zathura" "lsd" "neofetch" "bat")
+packages=("wget" "ranger" "tmux" "curl" "unzip" "rustup" "base-devel" "hyprland" "xdg-desktop-portal-hyprland" "alacritty" "nautilus" "rofi" "flatpak" "gammastep" "light" "grim" "wl-clipboard" "slurp" "dunst" "waybar" "blueman" "btop" "fish" "neovim" "zathura" "lsd" "neofetch" "bat" "polkit-gnome")
 # Filter out already installed packages
 to_install=()
 for pkg in "${packages[@]}"; do
@@ -107,9 +107,18 @@ ln -s "${current_dir}/waybar" ~/.config/waybar
 rm -rf ~/.config/zathura
 ln -s "${current_dir}/zathura" ~/.config/zathura
 
+# Install fonts
+# Needed for waybar
 unzip ./icomoon.zip
 mkdir -p ~/.local/share/fonts
 cp -r ./icomoon/fonts ~/.local/share/fonts/icomoon
+
+wget https://github.com/rsms/inter/releases/download/v3.19/Inter-3.19.zip
+unzip -d Inter Inter-3.19.zip
+mv "./Inter/Inter Desktop" ~/.local/share/fonts/Inter
+rm -rf Inter Inter-3.19.zip
+
+fc-cache
 
 # Install code config
 mkdir -p ~/.config/Code/User
@@ -127,5 +136,14 @@ rm -rf ~/.config/fish
 create_symlinks "fish" "$HOME/.config/fish"
 ln -s "${current_dir}/omf" ~/.config/omf
 sudo cp ./pacman.conf /etc/pacman.conf
+
+# Ranger dev icons
+git clone https://github.com/alexanderjeurissen/ranger_devicons ~/.config/ranger/plugins/ranger_devicons
+rm -rf ~/.config/ranger/rc.conf
+rm -rf ~/.config/ranger/scope.sh
+rm -rf ~/.config/ranger/rifle.conf
+ln -s "${current_dir}/ranger/rc.conf" ~/.config/ranger/rc.conf
+ln -s "${current_dir}/ranger/scope.sh" ~/.config/ranger/scope.sh
+ln -s "${current_dir}/ranger/rifle.conf" ~/.config/ranger/rifle.conf
 
 curl https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install | fish
