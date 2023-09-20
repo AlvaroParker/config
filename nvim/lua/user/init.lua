@@ -32,6 +32,7 @@ return {
     { import = "astrocommunity.pack.python" },
     { import = "astrocommunity.pack.typescript" },
     { import = "astrocommunity.pack.vue" },
+    { import = "astrocommunity.pack.cpp" },
   },
   lsp = {
     config = {

@@ -19,7 +19,7 @@
     "tray"
   ],
 
-  "modules-center": ["wlr/workspaces"],
+  "modules-center": ["hyprland/workspaces"],
   "modules-right": [
     "battery",
     "backlight",
@@ -30,7 +30,7 @@
     "clock"
   ],
 
-  "wlr/workspaces": {
+  "hyprland/workspaces": {
     "all-outputs": true,
     "active-only": false,
     "on-click": "activate",
