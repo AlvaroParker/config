@@ -1,4 +1,4 @@
-# Arch Linux and Hyprland dot files
+# Arch Linux and Hyprland/i3 dot files
 ## Warning! The installation script `install` will overwrite your existing dot files! The script has only been tested on a freshly installed Arch Linux with GNOME. Use at your own risk!
 
 ## Instalation: 
@@ -17,3 +17,8 @@ Finally, run the dot files installation script. It will install al the needed de
 ```
 ./install
 ```
+
+# Screenshots Hyprland
+![S3](./screenshots/s3.png)
+![S2](./screenshots/s2.png)
+![S1](./screenshots/s1.png)
