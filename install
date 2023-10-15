@@ -17,7 +17,7 @@ create_symlinks() {
 }
 
 
-packages=("wget" "ranger" "tmux" "curl" "unzip" "rustup" "base-devel" "hyprland" "xdg-desktop-portal-hyprland" "alacritty" "nautilus" "rofi" "flatpak" "gammastep" "light" "grim" "wl-clipboard" "slurp" "dunst" "waybar" "blueman" "btop" "fish" "neovim" "zathura" "lsd" "neofetch" "bat" "polkit-gnome")
+packages=("wget" "ranger" "tmux" "curl" "unzip" "rustup" "base-devel" "hyprland" "xdg-desktop-portal-hyprland" "alacritty" "nautilus" "rofi" "flatpak" "gammastep" "light" "grim" "wl-clipboard" "slurp" "dunst" "waybar" "blueman" "btop" "fish" "neovim" "zathura" "lsd" "neofetch" "bat" "polkit-gnome" "picom" "i3" "polybar")
 # Filter out already installed packages
 to_install=()
 for pkg in "${packages[@]}"; do
@@ -106,6 +106,18 @@ ln -s "${current_dir}/waybar" ~/.config/waybar
 # Install zathura config
 rm -rf ~/.config/zathura
 ln -s "${current_dir}/zathura" ~/.config/zathura
+
+# Install polybar config
+rm -rf ~/.config/polybar
+ln -s "${current_dir}/polybar" ~/.config/polybar
+
+# Install picom config
+rm -rf ~/.config/picom
+ln -s "${current_dir}/picom" ~/.config/picom
+
+# Install i3 config
+rm -rf ~/.config/i3
+ln -s "${current_dir}/i3" ~/.config/i3
 
 # Install fonts
 # Needed for waybar

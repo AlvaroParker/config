@@ -86,10 +86,10 @@ window:
 font:
   normal:
     family: JetBrainsMonoNL Nerd Font
-    style: Bold
+    style: SemiBold
   offset:
     y: 0
-  size: 11.5
+  size: 11
 cursor:
   style:
     shape: Beam
