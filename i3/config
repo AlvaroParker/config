@@ -18,10 +18,11 @@ exec --no-startup-id ~/.config/i3/setoutput
 floating_modifier $mod
 bindsym $mod+Shift+space floating toggle
 default_floating_border pixel 0
+for_window [class="zoom"] floating enable
 
 # Media control 
-bindsym XF86AudioRaiseVolume exec --no-startup-id amixer -D pulse sset Master 5%+ 
-bindsym XF86AudioLowerVolume exec --no-startup-id amixer -D pulse sset Master 5%- 
+bindsym XF86AudioRaiseVolume exec --no-startup-id  pactl set-sink-volume 0 +5%
+bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume 0 -5% 
 bindsym XF86AudioMute exec --no-startup-id amixer -D pulse sset Master toggle-mute 
 bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle 
 
@@ -92,7 +93,7 @@ bindsym $mod+Shift+0 move container to workspace number $ws10
 # Refresh/Restart/Logout
 bindsym $mod+Shift+c reload
 bindsym $mod+Shift+e exec --no-startup-id i3-msg exit
-bindsym $mod+Shift+a exec --no-startup-id "i3-nagbar -t warning -m 'You pressed the shutdown shortcut. Do you really want to shutdown your PC?' -B 'Yes, shutdown' 'shutdown 0'"
+bindsym $mod+Shift+a exec --no-startup-id "i3-nagbar -t warning -m 'You pressed the hibernation shortcut. Do you really want to hibernate your PC?' -B 'Yes, hibernate' 'systemctl hibernate'"
 
 # Resize 
 mode "resize" {
