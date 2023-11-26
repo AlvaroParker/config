@@ -85,7 +85,7 @@ window:
     lines: 26
 font:
   normal:
-    family: JetBrainsMonoNL Nerd Font
+    family: JetBrainsMono NF
     style: SemiBold
   offset:
     y: 0
