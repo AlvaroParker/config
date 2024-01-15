@@ -27,6 +27,7 @@ return {
       priority = 1000,
     },
     { import = "astrocommunity.pack.rust" },
+    { import = "astrocommunity.pack.cs" },
     { import = "astrocommunity.pack.go" },
     { import = "astrocommunity.pack.java" },
     { import = "astrocommunity.completion.copilot-lua" },

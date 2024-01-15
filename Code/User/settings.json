@@ -1,5 +1,5 @@
 {
-    "workbench.colorTheme": "Catppuccin Macchiato",
+    "workbench.colorTheme": "Catppuccin Mocha",
     "zenMode.hideLineNumbers": false,
     "editor.minimap.enabled": false,
     "window.menuBarVisibility": "compact",
@@ -67,7 +67,12 @@
     },
     {
       "before": ["<leader>", "f", "f"],
-      "commands": ["workbench.action.showAllEditors"]
+      "commands": ["workbench.action.showCommands"]
+
+    },
+    {
+      "before": ["<leader>", "f", "o"],
+      "commands": ["workbench.action.quickOpen"]
     },
     {
       "before": ["<leader>", "p", "s"],
@@ -97,6 +102,14 @@
       "before": ["<leader>", "g"],
       "commands": ["workbench.view.scm"]
     },
+    {
+      "before": ["<leader>", "a", "f"],
+      "commands": ["explorer.newFolder"]
+    },
+    {
+      "before": ["<leader>", "a", "a"],
+      "commands": ["explorer.newFile"]
+    }
 
   ],
   "[rust]": {
@@ -124,5 +137,6 @@
 "update.showReleaseNotes": false,
 "workbench.productIconTheme": "material-product-icons",
 "git.openRepositoryInParentFolders": "always",
-"workbench.iconTheme": "material-icon-theme",
+"workbench.iconTheme": "catppuccin-mocha",
+"window.zoomLevel": 1,
 }
