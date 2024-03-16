@@ -109,6 +109,10 @@
     {
       "before": ["<leader>", "a", "a"],
       "commands": ["explorer.newFile"]
+    },
+    {
+      "before": ["<leader>", "/"],
+      "commands": ["editor.action.commentLine"]
     }
 
   ],
@@ -138,5 +142,5 @@
 "workbench.productIconTheme": "material-product-icons",
 "git.openRepositoryInParentFolders": "always",
 "workbench.iconTheme": "catppuccin-mocha",
-"window.zoomLevel": 1,
+"editor.cursorSmoothCaretAnimation": "on",
 }
