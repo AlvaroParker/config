@@ -17,7 +17,7 @@ create_symlinks() {
 }
 
 
-packages=("wget" "ranger" "tmux" "curl" "unzip" "rustup" "base-devel" "hyprland" "xdg-desktop-portal-hyprland" "alacritty" "nautilus" "rofi" "flatpak" "gammastep" "grim" "wl-clipboard" "slurp" "dunst" "waybar" "blueman" "btop" "fish" "neovim" "zathura" "lsd" "neofetch" "bat" "polkit-gnome" "picom" "i3" "polybar" "nerd-fonts")
+packages=("wget" "ranger" "tmux" "curl" "unzip" "rustup" "base-devel" "hyprland" "xdg-desktop-portal-hyprland" "alacritty" "nautilus" "rofi" "flatpak" "gammastep" "grim" "wl-clipboard" "slurp" "dunst" "waybar" "blueman" "btop" "fish" "neovim" "zathura" "lsd" "neofetch" "bat" "polkit-gnome" "picom" "i3" "polybar" "nerd-fonts" "qemu-system-x86" "qemu-system-x86-firmware" "libvirt" "bridge-utils" "virt-manager" "qemu-hw-display-virtio-gpu-gl" "qemu-hw-display-virtio-gpu" "qemu-hw-display-virtio-gpu-pci" "qemu-hw-display-virtio-gpu-pci-gl" "dnsmasq" "qemu-img" "docker" "docker-compose")
 # Filter out already installed packages
 to_install=()
 for pkg in "${packages[@]}"; do
@@ -157,5 +157,16 @@ rm -rf ~/.config/ranger/rifle.conf
 ln -s "${current_dir}/ranger/rc.conf" ~/.config/ranger/rc.conf
 ln -s "${current_dir}/ranger/scope.sh" ~/.config/ranger/scope.sh
 ln -s "${current_dir}/ranger/rifle.conf" ~/.config/ranger/rifle.conf
+
+# Configure virtual machines
+sudo systemctl enable libvirtd.service --now
+sudo virsh net-start default
+sudo virsh net-autostart default
+
+sudo usermod -aG libvirt $USER
+sudo usermod -aG libvirt-qemu $USER
+sudo usermod -aG kvm $USER
+sudo usermod -aG docker $USER
+
 
 curl https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install | fish
