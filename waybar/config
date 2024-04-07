@@ -56,7 +56,7 @@
   },
 
   "custom/clock-icon": {
-    "format": ""
+    "format": "󱑅"
   },
 
   "clock": {
@@ -67,13 +67,13 @@
 
   "cpu": {
     "interval": 10,
-    "format": " {usage}%",
+    "format": " {usage}%",
     "max-length": 10,
     "tooltip": false
   },
   "memory": {
     "interval": 30,
-    "format": " {used}GiB",
+    "format": " {used}GiB",
     "format-alt": " {used:0.1f}G",
     "max-length": 10
   },
@@ -134,7 +134,7 @@
     "format": ""
   },
   "custom/pacman-update-icon": {
-    "format": ""
+    "format": "󰏔"
   },
   "custom/pacman-update": {
     "format": " {}",
