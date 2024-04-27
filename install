@@ -17,7 +17,7 @@ create_symlinks() {
 }
 
 
-packages=("wget" "ranger" "tmux" "curl" "unzip" "rustup" "base-devel" "hyprland" "xdg-desktop-portal-hyprland" "alacritty" "nautilus" "flatpak" "gammastep" "grim" "wl-clipboard" "slurp" "dunst" "waybar" "blueman" "btop" "fish" "neovim" "zathura" "lsd" "neofetch" "bat" "polkit-gnome" "picom" "i3" "polybar" "nerd-fonts" "qemu-system-x86" "qemu-system-x86-firmware" "libvirt" "bridge-utils" "virt-manager" "qemu-hw-display-virtio-gpu-gl" "qemu-hw-display-virtio-gpu" "qemu-hw-display-virtio-gpu-pci" "qemu-hw-display-virtio-gpu-pci-gl" "dnsmasq" "qemu-img" "docker" "docker-compose" "hyprpaper")
+packages=("wget" "ranger" "tmux" "curl" "unzip" "rustup" "base-devel" "hyprland" "xdg-desktop-portal-hyprland" "alacritty" "nautilus" "flatpak" "gammastep" "grim" "wl-clipboard" "slurp" "dunst" "waybar" "blueman" "btop" "fish" "neovim" "zathura" "lsd" "neofetch" "bat" "polkit-gnome" "picom" "i3" "polybar" "nerd-fonts" "qemu-system-x86" "qemu-system-x86-firmware" "libvirt" "bridge-utils" "virt-manager" "qemu-hw-display-virtio-gpu-gl" "qemu-hw-display-virtio-gpu" "qemu-hw-display-virtio-gpu-pci" "qemu-hw-display-virtio-gpu-pci-gl" "dnsmasq" "qemu-img" "docker" "docker-compose" "hyprpaper" "hyprlock")
 # Filter out already installed packages
 to_install=()
 for pkg in "${packages[@]}"; do
