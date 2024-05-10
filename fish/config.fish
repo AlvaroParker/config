@@ -3,6 +3,7 @@ alias nv='nvim'
 alias tree='exa --icons=always --tree'
 alias doc_server='cd ~/.cargo-target/doc && python3 -m http.server 3494'
 alias ipinfo="ip -br -c a"
+alias gbc="GalaxyBudsClient"
 set -g -x AndroidSdkPath "/home/parker/Android/Sdk"
 set -g -x AndroidNdkPath "/home/parker/Android/Sdk/ndk/26.1.10909125"
 set fish_greeting

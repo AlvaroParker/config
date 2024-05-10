@@ -69,9 +69,7 @@ fi
 cd $current_dir
 # Install AstroNvim
 rm -rf ~/.config/nvim ~/.local/share/nvim ~/.local/state/nvim ~/.cache/nvim
-git clone --depth 1 https://github.com/AstroNvim/AstroNvim ~/.config/nvim
-mkdir -p ~/.config/nvim/lua/user
-ln -s  "${current_dir}/nvim/lua/user/init.lua" ~/.config/nvim/lua/user/init.lua
+ln -s  "${current_dir}/nvim" ~/.config/nvim
 
 
 # Install tmux plugin manager
