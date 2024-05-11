@@ -19,6 +19,6 @@ Finally, run the dot files installation script. It will install al the needed de
 ```
 
 # Screenshots Hyprland
-![S3](./screenshots/s3.png)
-![S2](./screenshots/s2.png)
 ![S1](./screenshots/s1.png)
+![S2](./screenshots/s2.png)
+![S3](./screenshots/s3.png)
