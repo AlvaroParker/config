@@ -1,13 +1,3 @@
-/**
- *
- * Author : Aditya Shakya (adi1090x)
- * Github : @adi1090x
- * 
- * Rofi Theme File
- * Rofi Version: 1.7.3
- **/
-
-/*****----- Configuration -----*****/
 configuration {
 	modi:                       "drun,run,filebrowser";
     show-icons:                 true;
@@ -19,15 +9,13 @@ configuration {
 	window-format:              "{w} · {c} · {t}";
 }
 
-/*****----- Global Properties -----*****/
 * {
     background:     #15161EFF;
     background-alt: #1A1B26FF;
     foreground:     #C0CAF5FF;
     selected:       #33467CFF;
     active:         #414868FF;
-    urgent:         #F7768EFF;
-}
+    urgent:         #F7768EFF; }
 
 * {
     font: "Inter-V 12";

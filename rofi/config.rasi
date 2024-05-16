@@ -8,7 +8,7 @@ configuration {
 	normalize-match: true;
 	show-icons: true;
 	icon-theme: "Reversal-dark";
-	steal-focus: false;
+	steal-focus: true;
 
 	/*---------- Matching setting ----------*/
 	matching: "normal";

@@ -1,11 +1,3 @@
-[[colors.indexed_colors]]
-color = "#FAB387"
-index = 16
-
-[[colors.indexed_colors]]
-color = "#F5E0DC"
-index = 17
-
 [colors.bright]
 black = "#585B70"
 blue = "#89B4FA"
