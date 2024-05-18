@@ -1,5 +1,6 @@
 {
   "layer": "top",
+  "position": "top",
   "height": 35,
   "margin-top": 10,
   "margin-left": 10,
@@ -81,12 +82,12 @@
     "device": "amdgpu_bl1",
     "format": "{icon} {percent}",
     "tooltip": false,
-    "format-icons": ["", "", ""]
+    "format-icons": ["󰃚 ", "󰃛 ", "󰃜 ", "󰃝 ", "󰃞 ", "󰃟 ", "󰃠 "]
   },
   "network": {
-    "format-wifi": " {essid}",
+    "format-wifi": "  {essid}",
     "on-click": "iwgtk",
-    "format-ethernet": " wired",
+    "format-ethernet": "󰈀 wired",
     "tooltip": false,
     "format-disconnected": ""
   },
@@ -94,11 +95,11 @@
   "pulseaudio": {
     "format": "{icon} <b>{volume}</b>",
     "format-bluetooth": " <b>{volume}</b>",
-    "format-bluetooth-muted": " ",
+    "format-bluetooth-muted": " ",
     "tooltip": false,
-    "format-muted": "",
+    "format-muted": " ",
     "format-icons": {
-      "default": ["", "", ""]
+      "default": ["󰕿 ", "󰖀 ", "󰕾 "]
     },
     "on-click": "pavucontrol"
   },
@@ -134,7 +135,7 @@
     "format": ""
   },
   "custom/pacman-update-icon": {
-    "format": "󰏔"
+    "format": " 󰏔 "
   },
   "custom/pacman-update": {
     "format": " {}",
