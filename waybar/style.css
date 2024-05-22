@@ -130,9 +130,21 @@ window#waybar {
   border-radius: 5px 0px 0px 5px;
 }
 
+#custom-wl-gammarelay-temperature {
+  font-size: 14px;
+  background: #363a4f;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+#custom-wl-gammarelay-temperature {
+  color: #eed49f;
+  padding: 0px 10px 0px 10px;
+}
+
 #pulseaudio {
   color: #91d7e3;
-  padding: 0px 10px 0px 0px;
+  padding: 0px 10px 0px 10px;
   border-radius: 0px 5px 5px 0px;
 }
 

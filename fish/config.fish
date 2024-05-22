@@ -6,6 +6,7 @@ alias ipinfo="ip -br -c a"
 alias gbc="GalaxyBudsClient"
 set -g -x AndroidSdkPath "/home/parker/Android/Sdk"
 set -g -x AndroidNdkPath "/home/parker/Android/Sdk/ndk/26.1.10909125"
+set -g -x XCURSOR_SIZE 24
 set fish_greeting
 if status is-interactive
     # Check if we are not in tmux
@@ -15,5 +16,5 @@ if status is-interactive
 end
 
 # bun
-set --export BUN_INSTALL "$HOME/.bun"
-set --export PATH $BUN_INSTALL/bin $PATH
+
+set -q GHCUP_INSTALL_BASE_PREFIX[1]; or set GHCUP_INSTALL_BASE_PREFIX $HOME ; set -gx PATH $HOME/.cabal/bin $PATH /home/parker/.ghcup/bin # ghcup-env

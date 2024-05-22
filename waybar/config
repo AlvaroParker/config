@@ -24,12 +24,19 @@
   "modules-right": [
     "battery",
     "backlight",
+    "custom/wl-gammarelay-temperature",
     "pulseaudio",
     "custom/right-arr",
     "network",
     "custom/clock-icon",
     "clock"
   ],
+  "custom/wl-gammarelay-temperature": {
+      "format": "{} ",
+      "exec": "wl-gammarelay-rs watch {t}",
+      "on-scroll-up": "busctl --user -- call rs.wl-gammarelay / rs.wl.gammarelay UpdateTemperature n +100",
+      "on-scroll-down": "busctl --user -- call rs.wl-gammarelay / rs.wl.gammarelay UpdateTemperature n -100"
+  },
 
   "hyprland/workspaces": {
     "all-outputs": true,

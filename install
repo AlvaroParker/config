@@ -17,7 +17,7 @@ create_symlinks() {
 }
 
 
-packages=("wget" "ranger" "tmux" "curl" "unzip" "rustup" "base-devel" "hyprland" "xdg-desktop-portal-hyprland" "alacritty" "nautilus" "flatpak" "gammastep" "grim" "wl-clipboard" "slurp" "dunst" "waybar" "blueman" "btop" "fish" "neovim" "zathura" "lsd" "neofetch" "bat" "polkit-gnome" "picom" "i3" "polybar" "nerd-fonts" "qemu-system-x86" "qemu-system-x86-firmware" "libvirt" "bridge-utils" "virt-manager" "qemu-hw-display-virtio-gpu-gl" "qemu-hw-display-virtio-gpu" "qemu-hw-display-virtio-gpu-pci" "qemu-hw-display-virtio-gpu-pci-gl" "dnsmasq" "qemu-img" "docker" "docker-compose" "hyprpaper" "hyprlock" "ripgrep")
+packages=("wget" "ranger" "tmux" "curl" "unzip" "rustup" "base-devel" "hyprland" "xdg-desktop-portal-hyprland" "alacritty" "nautilus" "flatpak" "gammastep" "grim" "wl-clipboard" "slurp" "swaync" "waybar" "blueman" "btop" "fish" "neovim" "zathura" "lsd" "neofetch" "bat" "polkit-gnome" "picom" "i3" "polybar" "nerd-fonts" "qemu-system-x86" "qemu-system-x86-firmware" "libvirt" "bridge-utils" "virt-manager" "qemu-hw-display-virtio-gpu-gl" "qemu-hw-display-virtio-gpu" "qemu-hw-display-virtio-gpu-pci" "qemu-hw-display-virtio-gpu-pci-gl" "dnsmasq" "qemu-img" "docker" "docker-compose" "hyprpaper" "hyprlock" "ripgrep" "qt5-wayland" "qt6-wayland")
 # Filter out already installed packages
 to_install=()
 for pkg in "${packages[@]}"; do
@@ -52,7 +52,7 @@ if pacman -Qq xdg-desktop-portal-gnome &>/dev/null; then
 fi
 
 # Install AUR packages
-aur_packages=("light" "hyprpicker" "rate-mirrors-bin" "swayosd-git" "visual-studio-code-bin" "rofi-lbonn-wayland-git")
+aur_packages=("light" "hyprpicker" "rate-mirrors-bin" "swayosd-git" "visual-studio-code-bin" "rofi-lbonn-wayland-git" "wl-gammarelay-rs")
 aur_to_install=()
 
 for pkg in "${aur_packages[@]}"; do
@@ -82,8 +82,8 @@ rm -rf ~/.config/alacritty
 ln -s "${current_dir}/alacritty" ~/.config/alacritty
 
 # Install dunst config
-rm -rf ~/.config/dunst
-ln -s "${current_dir}/dunst" ~/.config/dunst
+rm -rf ~/.config/swaync
+ln -s "${current_dir}/swaync" ~/.config/swaync
 
 # Install hyprland config
 rm -rf ~/.config/hypr
