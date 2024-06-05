@@ -135,7 +135,7 @@
   "custom/window-name": {
     "format": "<b>{}</b>",
     "interval": 1,
-    "exec": "hyprctl activewindow | grep class | awk '{print $2}' | sed 's/\\([[:alpha:]]\\)/\\U\\1/'"
+    "exec": "hyprctl activewindow | grep \"class:\" | awk '{print $2}' | sed 's/\\([[:alpha:]]\\)/\\U\\1/'"
   },
 
   "custom-pacman-update-icon-background": {

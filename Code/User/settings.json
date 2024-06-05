@@ -139,8 +139,10 @@
 "window.titleBarStyle": "custom",
 "update.showReleaseNotes": false,
 "git.openRepositoryInParentFolders": "always",
-"editor.cursorSmoothCaretAnimation": "on",
 "workbench.iconTheme": "material-icon-theme",
 "workbench.productIconTheme": "material-product-icons",
 "window.menuBarVisibility": "compact",
+"github.copilot.editor.enableAutoCompletions": true,
+"editor.cursorSmoothCaretAnimation": "on",
+"javascript.updateImportsOnFileMove.enabled": "always",
 }

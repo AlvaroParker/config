@@ -52,7 +52,7 @@ if pacman -Qq xdg-desktop-portal-gnome &>/dev/null; then
 fi
 
 # Install AUR packages
-aur_packages=("light" "hyprpicker" "rate-mirrors-bin" "swayosd-git" "visual-studio-code-bin" "rofi-lbonn-wayland-git" "wl-gammarelay-rs")
+aur_packages=("light" "hyprpicker" "rate-mirrors-bin" "swayosd-git" "visual-studio-code-bin" "rofi-lbonn-wayland-git" "wl-gammarelay-rs" "brave-bin")
 aur_to_install=()
 
 for pkg in "${aur_packages[@]}"; do

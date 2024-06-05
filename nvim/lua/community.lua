@@ -5,7 +5,5 @@ return {
   { import = "astrocommunity.pack.go" },
   { import = "astrocommunity.completion.copilot-lua" },
   { import = "astrocommunity.pack.python" },
-  { import = "astrocommunity.pack.typescript" },
-  { import = "astrocommunity.pack.cpp" },
-  -- import/override with your plugins folder
+  { import = "astrocommunity.pack.typescript-all-in-one" },
 }
