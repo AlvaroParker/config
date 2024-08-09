@@ -1,0 +1,60 @@
+// Zed settings
+//
+// For information on how to configure Zed, see the Zed
+// documentation: https://zed.dev/docs/configuring-zed
+//
+// To see all of Zed's default settings without changing your
+// custom settings, run the `open default settings` command
+// from the command palette or from `Zed` application menu.
+{
+  "auto_update_extensions": {
+    "catppuccin": false
+  },
+  "outline_panel": {
+    "dock": "right"
+  },
+  "project_panel": {
+    "dock": "left"
+  },
+  "tab_bar": {
+    "show": true
+  },
+  "languages": {
+    "Markdown": {
+      "soft_wrap": "editor_width"
+    },
+    "Go": {
+      "show_inline_completions": false
+    },
+    "C++": {
+      "show_inline_completions": false,
+      "tab_size": 2
+    },
+    "TypeScript": {
+      "show_inline_completions": true,
+      "tab_size": 4
+    },
+    "Rust": {
+      "show_inline_completions": false
+    }
+  },
+  "vim_mode": true,
+  "base_keymap": "VSCode",
+  "theme": "Catppuccin Mocha",
+  "ui_font_family": "JetBrainsMono Nerd Font",
+  "buffer_font_family": "JetBrainsMono Nerd Font",
+  "telemetry": {
+    "diagnostics": false,
+    "metrics": false
+  },
+  "ui_font_size": 12,
+  "buffer_font_size": 12,
+  "experimental.theme_overrides": {
+    "background.appearance": "blurred",
+    "background": "#000000"
+  },
+  "scrollbar": {
+    "show": "never"
+  },
+  "format_on_save": "on"
+}
