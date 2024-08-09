@@ -1,0 +1,11 @@
+:root[inFullscreen] #PersonalToolbar {
+  visibility: visible !important;
+}
+
+#TabsToolbar {
+  visibility: collapse;
+}
+
+#titlebar {
+  display: none;
+}

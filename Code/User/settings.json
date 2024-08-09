@@ -145,4 +145,7 @@
 "github.copilot.editor.enableAutoCompletions": true,
 "editor.cursorSmoothCaretAnimation": "on",
 "javascript.updateImportsOnFileMove.enabled": "always",
+"workbench.editor.tabActionCloseVisibility": false,
+"window.customTitleBarVisibility": "auto"
 }
+
