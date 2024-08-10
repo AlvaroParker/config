@@ -172,6 +172,18 @@ ln -s "${current_dir}/ranger/rc.conf" ~/.config/ranger/rc.conf
 ln -s "${current_dir}/ranger/scope.sh" ~/.config/ranger/scope.sh
 ln -s "${current_dir}/ranger/rifle.conf" ~/.config/ranger/rifle.conf
 
+# Webcord flags
+rm -f ~/.config/webcord-flags.conf
+ln -s "${current_dir}/webcord-flags.conf" ~/.config/webcord-flags.conf
+
+# VSCode flags
+rm -f ~/.config/code-flags.conf
+ln -s "${current_dir}/code-flags.conf" ~/.config/code-flags.conf
+
+# Obsidian flags 
+rm -f ~/.config/obsidian/user-flags.conf
+ln -s "${current_dir}/obsidian/user-flags.conf" ~/.config/obsidian/user-flags.conf
+
 # Firefox profile
 mkdir -p ~/.mozilla/firefox/1l0qa58n.default-release
 rm ~/.mozilla/firefox/profiles.ini
