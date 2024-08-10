@@ -1,0 +1,12 @@
+#!/bin/bash
+# Get the output and count the number of lines matching the regex
+line_count=$(hyprctl monitors | grep -P 'Monitor\s(?!eDP-1).+?\s\(ID\s\d+\):' | wc -l)
+
+# Check if the line count is more than 1
+if [ "$line_count" -gt 0 ]; then
+    # Do nothing 
+    # echo "Detected external monitor"
+else
+    # echo "External monitor not detected"
+    hyprlock & sleep 0.1 &&  systemctl suspend
+fi
