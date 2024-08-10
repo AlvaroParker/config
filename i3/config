@@ -10,7 +10,7 @@ exec_always --no-startup-id autotiling
 font pango:JetBrainsMonoNL Nerd Font 0
 
 # Set wallpaper
-exec --no-startup-id feh --bg-scale ~/.config/hypr/wallpapers/wallpaper.png
+exec --no-startup-id feh --bg-scale ~/.config/hypr/wallpapers/wallpaper_street.png
 exec --no-startup-id ~/.config/i3/setoutput
 
 
