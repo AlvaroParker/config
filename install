@@ -16,7 +16,7 @@ create_symlinks() {
     done
 }
 
-packages=("wget" "ranger" "tmux" "curl" "unzip" "rustup" "base-devel" "hyprland" "xdg-desktop-portal-hyprland" "alacritty" "nautilus" "flatpak" "gammastep" "grim" "wl-clipboard" "slurp" "swaync" "waybar" "blueman" "btop" "fish" "neovim" "zathura" "lsd" "neofetch" "bat" "polkit-gnome" "picom" "i3" "polybar" "nerd-fonts" "qemu-system-x86" "qemu-system-x86-firmware" "libvirt" "bridge-utils" "virt-manager" "qemu-hw-display-virtio-gpu-gl" "qemu-hw-display-virtio-gpu" "qemu-hw-display-virtio-gpu-pci" "qemu-hw-display-virtio-gpu-pci-gl" "dnsmasq" "qemu-img" "docker" "docker-compose" "hyprpaper" "hyprlock" "ripgrep" "qt5-wayland" "qt6-wayland" "lib32-glibc" "lib32-gcc-libs" "easyeffects" "firefox" "network-manager-applet" "zed" "feh" "xorg-server" "lxappearance" "zathura-pdf-poppler" "gnome-tweaks" "gnome-themes-extra" "plymouth" "obsidian")
+packages=("wget" "ranger" "tmux" "curl" "unzip" "rustup" "base-devel" "hyprland" "xdg-desktop-portal-hyprland" "alacritty" "nautilus" "flatpak" "gammastep" "grim" "wl-clipboard" "slurp" "swaync" "waybar" "blueman" "btop" "fish" "neovim" "zathura" "lsd" "neofetch" "bat" "picom" "i3" "polybar" "nerd-fonts" "qemu-system-x86" "qemu-system-x86-firmware" "libvirt" "bridge-utils" "virt-manager" "qemu-hw-display-virtio-gpu-gl" "qemu-hw-display-virtio-gpu" "qemu-hw-display-virtio-gpu-pci" "qemu-hw-display-virtio-gpu-pci-gl" "dnsmasq" "qemu-img" "docker" "docker-compose" "hyprpaper" "hyprlock" "ripgrep" "qt5-wayland" "qt6-wayland" "lib32-glibc" "lib32-gcc-libs" "easyeffects" "firefox" "network-manager-applet" "zed" "feh" "xorg-server" "lxappearance" "zathura-pdf-poppler" "gnome-tweaks" "gnome-themes-extra" "plymouth" "obsidian" "polkit-kde-agent")
 # Filter out already installed packages
 to_install=()
 for pkg in "${packages[@]}"; do
@@ -171,6 +171,20 @@ rm -rf ~/.config/ranger/rifle.conf
 ln -s "${current_dir}/ranger/rc.conf" ~/.config/ranger/rc.conf
 ln -s "${current_dir}/ranger/scope.sh" ~/.config/ranger/scope.sh
 ln -s "${current_dir}/ranger/rifle.conf" ~/.config/ranger/rifle.conf
+
+# Firefox profile
+mkdir -p ~/.mozilla/firefox/1l0qa58n.default-release
+rm ~/.mozilla/firefox/profiles.ini
+rm ~/.mozilla/firefox/installs.ini
+rm ~/.mozilla/firefox/1l0qa58n.default-release/prefs.js
+rm -rf ~/.mozilla/firefox/1l0qa58n.default-release/chrome
+ln -s "${current_dir}/mozilla/firefox/profiles.ini" ~/.mozilla/firefox/profiles.ini
+ln -s "${current_dir}/mozilla/firefox/installs.ini" ~/.mozilla/firefox/installs.ini
+ln -s "${current_dir}/mozilla/firefox/1l0qa58n.default-release/prefs.js" ~/.mozilla/firefox/1l0qa58n.default-release/prefs.js
+ln -s "${current_dir}/mozilla/firefox/1l0qa58n.default-release/chrome" ~/.mozilla/firefox/1l0qa58n.default-release/chrome
+
+# Enable bluetooth
+sudo systemctl enable bluetooth.service --now
 
 # Configure virtual machines
 sudo systemctl enable libvirtd.service --now
