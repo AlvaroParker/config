@@ -8,18 +8,11 @@ return {
     highlights = {
       init = {
         -- set the transparency for all of these highlight groups
-        Normal = { bg = "NONE", ctermbg = "NONE" },
-        NormalNC = { bg = "NONE", ctermbg = "NONE" },
-        CursorColumn = { cterm = {}, ctermbg = "NONE", ctermfg = "NONE" },
-        CursorLine = { cterm = {}, ctermbg = "NONE", ctermfg = "NONE" },
-        CursorLineNr = { cterm = {}, ctermbg = "NONE", ctermfg = "NONE" },
-        LineNr = {},
-        SignColumn = {},
-        StatusLine = {bg = "NONE", ctermbg = "NONE"},
-        NeoTreeNormal = { bg = "NONE", ctermbg = "NONE" },
-        NeoTreeNormalNC = { bg = "NONE", ctermbg = "NONE" },
+        --
+        TabLineFill = { bg = "#1e1e2e", ctermbg = "NONE" },
       },
       astrotheme = { -- a table of overrides/changes when applying the astrotheme theme
+        TabLineFill = { bg = "#1e1e2e", ctermbg = "NONE" },
         -- Normal = { bg = "#000000" },
       },
     },

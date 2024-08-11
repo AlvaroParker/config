@@ -7,4 +7,5 @@ return {
   { import = "astrocommunity.pack.python" },
   { import = "astrocommunity.pack.cpp" },
   { import = "astrocommunity.pack.typescript-all-in-one" },
+  { import = "astrocommunity.color.transparent-nvim" },
 }
