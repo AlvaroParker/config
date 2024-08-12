@@ -139,7 +139,7 @@
 "window.titleBarStyle": "custom",
 "update.showReleaseNotes": false,
 "git.openRepositoryInParentFolders": "always",
-"workbench.iconTheme": "material-icon-theme",
+"workbench.iconTheme": "eq-material-theme-icons-palenight",
 "workbench.productIconTheme": "material-product-icons",
 "window.menuBarVisibility": "compact",
 "github.copilot.editor.enableAutoCompletions": true,
