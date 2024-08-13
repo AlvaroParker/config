@@ -9,7 +9,7 @@ return {
       init = {
         -- set the transparency for all of these highlight groups
         --
-        TabLineFill = { bg = "#1e1e2e", ctermbg = "NONE" },
+        -- TabLineFill = { bg = "#1e1e2e", ctermbg = "NONE" },
       },
       astrotheme = { -- a table of overrides/changes when applying the astrotheme theme
         TabLineFill = { bg = "#1e1e2e", ctermbg = "NONE" },
