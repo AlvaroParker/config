@@ -13,7 +13,7 @@ set fish_greeting
 if status is-interactive
     # Check if we are not in tmux
     if test -z "$TMUX"
-        neofetch
+        fastfetch
     end
 end
 
