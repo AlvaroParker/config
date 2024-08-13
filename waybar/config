@@ -22,6 +22,7 @@
 
   "modules-center": ["hyprland/workspaces"],
   "modules-right": [
+    "custom/music",
     "battery",
     "backlight",
     "custom/wl-gammarelay-temperature",
@@ -157,5 +158,22 @@
 
   "custom/wrap-right": {
     "format": "<b>]</b>"
+  },
+  "custom/music": {
+      "format": "{icon}{}",
+      "format-icons": {
+          // "Playing": " ", // Uncomment if not using caway
+          "Paused": " ",
+          "Stopped": " " // This stop symbol is RTL. So &#x202d; is left-to-right override.
+      },
+      "escape": true,
+      "tooltip": true,
+      "exec": "$HOME/.config/waybar/scripts/caway",
+      "return-type": "json",
+      "on-click": "playerctl play-pause",
+      "on-scroll-up": "playerctl previous",
+      "on-scroll-down": "playerctl next",
+      "on-click-right": "g4music",
+      "max-length": 25
   }
 }
