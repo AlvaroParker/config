@@ -136,7 +136,6 @@
   },
 "svelte.enable-ts-plugin": true,
 "window.dialogStyle": "custom",
-"window.titleBarStyle": "custom",
 "update.showReleaseNotes": false,
 "git.openRepositoryInParentFolders": "always",
 "workbench.iconTheme": "eq-material-theme-icons-palenight",
@@ -146,6 +145,7 @@
 "editor.cursorSmoothCaretAnimation": "on",
 "javascript.updateImportsOnFileMove.enabled": "always",
 "workbench.editor.tabActionCloseVisibility": false,
-"window.customTitleBarVisibility": "auto"
+"window.customTitleBarVisibility": "auto",
+"window.titleBarStyle": "custom"
 }
 
