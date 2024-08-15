@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Check if there is any tmux session running
-if tmux ls &>/dev/null; then
+if tmux ls 2>/dev/null | grep -q .; then
     # Attach to the first running tmux session
     tmux attach-session -t $(tmux ls | head -n 1 | cut -d: -f1)
 else
