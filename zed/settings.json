@@ -7,6 +7,18 @@
 // custom settings, run the `open default settings` command
 // from the command palette or from `Zed` application menu.
 {
+  "assistant": {
+    "default_model": {
+      "provider": "openai",
+      "model": "gpt-4"
+    },
+    "version": "2"
+  },
+  "git": {
+    "inline_blame": {
+      "enabled": false
+    }
+  },
   "auto_update_extensions": {
     "catppuccin": false
   },
@@ -36,6 +48,16 @@
     },
     "Rust": {
       "show_inline_completions": false
+    },
+    "C": {
+      "show_inline_completions": false,
+      "formatter": {
+        "external": {
+          "command": "bash",
+          "arguments": ["-c", "clang-format"]
+        }
+      },
+      "format_on_save": "on"
     }
   },
   "vim_mode": true,
