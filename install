@@ -51,7 +51,7 @@ if pacman -Qq xdg-desktop-portal-gnome &>/dev/null; then
 fi
 
 # Install AUR packages
-aur_packages=("light" "hyprpicker" "rate-mirrors-bin" "swayosd-git" "visual-studio-code-bin" "rofi-lbonn-wayland-git" "wl-gammarelay-rs" "brave-bin" "proton-vpn-gtk-app" "webcord-bin" "postman-bin" "clipse-bin")
+aur_packages=("light" "hyprpicker" "rate-mirrors-bin" "swayosd-git" "visual-studio-code-bin" "rofi-lbonn-wayland-git" "wl-gammarelay-rs" "brave-bin" "proton-vpn-gtk-app" "webcord-bin" "postman-bin" "clipse-bin" "librewolf-bin")
 aur_to_install=()
 
 for pkg in "${aur_packages[@]}"; do
@@ -139,6 +139,7 @@ unzip -d Inter Inter-3.19.zip
 mv "./Inter/Inter Desktop" ~/.local/share/fonts/Inter
 rm -rf Inter Inter-3.19.zip
 
+# Reload cache
 fc-cache
 
 # Install code config
@@ -194,6 +195,11 @@ ln -s "${current_dir}/mozilla/firefox/profiles.ini" ~/.mozilla/firefox/profiles.
 ln -s "${current_dir}/mozilla/firefox/installs.ini" ~/.mozilla/firefox/installs.ini
 ln -s "${current_dir}/mozilla/firefox/1l0qa58n.default-release/prefs.js" ~/.mozilla/firefox/1l0qa58n.default-release/prefs.js
 ln -s "${current_dir}/mozilla/firefox/1l0qa58n.default-release/chrome" ~/.mozilla/firefox/1l0qa58n.default-release/chrome
+
+# Add shutdown, hibernate and suspend desktop entries for rofi
+ln -sf "${current_dir}/applications/suspend.desktop" ~/.local/share/applications/suspend.desktop
+ln -sf "${current_dir}/applications/shutdown.desktop" ~/.local/share/applications/shutdown.desktop
+ln -sf "${current_dir}/applications/hibernate.desktop" ~/.local/share/applications/hibernate.desktop
 
 # Enable bluetooth
 sudo systemctl enable bluetooth.service --now

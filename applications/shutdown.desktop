@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Name=Shutdown
+Comment=Shutdown your computer
+GenericName=Shutdown
+Keywords=Power;Off;Shutdown;
+Exec=/usr/bin/shutdown 0
+Icon=gnome-power-manager
+Terminal=false
+Type=Application
