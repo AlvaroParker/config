@@ -22,7 +22,7 @@
 
   "modules-center": ["hyprland/workspaces"],
   "modules-right": [
-    "custom/music",
+    // "custom/music",
     "battery",
     "backlight",
     "custom/wl-gammarelay-temperature",
@@ -128,7 +128,8 @@
     "format": "  "
   },
   "custom/launcher": {
-    "format": ""
+    "format": "",
+    "on-click": "rofi -show drun"
   },
   "custom/separator": {
     "format": " "
