@@ -25,6 +25,10 @@ Finally, run the dot files installation script. It will install al the needed de
 ./install
 ```
 
+## Utilities
+
+The `genswap` script will generate a new swapfile located at `/swapfile` and will output the needed kernel parameters to add for hibernation. **Do not run if you already have swap configured.**
+
 # Screenshots Hyprland
 
 ![S1](./screenshots/s1.png)

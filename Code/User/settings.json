@@ -135,17 +135,17 @@
     "vue": false
   },
 "svelte.enable-ts-plugin": true,
-"window.dialogStyle": "custom",
 "update.showReleaseNotes": false,
 "git.openRepositoryInParentFolders": "always",
 "workbench.iconTheme": "eq-material-theme-icons-palenight",
-"workbench.productIconTheme": "material-product-icons",
 "window.menuBarVisibility": "compact",
 "github.copilot.editor.enableAutoCompletions": true,
 "editor.cursorSmoothCaretAnimation": "on",
 "javascript.updateImportsOnFileMove.enabled": "always",
 "workbench.editor.tabActionCloseVisibility": false,
 "window.customTitleBarVisibility": "auto",
+"workbench.experimental.enableNewProfilesUI": true,
+"window.dialogStyle": "custom",
 "window.titleBarStyle": "custom"
 }
 
