@@ -7,10 +7,16 @@
 // custom settings, run the `open default settings` command
 // from the command palette or from `Zed` application menu.
 {
+  // "theme": "Catppuccin Macchiato",
+  "outline_panel": {
+    "dock": "left"
+  },
+  "show_inline_completions": true,
+  "theme": "Catppuccin Macchiato",
   "assistant": {
     "default_model": {
-      "provider": "openai",
-      "model": "gpt-4"
+      "provider": "copilot_chat",
+      "model": "gpt-4o"
     },
     "version": "2"
   },
@@ -22,32 +28,33 @@
   "auto_update_extensions": {
     "catppuccin": false
   },
-  "outline_panel": {
-    "dock": "right"
-  },
-  "project_panel": {
-    "dock": "left"
-  },
   "tab_bar": {
     "show": true
   },
+  "tabs": {
+    "git_status": true,
+    "file_icons": true
+  },
+  "terminal": {
+    "dock": "bottom",
+    "default_height": 150
+  },
   "languages": {
+    "Python": {
+      "show_inline_completions": true
+    },
     "Markdown": {
       "soft_wrap": "editor_width"
     },
     "Go": {
       "show_inline_completions": false
     },
-    "C++": {
-      "show_inline_completions": false,
-      "tab_size": 2
-    },
     "TypeScript": {
       "show_inline_completions": true,
       "tab_size": 4
     },
     "Rust": {
-      "show_inline_completions": false
+      "show_inline_completions": true
     },
     "C": {
       "show_inline_completions": false,
@@ -57,26 +64,41 @@
           "arguments": ["-c", "clang-format"]
         }
       },
-      "format_on_save": "on"
+      "format_on_save": "off"
+    },
+    "C++": {
+      "show_inline_completions": false,
+      "formatter": {
+        "external": {
+          "command": "bash",
+          "arguments": ["-c", "clang-format"]
+        }
+      },
+      "tab_size": 4,
+      "format_on_save": "off"
     }
   },
   "vim_mode": true,
   "base_keymap": "VSCode",
-  "theme": "Catppuccin Mocha",
-  "ui_font_family": "JetBrainsMono Nerd Font",
+  "ui_font_family": "Inter V",
   "buffer_font_family": "JetBrainsMono Nerd Font",
   "telemetry": {
     "diagnostics": false,
     "metrics": false
   },
-  "ui_font_size": 14,
-  "buffer_font_size": 14,
-  "experimental.theme_overrides": {
-    "background.appearance": "blurred",
-    "background": "#000000"
-  },
+  "ui_font_size": 15,
+  "buffer_font_size": 12,
   "scrollbar": {
     "show": "never"
   },
-  "format_on_save": "on"
+  "format_on_save": "on",
+  // "file_scan_exclusions": [""],
+  "project_panel": {
+    "scrollbar": {
+      "show": "never"
+    }
+  },
+  "command_aliases": {
+    "xdd": "workspace::Save"
+  }
 }
