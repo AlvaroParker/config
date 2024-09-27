@@ -16,7 +16,7 @@ create_symlinks() {
     done
 }
 
-packages=("wget" "ranger" "tmux" "curl" "unzip" "rustup" "base-devel" "hyprland" "xdg-desktop-portal-hyprland" "alacritty" "nautilus" "flatpak" "gammastep" "grim" "wl-clipboard" "slurp" "swaync" "waybar" "blueman" "btop" "fish" "neovim" "zathura" "lsd" "fastfetch" "bat" "picom" "i3" "polybar" "nerd-fonts" "qemu-system-x86" "qemu-system-x86-firmware" "libvirt" "bridge-utils" "virt-manager" "qemu-hw-display-virtio-gpu-gl" "qemu-hw-display-virtio-gpu" "qemu-hw-display-virtio-gpu-pci" "qemu-hw-display-virtio-gpu-pci-gl" "dnsmasq" "qemu-img" "docker" "docker-compose" "hyprpaper" "hyprlock" "ripgrep" "qt5-wayland" "qt6-wayland" "lib32-glibc" "lib32-gcc-libs" "easyeffects" "firefox" "network-manager-applet" "zed" "feh" "xorg-server" "lxappearance" "zathura-pdf-poppler" "gnome-tweaks" "gnome-themes-extra" "plymouth" "obsidian" "polkit-kde-agent" "qemu-full" "gdb" "vlc" "cava" "jq" "man-pages" "hypridle")
+packages=("wget" "ranger" "tmux" "curl" "unzip" "rustup" "base-devel" "hyprland" "xdg-desktop-portal-hyprland" "alacritty" "nautilus" "flatpak" "gammastep" "grim" "wl-clipboard" "slurp" "swaync" "waybar" "blueman" "btop" "zsh" "neovim" "zathura" "lsd" "fastfetch" "bat" "picom" "i3" "polybar" "nerd-fonts" "qemu-system-x86" "qemu-system-x86-firmware" "libvirt" "bridge-utils" "virt-manager" "qemu-hw-display-virtio-gpu-gl" "qemu-hw-display-virtio-gpu" "qemu-hw-display-virtio-gpu-pci" "qemu-hw-display-virtio-gpu-pci-gl" "dnsmasq" "qemu-img" "docker" "docker-compose" "hyprpaper" "hyprlock" "ripgrep" "qt5-wayland" "qt6-wayland" "lib32-glibc" "lib32-gcc-libs" "easyeffects" "firefox" "network-manager-applet" "zed" "feh" "xorg-server" "lxappearance" "zathura-pdf-poppler" "gnome-tweaks" "gnome-themes-extra" "plymouth" "obsidian" "polkit-kde-agent" "qemu-full" "gdb" "vlc" "cava" "jq" "man-pages" "hypridle")
 # Filter out already installed packages
 to_install=()
 for pkg in "${packages[@]}"; do
@@ -158,10 +158,8 @@ create_symlinks "bin" "$HOME/.local/bin/"
 
 
 ~/.local/bin/set_wallpaper ~/.config/hypr/wallpapers/wallpaper.png
-# Install omf
-rm -rf ~/.config/fish
-create_symlinks "fish" "$HOME/.config/fish"
-ln -s "${current_dir}/omf" ~/.config/omf
+
+# Install pacman config
 sudo cp ./pacman.conf /etc/pacman.conf
 
 # Ranger dev icons
@@ -217,4 +215,5 @@ sudo usermod -aG docker $USER
 flatpak override --filesystem=~/.themes:ro --filesystem=~/.icons:ro --user
 mkdir -p ~/.icons
 
-curl https://raw.githubusercontent.com/oh-my-fish/oh-my-fish/master/bin/install | fish
+ln -sf "${current_dir}/zshrc" ~/.zshrc
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc
