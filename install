@@ -152,6 +152,8 @@ ln -s "${current_dir}/Code/User/settings.json" ~/.config/Code/User/settings.json
 mkdir -p ~/.config/zed
 rm -rf ~/.config/zed/settings.json
 ln -s "${current_dir}/zed/settings.json" ~/.config/zed/settings.json
+ln -s "${current_dir}/zed/keymap.json" ~/.config/zed/keymap.json
+ln -s "${current_dir}/zed/themes" ~/.config/zed/themes
 
 # Install bin
 create_symlinks "bin" "$HOME/.local/bin/"
