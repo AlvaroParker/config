@@ -185,7 +185,19 @@
           // Ruff server settings goes here
           "lineLength": 120,
           "lint": {
-            "extendSelect": ["I", "ARG001"]
+            "extendSelect": [
+              // Recommended rules for Python linting
+              "I", // isort (sorts imports)
+              "ARG", // flake8-unused-arguments detects unused arguments in functions
+              "F841", // Warn about unused variables
+              "E", // Pycodestyle errors (style issues like indentation, whitespace, etc.)
+              "F", // Pyflakes rules (includes F841 for unused variables, and other common Python errors)
+              "W", // Pycodestyle warnings (like line breaks before binary operators)
+              "C90", // Pylint rules for cyclomatic complexity and code structure
+              "N", // PEP8 Naming conventions
+              "B", // Bugbear (detects potential code issues like mutable default arguments)
+              "A" // flake8-builtins (detects misuse of Python built-ins like `list`, `dict`, etc.)
+            ]
           }
         }
       }
