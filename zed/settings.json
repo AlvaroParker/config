@@ -8,11 +8,12 @@
 // from the command palette or from `Zed` application menu.
 {
   // "theme": "Catppuccin Macchiato",
+  "exclusions_gitignore": true,
   "outline_panel": {
     "dock": "left"
   },
   "show_inline_completions": true,
-  "theme": "Catppuccin Macchiato",
+  "theme": "Catppuccin Mocha - No Italics",
   "assistant": {
     "default_model": {
       "provider": "copilot_chat",
@@ -37,11 +38,36 @@
   },
   "terminal": {
     "dock": "bottom",
-    "default_height": 150
+    "default_height": 250
   },
   "languages": {
-    "Python": {
+    "Shell Script": {
       "show_inline_completions": true
+    },
+    "TSX": {
+      "show_inline_completions": false
+    },
+    "Java": {
+      "show_inline_completions": false
+    },
+    "Python": {
+      "language_servers": ["ruff", "pyright"],
+      "format_on_save": "on",
+      "formatter": [
+        {
+          "language_server": {
+            "name": "ruff"
+          }
+        },
+        {
+          "code_actions": {
+            // Fix all auto-fixable lint violations
+            "source.fixAll.ruff": true,
+            // Organize imports
+            "source.organizeImports.ruff": true
+          }
+        }
+      ]
     },
     "Markdown": {
       "soft_wrap": "editor_width"
@@ -50,7 +76,7 @@
       "show_inline_completions": false
     },
     "TypeScript": {
-      "show_inline_completions": true,
+      "show_inline_completions": false,
       "tab_size": 4
     },
     "Rust": {
@@ -67,7 +93,7 @@
       "format_on_save": "off"
     },
     "C++": {
-      "show_inline_completions": false,
+      "show_inline_completions": true,
       "formatter": {
         "external": {
           "command": "bash",
@@ -80,7 +106,7 @@
   },
   "vim_mode": true,
   "base_keymap": "VSCode",
-  "ui_font_family": "Inter V",
+  "ui_font_family": "JetBrainsMono Nerd Font",
   "buffer_font_family": "JetBrainsMono Nerd Font",
   "telemetry": {
     "diagnostics": false,
@@ -92,13 +118,77 @@
     "show": "never"
   },
   "format_on_save": "on",
-  // "file_scan_exclusions": [""],
+  "file_scan_exclusions": [".git", ".next", ".turbo", "node_modules", "dist"],
   "project_panel": {
     "scrollbar": {
       "show": "never"
     }
   },
-  "command_aliases": {
-    "xdd": "workspace::Save"
+  "lsp": {
+    "rust-analyzer": {
+      "initialization_options": {
+        "completion": {
+          "snippets": {
+            "custom": {
+              "Arc::new": {
+                "postfix": "arc",
+                "body": ["Arc::new(${receiver})"],
+                "requires": "std::sync::Arc",
+                "scope": "expr"
+              },
+              "Some": {
+                "postfix": "some",
+                "body": ["Some(${receiver})"],
+                "scope": "expr"
+              },
+              "Ok": {
+                "postfix": "ok",
+                "body": ["Ok(${receiver})"],
+                "scope": "expr"
+              },
+              "Rc::new": {
+                "postfix": "rc",
+                "body": ["Rc::new(${receiver})"],
+                "requires": "std::rc::Rc",
+                "scope": "expr"
+              },
+              "Box::pin": {
+                "postfix": "boxpin",
+                "body": ["Box::pin(${receiver})"],
+                "requires": "std::boxed::Box",
+                "scope": "expr"
+              },
+              "vec!": {
+                "postfix": "vec",
+                "body": ["vec![${receiver}]"],
+                "description": "vec![]",
+                "scope": "expr"
+              }
+            }
+          }
+        }
+      }
+    },
+    "pyright": {
+      "settings": {
+        "analysis": {
+          "autoSearchPaths": true,
+          "useLibraryCodeForTypes": true,
+          "typeCheckingMode": "strict",
+          "reportUnusedVariable": "warning"
+        }
+      }
+    },
+    "ruff": {
+      "initialization_options": {
+        "settings": {
+          // Ruff server settings goes here
+          "lineLength": 120,
+          "lint": {
+            "extendSelect": ["I", "ARG001"]
+          }
+        }
+      }
+    }
   }
 }

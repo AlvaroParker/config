@@ -13,5 +13,11 @@ prompt_context(){}
 if [[ -z "$TMUX" ]]; then
   fastfetch
 fi
-EDITOR=nvim
-export PATH="$HOME/.cargo/bin:$HOME/.local/share/gem/ruby/3.2.0/bin:$HOME/.local/bin:$HOME/go/bin:/usr/local/bin:$PATH"
+export EDITOR=nvim
+export ANDROID_HOME=$HOME/Android/Sdk
+export DOTNET_ROOT=$HOME/.dotnet
+export JAVA_HOME=/usr/lib/jvm/java-22-openjdk
+export PATH=$JAVA_HOME/bin:$PATH
+export PATH="$PATH:$HOME/.cargo/bin:$HOME/.local/share/gem/ruby/3.2.0/bin:$HOME/.local/bin:$HOME/go/bin:/usr/local/bin:$HOME/.dotnet:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools"
+export PATH="$PATH:$ANDROID_HOME/emulator"
+alias vim='nvim'

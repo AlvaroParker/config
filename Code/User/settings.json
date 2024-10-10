@@ -125,10 +125,10 @@
   "github.copilot.enable": {
     "*": true,
     "plaintext": false,
-    "markdown": false,
+    "markdown": true,
     "scminput": false,
     "yaml": false,
-    "python": false,
+    "python": true,
     "typescript": true,
     "rust": true,
     "vue": false
@@ -146,6 +146,9 @@
 "workbench.experimental.enableNewProfilesUI": true,
 "window.dialogStyle": "custom",
 "window.titleBarStyle": "custom",
-"explorer.excludeGitIgnore": true
+"explorer.excludeGitIgnore": true,
+"editor.minimap.enabled": false,
+"notebook.lineNumbers": "on",
+"editor.fontSize": 12
 }
 
