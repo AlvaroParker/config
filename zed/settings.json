@@ -3,6 +3,9 @@
   "outline_panel": {
     "dock": "right"
   },
+  "file_types": {
+    "XML": ["*.csproj"]
+  },
   "show_inline_completions": true,
   "theme": "Catppuccin Mocha",
   "assistant": {
@@ -16,9 +19,6 @@
     "inline_blame": {
       "enabled": true
     }
-  },
-  "auto_update_extensions": {
-    "catppuccin": false
   },
   "tab_bar": {
     "show": true
@@ -102,9 +102,6 @@
   "buffer_font_weight": 500,
   "ui_font_size": 16,
   "buffer_font_size": 12,
-  "scrollbar": {
-    "show": "never"
-  },
   "format_on_save": "on",
   "file_scan_exclusions": [".git", ".next", ".turbo", "node_modules", "dist"],
   "project_panel": {
