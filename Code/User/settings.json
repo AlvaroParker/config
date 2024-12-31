@@ -139,7 +139,7 @@
   "window.titleBarStyle": "custom",
   "editor.minimap.enabled": false,
   "notebook.lineNumbers": "on",
-  "editor.fontSize": 12,
+  "editor.fontSize": 13,
   "workbench.colorTheme": "Catppuccin Macchiato",
   "workbench.iconTheme": "eq-material-theme-icons-darker",
   "workbench.productIconTheme": "material-product-icons",

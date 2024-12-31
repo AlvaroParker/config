@@ -7,11 +7,11 @@
     "XML": ["*.csproj"]
   },
   "show_inline_completions": true,
-  "theme": "Catppuccin Mocha",
+  "theme": "Catppuccin Macchiato",
   "assistant": {
     "default_model": {
       "provider": "copilot_chat",
-      "model": "gpt-4o"
+      "model": "claude-3-5-sonnet"
     },
     "version": "2"
   },
