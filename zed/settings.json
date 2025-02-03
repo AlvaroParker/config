@@ -3,6 +3,7 @@
   "outline_panel": {
     "dock": "right"
   },
+  "soft_wrap": "editor_width",
   "file_types": {
     "XML": ["*.csproj"]
   },
@@ -11,7 +12,7 @@
   "assistant": {
     "default_model": {
       "provider": "copilot_chat",
-      "model": "claude-3-5-sonnet"
+      "model": "gpt-4o"
     },
     "version": "2"
   },
@@ -101,7 +102,7 @@
   "buffer_font_family": "FiraCode Nerd Font",
   "buffer_font_weight": 500,
   "ui_font_size": 16,
-  "buffer_font_size": 12,
+  "buffer_font_size": 13.0,
   "format_on_save": "on",
   "file_scan_exclusions": [".git", ".next", ".turbo", "node_modules", "dist"],
   "project_panel": {

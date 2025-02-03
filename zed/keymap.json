@@ -13,5 +13,11 @@
       "space p": "workspace::ToggleRightDock",
       "space enter": "workspace::ToggleBottomDock"
     }
+  },
+  {
+    "context": "vim_mode == visual",
+    "bindings": {
+      "p": ["workspace::SendKeystrokes", "p g v y"]
+    }
   }
 ]
