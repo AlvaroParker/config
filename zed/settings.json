@@ -1,4 +1,8 @@
 {
+  "features": {
+    "edit_prediction_provider": "zed"
+  },
+  "icon_theme": "Material Icon Theme",
   "exclusions_gitignore": true, // Custom setting see my PR draft: https://github.com/zed-industries/zed/pull/17544
   "outline_panel": {
     "dock": "right"
@@ -7,8 +11,8 @@
   "file_types": {
     "XML": ["*.csproj"]
   },
-  "show_inline_completions": true,
-  "theme": "Catppuccin Macchiato",
+  "show_edit_predictions": true,
+  "theme": "Catppuccin Mocha",
   "assistant": {
     "default_model": {
       "provider": "copilot_chat",
@@ -34,16 +38,16 @@
   },
   "languages": {
     "Shell Script": {
-      "show_inline_completions": true
+      "show_edit_predictions": true
     },
     "TSX": {
-      "show_inline_completions": true
+      "show_edit_predictions": true
     },
     "Java": {
-      "show_inline_completions": false
+      "show_edit_predictions": false
     },
     "Python": {
-      "show_inline_completions": true,
+      "show_edit_predictions": true,
       "language_servers": ["ruff", "pyright"],
       "format_on_save": "on",
       "formatter": [
@@ -64,17 +68,17 @@
       "soft_wrap": "editor_width"
     },
     "Go": {
-      "show_inline_completions": false
+      "show_edit_predictions": false
     },
     "TypeScript": {
-      "show_inline_completions": true,
+      "show_edit_predictions": true,
       "tab_size": 4
     },
     "Rust": {
-      "show_inline_completions": false
+      "show_edit_predictions": true
     },
     "C": {
-      "show_inline_completions": false,
+      "show_edit_predictions": false,
       "formatter": {
         "external": {
           "command": "bash",
@@ -84,7 +88,7 @@
       "format_on_save": "on"
     },
     "C++": {
-      "show_inline_completions": true,
+      "show_edit_predictions": true,
       "formatter": {
         "external": {
           "command": "bash",
@@ -101,8 +105,8 @@
   "ui_font_weight": 600,
   "buffer_font_family": "FiraCode Nerd Font",
   "buffer_font_weight": 500,
-  "ui_font_size": 16,
-  "buffer_font_size": 13.0,
+  "ui_font_size": 14,
+  "buffer_font_size": 12,
   "format_on_save": "on",
   "file_scan_exclusions": [".git", ".next", ".turbo", "node_modules", "dist"],
   "project_panel": {
