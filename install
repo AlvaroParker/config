@@ -51,7 +51,7 @@ fi
 # fi
 
 # Install AUR packages
-aur_packages=("light" "hyprpicker" "rate-mirrors-bin" "swayosd-git" "zen-browser-avx2-bin" "visual-studio-code-bin" "rofi-lbonn-wayland-git" "wl-gammarelay-rs" "proton-vpn-gtk-app" "clipse-bin")
+aur_packages=("light" "hyprpicker" "rate-mirrors-bin" "swayosd-git" "zen-browser-bin" "visual-studio-code-bin" "rofi-lbonn-wayland-git" "wl-gammarelay-rs" "proton-vpn-gtk-app" "clipse-bin")
 aur_to_install=()
 
 for pkg in "${aur_packages[@]}"; do
