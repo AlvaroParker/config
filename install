@@ -203,6 +203,7 @@ sudo usermod -aG libvirt $USER
 sudo usermod -aG libvirt-qemu $USER
 sudo usermod -aG kvm $USER
 sudo usermod -aG docker $USER
+sudo usermod -aG video $USER
 
 flatpak override --filesystem=~/.themes:ro --filesystem=~/.icons:ro --user
 mkdir -p ~/.icons

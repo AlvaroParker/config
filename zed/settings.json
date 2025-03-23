@@ -112,7 +112,8 @@
   "project_panel": {
     "scrollbar": {
       "show": "never"
-    }
+    },
+    "hide_gitignore": true
   },
   "lsp": {
     "rust-analyzer": {

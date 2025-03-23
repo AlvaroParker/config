@@ -19,5 +19,11 @@
     "bindings": {
       "p": ["workspace::SendKeystrokes", "p g v y"]
     }
+  },
+  {
+    "context": "Editor && vim_mode == visual || vim_mode == normal",
+    "bindings": {
+      "space /": "editor::ToggleComments"
+    }
   }
 ]

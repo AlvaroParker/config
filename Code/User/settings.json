@@ -140,8 +140,7 @@
   "editor.minimap.enabled": false,
   "notebook.lineNumbers": "on",
   "editor.fontSize": 13,
-  "workbench.colorTheme": "Catppuccin Macchiato",
-  "workbench.iconTheme": "eq-material-theme-icons-darker",
+  "workbench.iconTheme": "eq-material-theme-icons",
   "workbench.productIconTheme": "material-product-icons",
   "cmake.pinnedCommands": [
     "workbench.action.tasks.configureTaskRunner",
@@ -154,5 +153,6 @@
   "cmake.showOptionsMovedNotification": false,
   "window.menuBarVisibility": "compact",
   "chat.editor.fontFamily": "FiraCode Nerd Font",
-  "debug.console.fontFamily": "FiraCode Nerd Font"
+  "debug.console.fontFamily": "FiraCode Nerd Font",
+  "workbench.colorTheme": "Catppuccin Mocha"
 }

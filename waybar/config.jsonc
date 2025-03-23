@@ -81,7 +81,6 @@
     "max-length": 10
   },
   "backlight": {
-    "device": "amdgpu_bl1",
     "format": "{icon} {percent}",
     "tooltip": false,
     "format-icons": [
@@ -117,7 +116,7 @@
     "on-click": "pavucontrol"
   },
   "battery": {
-    "bat": "BAT1",
+    "bat": "BAT0",
     "interval": 30,
     "states": {
       "warning": 30,

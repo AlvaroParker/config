@@ -35,9 +35,8 @@ export PATH="$PATH:$HOME/.cargo/bin:$HOME/.local/share/gem/ruby/3.2.0/bin:$HOME/
 export PATH="$PATH:$ANDROID_HOME/emulator"
 export PATH="$PATH:$HOME/.dotnet"
 export PATH=$GEM_HOME/bin:$PATH
-export PATH="$PATH:$HOME/Documents/projects/intrusion.aware/argus/bin"
-export PATH="$PATH:$HOME/Documents/projects/intrusion.aware/clients/bin"
 export PATH="$PATH:$HOME/.dotnet/tools"
+
 
 # Key bindings
 bindkey -v # enable vi mode
@@ -45,3 +44,4 @@ bindkey '^F' forward-char
 bindkey "^P" up-line-or-beginning-search
 bindkey "^N" down-line-or-beginning-search
 
+source .custom_zshrc
