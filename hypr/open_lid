@@ -1,6 +1,6 @@
 #!/bin/bash
 sleep 1
-hyprctl keyword monitor eDP-1, 1920x1080, 0x0,1.25
+hyprctl keyword monitor eDP-1, 3072x1920, 0x0,2, vrr, 1
 # Get the output and count the number of lines matching the regex
 line_count=$(hyprctl monitors | grep -P 'Monitor\s(?!eDP-1).+?\s\(ID\s\d+\):' | wc -l)
 

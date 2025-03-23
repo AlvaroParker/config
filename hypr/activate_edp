@@ -1,2 +1,2 @@
 #!/bin/bash
-hyprctl keyword monitor eDP-1, 1920x1080, 0x0, 1
+hyprctl keyword monitor eDP-1, 3072x1920, 0x0,2, vrr, 1
