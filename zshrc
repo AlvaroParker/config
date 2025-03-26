@@ -44,4 +44,4 @@ bindkey '^F' forward-char
 bindkey "^P" up-line-or-beginning-search
 bindkey "^N" down-line-or-beginning-search
 
-source .custom_zshrc
+source ~/.custom_zshrc

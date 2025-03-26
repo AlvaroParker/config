@@ -105,10 +105,10 @@
   "ui_font_weight": 600,
   "buffer_font_family": "FiraCode Nerd Font",
   "buffer_font_weight": 500,
-  "ui_font_size": 14,
-  "buffer_font_size": 12,
+  "ui_font_size": 13,
+  "buffer_font_size": 13,
   "format_on_save": "on",
-  "file_scan_exclusions": [".git", ".next", ".turbo", "node_modules", "dist"],
+  "file_scan_exclusions": [".next", ".turbo", "node_modules", "dist"],
   "project_panel": {
     "scrollbar": {
       "show": "never"

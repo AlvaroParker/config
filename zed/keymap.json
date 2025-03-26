@@ -2,13 +2,16 @@
   {
     "context": "Workspace",
     "bindings": {
-      "alt-enter": "terminal_panel::ToggleFocus",
+      "ctrl-shift-enter": "terminal_panel::ToggleFocus",
+      "ctrl-shift-t": "workspace::NewTerminal",
       "ctrl-9": "project_panel::ToggleFocus"
     }
   },
   {
     "context": "Editor && vim_mode == normal",
     "bindings": {
+      "ctrl-shift-enter": "terminal_panel::ToggleFocus",
+      "ctrl-shift-t": "workspace::NewTerminal",
       "space b": "workspace::ToggleLeftDock",
       "space p": "workspace::ToggleRightDock",
       "space enter": "workspace::ToggleBottomDock"
