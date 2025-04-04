@@ -2,7 +2,11 @@
   "features": {
     "edit_prediction_provider": "zed"
   },
-  "icon_theme": "Material Icon Theme",
+  "icon_theme": {
+    "mode": "system",
+    "light": "Material Icon Theme",
+    "dark": "Zed (Default)"
+  },
   "exclusions_gitignore": true, // Custom setting see my PR draft: https://github.com/zed-industries/zed/pull/17544
   "outline_panel": {
     "dock": "right"
@@ -12,7 +16,11 @@
     "XML": ["*.csproj"]
   },
   "show_edit_predictions": true,
-  "theme": "Catppuccin Mocha",
+  "theme": {
+    "mode": "system",
+    "light": "Catppuccin Mocha",
+    "dark": "Duskfox"
+  },
   "assistant": {
     "default_model": {
       "provider": "copilot_chat",

@@ -4,7 +4,8 @@
     "bindings": {
       "ctrl-shift-enter": "terminal_panel::ToggleFocus",
       "ctrl-shift-t": "workspace::NewTerminal",
-      "ctrl-9": "project_panel::ToggleFocus"
+      "ctrl-9": "project_panel::ToggleFocus",
+      "ctrl-shift-backspace": "workspace::ToggleZoom"
     }
   },
   {
@@ -20,7 +21,7 @@
   {
     "context": "vim_mode == visual",
     "bindings": {
-      "p": ["workspace::SendKeystrokes", "p g v y"]
+      "p": ["workspace::SendKeystrokes", "g r"]
     }
   },
   {
