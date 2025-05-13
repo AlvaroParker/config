@@ -140,7 +140,7 @@
   "editor.minimap.enabled": false,
   "notebook.lineNumbers": "on",
   "editor.fontSize": 13,
-  "workbench.iconTheme": "eq-material-theme-icons",
+  "workbench.iconTheme": "catppuccin-mocha",
   "workbench.productIconTheme": "material-product-icons",
   "cmake.pinnedCommands": [
     "workbench.action.tasks.configureTaskRunner",
