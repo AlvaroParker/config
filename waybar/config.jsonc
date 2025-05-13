@@ -2,9 +2,9 @@
   "layer": "top",
   "position": "top",
   "height": 30,
-  "margin-top": 5,
-  "margin-left": 10,
-  "margin-right": 10,
+  "margin-top": 2,
+  "margin-left": 2,
+  "margin-right": 2,
   "margin-bottom": 0,
   "spacing": 0,
   "modules-left": [
@@ -16,11 +16,9 @@
     "custom/window-name",
     "custom/pacman-update-icon",
     "custom/pacman-update",
-    "tray"
+    "tray",
   ],
-  "modules-center": [
-    "hyprland/workspaces"
-  ],
+  "modules-center": ["hyprland/workspaces"],
   "modules-right": [
     // "custom/music",
     "battery",
@@ -29,13 +27,13 @@
     "pulseaudio",
     "network",
     "custom/clock-icon",
-    "clock"
+    "clock",
   ],
   "custom/wl-gammarelay-temperature": {
     "format": "{} ",
     "exec": "wl-gammarelay-rs watch {t}",
     "on-scroll-up": "busctl --user -- call rs.wl-gammarelay / rs.wl.gammarelay UpdateTemperature n +100",
-    "on-scroll-down": "busctl --user -- call rs.wl-gammarelay / rs.wl.gammarelay UpdateTemperature n -100"
+    "on-scroll-down": "busctl --user -- call rs.wl-gammarelay / rs.wl.gammarelay UpdateTemperature n -100",
   },
   "hyprland/workspaces": {
     "all-outputs": true,
@@ -53,52 +51,44 @@
       "6": "",
       "urgent": "",
       "active": "",
-      "default": ""
-    }
+      "default": "",
+    },
   },
   "tray": {
     "icon-size": 20,
-    "spacing": 8
+    "spacing": 8,
   },
   "custom/clock-icon": {
-    "format": "󱑅"
+    "format": "󱑅",
   },
   "clock": {
     "format": "<b>{:%I:%M %p}</b>",
     "format-alt": "<b>{:%a.%d,%b}</b>",
-    "tooltip-format": "<big>{:%B %Y}</big>\n<tt><small>{calendar}</small></tt>"
+    "tooltip-format": "<big>{:%B %Y}</big>\n<tt><small>{calendar}</small></tt>",
   },
   "cpu": {
     "interval": 10,
     "format": " {usage}%",
     "max-length": 10,
-    "tooltip": false
+    "tooltip": false,
   },
   "memory": {
     "interval": 30,
     "format": " {used}GiB",
     "format-alt": " {used:0.1f}G",
-    "max-length": 10
+    "max-length": 10,
   },
   "backlight": {
     "format": "{icon} {percent}",
     "tooltip": false,
-    "format-icons": [
-      "󰃚 ",
-      "󰃛 ",
-      "󰃜 ",
-      "󰃝 ",
-      "󰃞 ",
-      "󰃟 ",
-      "󰃠 "
-    ]
+    "format-icons": ["󰃚 ", "󰃛 ", "󰃜 ", "󰃝 ", "󰃞 ", "󰃟 ", "󰃠 "],
   },
   "network": {
     "format-wifi": "  {essid}",
     "on-click": "iwgtk",
     "format-ethernet": "󰈀 wired",
     "tooltip": false,
-    "format-disconnected": ""
+    "format-disconnected": "",
   },
   "pulseaudio": {
     "format": "{icon} <b>{volume}</b>",
@@ -107,72 +97,63 @@
     "tooltip": false,
     "format-muted": " ",
     "format-icons": {
-      "default": [
-        "󰕿 ",
-        "󰖀 ",
-        "󰕾 "
-      ]
+      "default": ["󰕿 ", "󰖀 ", "󰕾 "],
     },
-    "on-click": "pavucontrol"
+    "on-click": "pavucontrol",
   },
   "battery": {
     "bat": "BAT0",
     "interval": 30,
     "states": {
       "warning": 30,
-      "critical": 15
+      "critical": 15,
     },
     "format": "{icon} {capacity}%",
     "format-charging": " {icon} {capacity}%",
-    "format-icons": [
-      " ",
-      " ",
-      " ",
-      " "
-    ],
+    "format-icons": [" ", " ", " ", " "],
     "max-length": 25,
-    "tooltip": false
+    "tooltip": false,
   },
   "custom/right-arr": {
-    "format": "  "
+    "format": "  ",
   },
   "custom/launcher": {
     "format": "",
-    "on-click": "rofi -show drun"
+    "on-click": "rofi -show drun",
   },
   "custom/separator": {
-    "format": " "
+    "format": " ",
   },
   "custom/window-name": {
     "format": "<b>{}</b>",
     "interval": 1,
-    "exec": "hyprctl activewindow | grep \"class:\" | awk '{print $2}' | sed 's/\\([[:alpha:]]\\)/\\U\\1/'"
+    "exec": "hyprctl activewindow | grep \"class:\" | awk '{print $2}' | sed 's/\\([[:alpha:]]\\)/\\U\\1/'",
   },
   "custom-pacman-update-icon-background": {
-    "format": ""
+    "format": "",
   },
   "custom/pacman-update-icon": {
-    "format": " 󰏔 "
+    "format": " 󰏔 ",
   },
   "custom/pacman-update": {
     "format": " {}",
     "interval": 3600,
     "exec": "$HOME/.config/waybar/scripts/checkupdates | wc -l",
-    "signal": 8
+    "signal": 8,
   },
   "custom/window-icon": {},
   "custom/wrap-left": {
-    "format": "<b>[</b>"
+    "format": "<b>[</b>",
   },
   "custom/wrap-right": {
-    "format": "<b>]</b>"
+    "format": "<b>]</b>",
   },
   "custom/music": {
     "format": "{icon}{}",
     "format-icons": {
       // "Playing": " ", // Uncomment if not using caway
       "Paused": " ",
-      "Stopped": " " // This stop symbol is RTL. So &#x202d; is left-to-right override.
+      "Stopped": " ", // This stop symbol is RTL. So &#x202d; is left-to-right override.
     },
     "escape": true,
     "tooltip": true,
@@ -182,6 +163,6 @@
     "on-scroll-up": "playerctl previous",
     "on-scroll-down": "playerctl next",
     "on-click-right": "g4music",
-    "max-length": 25
-  }
+    "max-length": 25,
+  },
 }

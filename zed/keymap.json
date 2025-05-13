@@ -19,10 +19,7 @@
     }
   },
   {
-    "context": "vim_mode == visual",
-    "bindings": {
-      "p": ["workspace::SendKeystrokes", "g r"]
-    }
+    "context": "vim_mode == visual"
   },
   {
     "context": "Editor && vim_mode == visual || vim_mode == normal",

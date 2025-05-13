@@ -1,11 +1,23 @@
 {
+  "ssh_connections": [
+    {
+      "host": "165.1.125.87",
+      "username": "parker",
+      "args": ["-i", ".ssh/id_ed25519"],
+      "projects": [
+        {
+          "paths": ["~/uakari"]
+        }
+      ]
+    }
+  ],
   "features": {
     "edit_prediction_provider": "zed"
   },
   "icon_theme": {
     "mode": "system",
     "light": "Material Icon Theme",
-    "dark": "Zed (Default)"
+    "dark": "Catppuccin Mocha"
   },
   "exclusions_gitignore": true, // Custom setting see my PR draft: https://github.com/zed-industries/zed/pull/17544
   "outline_panel": {
@@ -19,9 +31,9 @@
   "theme": {
     "mode": "system",
     "light": "Catppuccin Mocha",
-    "dark": "Duskfox"
+    "dark": "Catppuccin Mocha"
   },
-  "assistant": {
+  "agent": {
     "default_model": {
       "provider": "copilot_chat",
       "model": "gpt-4o"
@@ -55,7 +67,7 @@
       "show_edit_predictions": false
     },
     "Python": {
-      "show_edit_predictions": true,
+      "show_edit_predictions": false,
       "language_servers": ["ruff", "pyright"],
       "format_on_save": "on",
       "formatter": [
@@ -83,7 +95,7 @@
       "tab_size": 4
     },
     "Rust": {
-      "show_edit_predictions": true
+      "show_edit_predictions": false
     },
     "C": {
       "show_edit_predictions": false,
@@ -113,11 +125,12 @@
   "ui_font_weight": 600,
   "buffer_font_family": "FiraCode Nerd Font",
   "buffer_font_weight": 500,
-  "ui_font_size": 13,
+  "ui_font_size": 16,
   "buffer_font_size": 13,
   "format_on_save": "on",
   "file_scan_exclusions": [".next", ".turbo", "node_modules", "dist"],
   "project_panel": {
+    "dock": "right",
     "scrollbar": {
       "show": "never"
     },
