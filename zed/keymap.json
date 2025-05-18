@@ -15,7 +15,9 @@
       "ctrl-shift-t": "workspace::NewTerminal",
       "space b": "workspace::ToggleLeftDock",
       "space p": "workspace::ToggleRightDock",
-      "space enter": "workspace::ToggleBottomDock"
+      "space enter": "workspace::ToggleBottomDock",
+      "ctrl-shift-l": "vim::ResizePaneRight",
+      "ctrl-shift-h": "vim::ResizePaneLeft"
     }
   },
   {

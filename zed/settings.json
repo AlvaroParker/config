@@ -1,16 +1,4 @@
 {
-  "ssh_connections": [
-    {
-      "host": "165.1.125.87",
-      "username": "parker",
-      "args": ["-i", ".ssh/id_ed25519"],
-      "projects": [
-        {
-          "paths": ["~/uakari"]
-        }
-      ]
-    }
-  ],
   "features": {
     "edit_prediction_provider": "zed"
   },
@@ -125,12 +113,16 @@
   "ui_font_weight": 600,
   "buffer_font_family": "FiraCode Nerd Font",
   "buffer_font_weight": 500,
-  "ui_font_size": 16,
+  "ui_font_size": 12,
+  "scrollbar": {
+    "show": "never"
+  },
+
   "buffer_font_size": 13,
   "format_on_save": "on",
   "file_scan_exclusions": [".next", ".turbo", "node_modules", "dist"],
   "project_panel": {
-    "dock": "right",
+    "dock": "left",
     "scrollbar": {
       "show": "never"
     },
