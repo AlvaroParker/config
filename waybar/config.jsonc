@@ -5,14 +5,12 @@
   "margin-top": 2,
   "margin-left": 2,
   "margin-right": 2,
-  "margin-bottom": 0,
-  "spacing": 0,
+  "margin-bottom": 5,
+  "spacing": 8,
   "modules-left": [
     "custom/launcher",
-    "custom/separator",
     "cpu",
     "memory",
-    "custom/separator",
     "custom/window-name",
     "custom/pacman-update-icon",
     "custom/pacman-update",
@@ -26,7 +24,6 @@
     "custom/wl-gammarelay-temperature",
     "pulseaudio",
     "network",
-    "custom/clock-icon",
     "clock",
   ],
   "custom/wl-gammarelay-temperature": {
@@ -58,12 +55,10 @@
     "icon-size": 20,
     "spacing": 8,
   },
-  "custom/clock-icon": {
-    "format": "󱑅",
-  },
+
   "clock": {
-    "format": "<b>{:%I:%M %p}</b>",
-    "format-alt": "<b>{:%a.%d,%b}</b>",
+    "format": "󱑅 <b>{:%I:%M %p}</b>",
+    "format-alt": "󱑅 <b>{:%a.%d,%b}</b>",
     "tooltip-format": "<big>{:%B %Y}</big>\n<tt><small>{calendar}</small></tt>",
   },
   "cpu": {
@@ -114,24 +109,18 @@
     "max-length": 25,
     "tooltip": false,
   },
-  "custom/right-arr": {
-    "format": "  ",
-  },
+
   "custom/launcher": {
     "format": "",
     "on-click": "rofi -show drun",
   },
-  "custom/separator": {
-    "format": " ",
-  },
+
   "custom/window-name": {
     "format": "<b>{}</b>",
     "interval": 1,
     "exec": "hyprctl activewindow | grep \"class:\" | awk '{print $2}' | sed 's/\\([[:alpha:]]\\)/\\U\\1/'",
   },
-  "custom-pacman-update-icon-background": {
-    "format": "",
-  },
+
   "custom/pacman-update-icon": {
     "format": " 󰏔 ",
   },
@@ -141,13 +130,7 @@
     "exec": "$HOME/.config/waybar/scripts/checkupdates | wc -l",
     "signal": 8,
   },
-  "custom/window-icon": {},
-  "custom/wrap-left": {
-    "format": "<b>[</b>",
-  },
-  "custom/wrap-right": {
-    "format": "<b>]</b>",
-  },
+
   "custom/music": {
     "format": "{icon}{}",
     "format-icons": {
