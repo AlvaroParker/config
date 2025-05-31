@@ -28,5 +28,23 @@
     "bindings": {
       "space /": "editor::ToggleComments"
     }
+  },
+  {
+    "context": "Pane",
+    "bindings": {
+      "ctrl-k l": "pane::SplitRight",
+      "ctrl-k h": "pane::SplitRight",
+      "ctrl-k j": "pane::SplitDown",
+      "ctrl-k k": "pane::SplitUp"
+    }
+  },
+  {
+    "context": "Terminal",
+    "bindings": {
+      "ctrl-w l": "agent::FocusRight",
+      "ctrl-w h": "agent::FocusLeft",
+      "ctrl-w j": "agent::FocusDown",
+      "ctrl-w k": "agent::FocusUp"
+    }
   }
 ]
