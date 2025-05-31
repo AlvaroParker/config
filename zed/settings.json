@@ -27,7 +27,7 @@
   },
   "agent": {
     // "default_view": "text_thread",
-    "default_profile": "ask",
+    "default_profile": "write",
     "default_model": {
       "provider": "copilot_chat",
       "model": "claude-sonnet-4"
