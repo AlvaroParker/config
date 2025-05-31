@@ -31,16 +31,17 @@ The `genswap` script will generate a new swapfile located at `/swapfile` and wil
 
 # Screenshots Hyprland
 
-![S1](./screenshots/s1.png)
-![S2](./screenshots/s2.png)
-![S3](./screenshots/s3.png)
-![S4](./screenshots/s4.png)
+![S1](./screenshots/P1.png)
+![S2](./screenshots/P2.png)
+![S3](./screenshots/P3.png)
+![S4](./screenshots/P4.png)
+![S5](./screenshots/P5.png)
 
 Programs on the screenshots:
 
 - [`Alacritty`](https://github.com/alacritty/alacritty)
 - [`Zed`](https://zed.dev)
 - [`Zen`](https://zen-browser.app/)
-- [`Obsidian`](https://obsidian.md)
-- [`Btop`](https://github.com/aristocratos/btop)
 - [`Fastfetch`](https://github.com/fastfetch-cli/fastfetch)
+- `Tmux` - Terminal multiplexer
+- `Zathura` - PDF viewer
