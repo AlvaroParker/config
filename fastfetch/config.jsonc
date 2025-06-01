@@ -46,6 +46,12 @@
       "keyColor": "blue"
     },
     {
+      "type": "cpu",
+      "key": "{#35}│ {#34}󰍛 ",
+      "keyColor": "blue",
+      "format": "{freq-max} - {cores-logical} cores {#34}"
+    },
+    {
         "type": "custom",
         "format": "{#35}╰───────────────────── {#90} {#31} {#32} {#33} {#34} {#35} {#36} {#37} {#35}────╯"
     }
