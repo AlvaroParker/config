@@ -61,7 +61,7 @@
     "tooltip-format": "<big>{:%B %Y}</big>\n<tt><small>{calendar}</small></tt>"
   },
   "cpu": {
-    "interval": 10,
+    "interval": 5,
     "format": " {usage}%",
     "max-length": 10,
     "tooltip": false
@@ -82,7 +82,7 @@
     "on-click": "iwgtk",
     "format-ethernet": "󰈀 wired",
     "tooltip": false,
-    "format-disconnected": ""
+    "format-disconnected": "󰖪"
   },
   "pulseaudio": {
     "format": "{icon} <b>{volume}</b>",
