@@ -32,6 +32,7 @@ The `genswap` script will generate a new swapfile located at `/swapfile` and wil
 # Screenshots Hyprland
 
 ![S1](./screenshots/S1.webp)
+![S6](./screenshots/S6.webp)
 ![S2](./screenshots/S2.webp)
 ![S3](./screenshots/S3.webp)
 ![S4](./screenshots/S4.webp)
