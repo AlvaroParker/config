@@ -3,6 +3,7 @@
     margin: 0;
     font-family: JetBrainsMono NF;
     font-size: 14px;
+    font-weight: 900;
     border: none;
     border-radius: 0;
     min-height: 0;
@@ -27,6 +28,7 @@ window#waybar {
     padding: 0px 12px;
     color: #cdd6f4;
     border: 1px solid rgba(88, 91, 112, 0.3);
+    font-weight: 900;
 }
 
 /* Individual module styling with Catppuccin Mocha colors */
@@ -59,7 +61,7 @@ window#waybar {
     background: rgba(205, 214, 244, 0.1);
     color: #cdd6f4;
     border: 1px solid rgba(205, 214, 244, 0.2);
-    font-weight: bold;
+    font-weight: 900;
 }
 
 #custom-pacman-update-icon {
@@ -149,6 +151,7 @@ window#waybar {
 }
 
 #pulseaudio {
+    font-weight: 900;
     background: rgba(145, 215, 227, 0.15);
     color: #91d7e3;
     border: 1px solid rgba(145, 215, 227, 0.3);
@@ -176,7 +179,7 @@ window#waybar {
     background: rgba(203, 166, 247, 0.15);
     color: #cba6f7;
     border: 1px solid rgba(203, 166, 247, 0.3);
-    font-weight: bold;
+    font-weight: 900;
     padding: 0px 14px;
 }
 
@@ -192,7 +195,7 @@ window#waybar {
 #custom-music.Playing {
     background: rgba(245, 194, 231, 0.25);
     border: 1px solid rgba(245, 194, 231, 0.5);
-    font-weight: bold;
+    font-weight: 900;
 }
 
 #custom-music.Paused,

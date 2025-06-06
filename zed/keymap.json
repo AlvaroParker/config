@@ -17,7 +17,9 @@
       "space p": "workspace::ToggleRightDock",
       "space enter": "workspace::ToggleBottomDock",
       "ctrl-shift-l": "vim::ResizePaneRight",
-      "ctrl-shift-h": "vim::ResizePaneLeft"
+      "ctrl-shift-h": "vim::ResizePaneLeft",
+      "ctrl-shift-j": "vim::ResizePaneDown",
+      "ctrl-shift-k": "vim::ResizePaneUp"
     }
   },
   {

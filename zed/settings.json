@@ -23,14 +23,14 @@
   "theme": {
     "mode": "system",
     "light": "Catppuccin Mocha",
-    "dark": "Catppuccin Mocha"
+    "dark": "Catppuccin Mocha (Blur)"
   },
   "agent": {
     // "default_view": "text_thread",
-    "default_profile": "write",
+    "default_profile": "ask",
     "default_model": {
       "provider": "copilot_chat",
-      "model": "claude-sonnet-4"
+      "model": "claude-3.7-sonnet"
     },
     "version": "2"
   },
@@ -123,6 +123,7 @@
   "lsp": {
     "rust-analyzer": {
       "initialization_options": {
+        // "checkOnSave": {},
         "completion": {
           "snippets": {
             "custom": {

@@ -31,11 +31,11 @@ The `genswap` script will generate a new swapfile located at `/swapfile` and wil
 
 # Screenshots Hyprland
 
-![S1](./screenshots/P1.webp)
-![S2](./screenshots/P2.webp)
-![S3](./screenshots/P3.webp)
-![S4](./screenshots/P4.webp)
-![S5](./screenshots/P5.webp)
+![S1](./screenshots/S1.webp)
+![S2](./screenshots/S2.webp)
+![S3](./screenshots/S3.webp)
+![S4](./screenshots/S4.webp)
+![S5](./screenshots/S5.webp)
 
 Programs on the screenshots:
 

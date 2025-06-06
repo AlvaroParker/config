@@ -17,10 +17,10 @@
   ],
   "modules-center": ["hyprland/workspaces"],
   "modules-right": [
-    // "custom/music",
+    "custom/music",
     "battery",
     "backlight",
-    "custom/wl-gammarelay-temperature",
+    // "custom/wl-gammarelay-temperature",
     "pulseaudio",
     "network",
     "clock"
@@ -56,7 +56,8 @@
   },
 
   "clock": {
-    "format": "󱑅 <b>{:%I:%M %p}</b>",
+    "interval": 1,
+    "format": "󱑅 <b>{:%I:%M:%S %p}</b>",
     "format-alt": "󱑅 <b>{:%a.%d,%b}</b>",
     "tooltip-format": "<big>{:%B %Y}</big>\n<tt><small>{calendar}</small></tt>"
   },
