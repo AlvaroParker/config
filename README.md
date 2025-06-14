@@ -1,5 +1,7 @@
 # Arch Linux and Hyprland/i3 dot files
 
+Checkout the NixOS dotfiles for this config! At [AlvaroParker/NixOS-config](https://github.com/AlvaroParker/NixOS-config)
+
 ## Warning! The installation script `install` will overwrite your existing dot files! The script has only been tested on a freshly installed Arch Linux with GNOME. Use at your own risk!
 
 ## Installation:
