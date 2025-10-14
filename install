@@ -16,7 +16,7 @@ create_symlinks() {
     done
 }
 
-packages=("wget" "ranger" "tmux" "curl" "unzip" "rustup" "base-devel" "hyprland" "xdg-desktop-portal-hyprland" "alacritty" "nautilus" "flatpak" "gammastep" "grim" "wl-clipboard" "slurp" "swaync" "waybar" "blueman" "btop" "zsh" "neovim" "zathura" "lsd" "fastfetch" "bat" "picom" "i3" "polybar" "ttf-jetbrains-mono-nerd" "ttf-firacode-nerd" "qemu-system-x86" "qemu-system-x86-firmware" "libvirt" "bridge-utils" "virt-manager" "qemu-hw-display-virtio-gpu-gl" "qemu-hw-display-virtio-gpu" "qemu-hw-display-virtio-gpu-pci" "qemu-hw-display-virtio-gpu-pci-gl" "dnsmasq" "qemu-img" "docker" "docker-compose" "hyprpaper" "hyprlock" "ripgrep" "qt5-wayland" "qt6-wayland" "lib32-glibc" "lib32-gcc-libs" "easyeffects" "network-manager-applet" "feh" "xorg-server" "lxappearance" "zathura-pdf-poppler" "gnome-tweaks" "gnome-themes-extra" "plymouth" "obsidian" "polkit-kde-agent" "qemu-full" "gdb" "vlc" "jq" "man-pages" "hypridle" "vulkan-radeon" "exa" "rsync" "firefox")
+packages=("wget" "ranger" "tmux" "curl" "unzip" "rustup" "base-devel" "hyprland" "xdg-desktop-portal-hyprland" "alacritty" "nautilus" "flatpak" "gammastep" "grim" "wl-clipboard" "slurp" "swaync" "waybar" "blueman" "btop" "zsh" "neovim" "zathura" "lsd" "fastfetch" "bat" "picom" "i3" "polybar" "ttf-jetbrains-mono-nerd" "ttf-firacode-nerd" "qemu-system-x86" "qemu-system-x86-firmware" "libvirt" "bridge-utils" "virt-manager" "qemu-hw-display-virtio-gpu-gl" "qemu-hw-display-virtio-gpu" "qemu-hw-display-virtio-gpu-pci" "qemu-hw-display-virtio-gpu-pci-gl" "dnsmasq" "qemu-img" "docker" "docker-compose" "hyprpaper" "hyprlock" "ripgrep" "qt5-wayland" "qt6-wayland" "lib32-glibc" "lib32-gcc-libs" "easyeffects" "network-manager-applet" "feh" "xorg-server" "lxappearance" "zathura-pdf-poppler" "gnome-tweaks" "gnome-themes-extra" "plymouth" "obsidian" "polkit-kde-agent" "qemu-full" "gdb" "vlc" "jq" "man-pages" "hypridle" "vulkan-radeon" "exa" "rsync" "firefox" "rofi" "less")
 # Filter out already installed packages
 to_install=()
 for pkg in "${packages[@]}"; do
@@ -45,13 +45,8 @@ else
     echo "Paru already installed."
 fi
 
-# Remove xdg-desktop-portal-gnome
-# if pacman -Qq xdg-desktop-portal-gnome &>/dev/null; then
-    # sudo pacman -Rs --noconfirm xdg-desktop-portal-gnome
-# fi
-
 # Install AUR packages
-aur_packages=("light" "hyprpicker" "rate-mirrors-bin" "swayosd-git" "zen-browser-bin" "visual-studio-code-bin" "rofi-lbonn-wayland-git" "wl-gammarelay-rs" "proton-vpn-gtk-app" "clipse-bin")
+aur_packages=("light" "hyprpicker" "rate-mirrors-bin" "swayosd-git" "zen-browser-bin" "visual-studio-code-bin" "wl-gammarelay-rs" "clipse-bin")
 aur_to_install=()
 
 for pkg in "${aur_packages[@]}"; do
@@ -191,6 +186,9 @@ ln -sf "${current_dir}/applications/suspend.desktop" ~/.local/share/applications
 ln -sf "${current_dir}/applications/shutdown.desktop" ~/.local/share/applications/shutdown.desktop
 ln -sf "${current_dir}/applications/hibernate.desktop" ~/.local/share/applications/hibernate.desktop
 
+# Starship config
+ln -sf "${current_dir}/starship.toml" ~/.config/starship.toml
+
 # Enable bluetooth
 sudo systemctl enable bluetooth.service --now
 
@@ -212,7 +210,11 @@ mkdir -p ~/.icons
 curl -f https://zed.dev/install.sh | ZED_CHANNEL=preview sh
 
 ln -sf "${current_dir}/zshrc" ~/.zshrc
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" -- --unattended --keep-zshrc
+sh -c "$(curl -sS https://starship.rs/install.sh)" -- --yes
 
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
 git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+
+
+touch ~/.custom_zshrc
