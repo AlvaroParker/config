@@ -2,7 +2,6 @@
 if [[ -z "$TMUX" ]]; then
   fastfetch
 fi
-fi
 
 # Oh-my-zsh configurations
 export ZSH="$HOME/.oh-my-zsh"
@@ -51,3 +50,4 @@ bindkey "^N" down-line-or-beginning-search
 
 source ~/.custom_zshrc
 eval "$(starship init zsh)"
+eval "$(zoxide init zsh)"

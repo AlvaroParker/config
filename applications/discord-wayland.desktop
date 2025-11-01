@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Discord (Wayland)
+GenericName=Internet Messenger
+Comment=All-in-one voice and text chat for gamers that's free, secure, and works on both your desktop and phone.
+Exec=/usr/bin/discord --ozone-platform-hint=auto
+Icon=discord
+Type=Application
+Categories=Network;InstantMessaging;

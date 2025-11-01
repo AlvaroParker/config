@@ -1,15 +1,134 @@
 {
+  "ui_font_weight": 500.0,
+  "confirm_quit": false,
+  "redact_private_values": false,
+  "zoomed_padding": false,
+  "profiles": {
+    "rust-no-clippy": {
+      "lsp": {
+        "rust-analyzer": {
+          "initialization_options": {
+            "completion": {
+              "snippets": {
+                "custom": {
+                  "Arc::new": {
+                    "postfix": "arc",
+                    "body": ["Arc::new(${receiver})"],
+                    "requires": "std::sync::Arc",
+                    "scope": "expr"
+                  },
+                  "Some": {
+                    "postfix": "some",
+                    "body": ["Some(${receiver})"],
+                    "scope": "expr"
+                  },
+                  "Ok": {
+                    "postfix": "ok",
+                    "body": ["Ok(${receiver})"],
+                    "scope": "expr"
+                  },
+                  "Rc::new": {
+                    "postfix": "rc",
+                    "body": ["Rc::new(${receiver})"],
+                    "requires": "std::rc::Rc",
+                    "scope": "expr"
+                  },
+                  "Box::pin": {
+                    "postfix": "boxpin",
+                    "body": ["Box::pin(${receiver})"],
+                    "requires": "std::boxed::Box",
+                    "scope": "expr"
+                  },
+                  "vec!": {
+                    "postfix": "vec",
+                    "body": ["vec![${receiver}]"],
+                    "description": "vec![]",
+                    "scope": "expr"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  // "use_system_path_prompts": false,
+  "load_direnv": "shell_hook",
+  "agent_servers": {
+    "claude": {
+      "default_mode": "default"
+    }
+  },
+  "collaboration_panel": {
+    "button": false
+  },
+  "telemetry": {
+    "diagnostics": false,
+    "metrics": false
+  },
+  "disable_ai": false,
+  "ssh_connections": [
+    {
+      "host": "192.168.122.208",
+      "username": "admin",
+      "args": [],
+      "projects": [
+        {
+          "paths": ["/home/admin/nixos-config"]
+        }
+      ]
+    },
+    {
+      "host": "192.168.68.115",
+      "username": "admin",
+      "args": [],
+      "projects": [
+        {
+          "paths": ["/home/admin/server"]
+        }
+      ]
+    },
+    {
+      "host": "cloudanddigital",
+      "username": "admin",
+      "args": [],
+      "projects": [
+        {
+          "paths": ["/home/admin/server"]
+        }
+      ]
+    },
+    {
+      "host": "127.0.0.1",
+      "username": "parker",
+      "args": [],
+      "projects": [
+        {
+          "paths": ["/home/parker"]
+        },
+        {
+          "paths": ["/home/parker/test_dir"]
+        }
+      ]
+    }
+  ],
   "minimap": {
     "show": "always",
-    "display_scope": "focused_pane",
-    "thumb": "hover"
+    "display_in": "active_editor",
+    "thumb": "always"
   },
+
+  "active_pane_modifiers": {
+    // "border_size": 5
+  },
+
   "features": {
     "edit_prediction_provider": "copilot"
   },
   "icon_theme": {
-    "mode": "system",
-    "light": "Material Icon Theme",
+    "mode": "dark",
+    "light": "Catppuccin Mocha",
     "dark": "Catppuccin Mocha"
   },
   "outline_panel": {
@@ -19,21 +138,41 @@
   "file_types": {
     "XML": ["*.csproj"]
   },
+  "diagnostics": {
+    "inline": {
+      "enabled": true,
+      "update_debounce_ms": 150,
+      "padding": 4,
+      "min_column": 0,
+      "max_severity": null
+    }
+  },
   "show_edit_predictions": true,
-  "theme": {
-    "mode": "system",
-    "light": "Catppuccin Mocha",
-    "dark": "Catppuccin Mocha (Blur)"
+  "edit_predictions": {
+    "disabled_globs": ["/home/parker/Documents/playground/learn-ruby/*"],
+    "mode": "subtle"
+  },
+  "experimental.theme_overrides": {
+    // "panel.background": "#00000000",
+    // "background": "#ffffff"
+  },
+  "theme": "Zed Dark",
+  "toolbar": {
+    "breadcrumbs": true,
+    "quick_actions": true
   },
   "agent": {
     // "default_view": "text_thread",
-    "default_profile": "ask",
+    "use_modifier_to_send": false,
+    "play_sound_when_agent_done": false,
+    "always_allow_tool_actions": true,
+    "default_profile": "write",
     "default_model": {
       "provider": "copilot_chat",
-      "model": "claude-3.7-sonnet"
-    },
-    "version": "2"
+      "model": "claude-sonnet-4"
+    }
   },
+
   "git": {
     "inline_blame": {
       "enabled": true
@@ -44,13 +183,27 @@
   },
   "tabs": {
     "git_status": true,
-    "file_icons": true
+    "file_icons": true,
+    "show_diagnostics": "all"
   },
   "terminal": {
     "dock": "bottom",
     "default_height": 250
+    // "tab_bar": {
+    //   "show": "auto"
+    // }
+  },
+  "indent_guides": {
+    "coloring": "indent_aware"
   },
   "languages": {
+    "Shell Script": {
+      "show_edit_predictions": true
+    },
+    "Nix": {
+      "format_on_save": "on"
+    },
+    "TSX": {},
     "Python": {
       "language_servers": ["ruff", "pyright"],
       "format_on_save": "on",
@@ -60,24 +213,17 @@
             "name": "ruff"
           }
         },
-        {
-          "code_actions": {
-            "source.fixAll.ruff": true,
-            "source.organizeImports.ruff": true
-          }
-        }
+        { "code_action": "source.fixAll.ruff" },
+        { "code_action": "source.organizeImports.ruff" }
       ]
     },
     "Markdown": {
       "soft_wrap": "editor_width"
     },
     "TypeScript": {
-      "show_edit_predictions": true,
       "tab_size": 4
     },
-    "Rust": {
-      "show_edit_predictions": false
-    },
+    "Rust": {},
     "C": {
       "formatter": {
         "external": {
@@ -85,7 +231,16 @@
           "arguments": ["-c", "clang-format"]
         }
       },
-      "format_on_save": "on"
+      "format_on_save": "off"
+    },
+    "Gleam": {
+      "format_on_save": "on",
+      "formatter": {
+        "external": {
+          "command": "gleam",
+          "arguments": ["format", "--stdin"]
+        }
+      }
     },
     "C++": {
       "formatter": {
@@ -100,19 +255,26 @@
   },
   "vim_mode": true,
   "base_keymap": "VSCode",
-  "ui_font_family": "FiraCode Nerd Font",
-  "ui_font_weight": 700,
-  "buffer_font_family": "FiraCode Nerd Font",
-  "buffer_font_weight": 600,
-  "ui_font_size": 15,
+  "ui_font_family": ".ZedSans",
+  "ui_font_size": 16,
+  "buffer_font_family": "FiraCode Nerd Font Propo",
+  "buffer_font_weight": 500,
+  "buffer_font_size": 12.5,
+  "title_bar": {
+    "show_user_picture": true,
+    "show_menus": false,
+    "show_branch_icon": true,
+    "show_onboarding_banner": false
+  },
   "scrollbar": {
     "show": "never"
   },
 
-  "buffer_font_size": 13,
   "format_on_save": "on",
   "file_scan_exclusions": [".next", ".turbo", "node_modules", "dist"],
   "project_panel": {
+    "drag_and_drop": false,
+    "sticky_scroll": false,
     "dock": "left",
     "indent_size": 15,
     "scrollbar": {
@@ -123,7 +285,9 @@
   "lsp": {
     "rust-analyzer": {
       "initialization_options": {
-        // "checkOnSave": {},
+        "check": {
+          "command": "clippy"
+        },
         "completion": {
           "snippets": {
             "custom": {
@@ -164,6 +328,12 @@
             }
           }
         }
+      }
+    },
+    "clangd": {
+      "binary": {
+        // "path": "/home/parker/github/clangd-proxy/target/release/clangd-proxy",
+        "arguments": ["--clang-tidy"]
       }
     },
     "pyright": {

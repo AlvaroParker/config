@@ -16,7 +16,7 @@ create_symlinks() {
     done
 }
 
-packages=("wget" "ranger" "tmux" "curl" "unzip" "rustup" "base-devel" "hyprland" "xdg-desktop-portal-hyprland" "alacritty" "nautilus" "flatpak" "gammastep" "grim" "wl-clipboard" "slurp" "swaync" "waybar" "blueman" "btop" "zsh" "neovim" "zathura" "lsd" "fastfetch" "bat" "picom" "i3" "polybar" "ttf-jetbrains-mono-nerd" "ttf-firacode-nerd" "qemu-system-x86" "qemu-system-x86-firmware" "libvirt" "bridge-utils" "virt-manager" "qemu-hw-display-virtio-gpu-gl" "qemu-hw-display-virtio-gpu" "qemu-hw-display-virtio-gpu-pci" "qemu-hw-display-virtio-gpu-pci-gl" "dnsmasq" "qemu-img" "docker" "docker-compose" "hyprpaper" "hyprlock" "ripgrep" "qt5-wayland" "qt6-wayland" "lib32-glibc" "lib32-gcc-libs" "easyeffects" "network-manager-applet" "feh" "xorg-server" "lxappearance" "zathura-pdf-poppler" "gnome-tweaks" "gnome-themes-extra" "plymouth" "obsidian" "polkit-kde-agent" "qemu-full" "gdb" "vlc" "jq" "man-pages" "hypridle" "vulkan-radeon" "exa" "rsync" "firefox" "rofi" "less")
+packages=("wget" "ranger" "tmux" "curl" "unzip" "rustup" "base-devel" "hyprland" "xdg-desktop-portal-hyprland" "alacritty" "nautilus" "flatpak" "gammastep" "grim" "wl-clipboard" "slurp" "swaync" "waybar" "blueman" "btop" "zsh" "neovim" "zathura" "lsd" "fastfetch" "bat" "picom" "i3" "polybar" "ttf-jetbrains-mono-nerd" "ttf-firacode-nerd" "qemu-system-x86" "qemu-system-x86-firmware" "libvirt" "bridge-utils" "virt-manager" "qemu-hw-display-virtio-gpu-gl" "qemu-hw-display-virtio-gpu" "qemu-hw-display-virtio-gpu-pci" "qemu-hw-display-virtio-gpu-pci-gl" "dnsmasq" "qemu-img" "docker" "docker-compose" "hyprpaper" "hyprlock" "ripgrep" "qt5-wayland" "qt6-wayland" "lib32-glibc" "lib32-gcc-libs" "easyeffects" "network-manager-applet" "feh" "xorg-server" "lxappearance" "zathura-pdf-poppler" "gnome-tweaks" "gnome-themes-extra" "plymouth" "obsidian" "polkit-kde-agent" "qemu-full" "gdb" "vlc" "jq" "man-pages" "hypridle" "vulkan-radeon" "exa" "rsync" "firefox" "rofi" "less" "git-delta" "discord" "zoxide" "gnome-tweaks" "pavucontrol" "go" "nodejs" )
 # Filter out already installed packages
 to_install=()
 for pkg in "${packages[@]}"; do
@@ -185,6 +185,10 @@ ln -s "${current_dir}/electron-flags.conf" ~/.config/obsidian/user-flags.conf
 ln -sf "${current_dir}/applications/suspend.desktop" ~/.local/share/applications/suspend.desktop
 ln -sf "${current_dir}/applications/shutdown.desktop" ~/.local/share/applications/shutdown.desktop
 ln -sf "${current_dir}/applications/hibernate.desktop" ~/.local/share/applications/hibernate.desktop
+
+# Add Discord and Obsidian Wayland desktop entries
+ln -sf "${current_dir}/applications/discord-wayland.desktop" ~/.local/share/applications/discord-wayland.desktop
+ln -sf "${current_dir}/applications/obsidian-wayland.desktop" ~/.local/share/applications/obsidian-wayland.desktop
 
 # Starship config
 ln -sf "${current_dir}/starship.toml" ~/.config/starship.toml
