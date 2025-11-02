@@ -1,13 +1,18 @@
 * {
-    /* Catppuccin Mocha mapped colors */
-    bg0:    #1e1e2e;      /* Base */
-    bg1:    #313244;      /* Surface0 */
-    bg2:    #45475a;      /* Surface1 */
-    bg3:    #89b4fa;      /* Blue (accent) */
-    fg0:    #cdd6f4;      /* Text */
-    fg1:    #f5e0dc;      /* Rosewater (highlight) */
-    fg2:    #bac2de;      /* Subtext1 */
-    fg3:    #6c7086;      /* Overlay0 */
+    /* Catppuccin Mocha mapped colors with glass effect */
+    bg0:    rgba(30, 30, 46, 0.85);       /* Base with transparency */
+    bg1:    rgba(49, 50, 68, 0.75);       /* Surface0 with transparency */
+    bg2:    rgba(69, 71, 90, 0.70);       /* Surface1 with transparency */
+    bg3:    rgba(137, 180, 250, 0.90);    /* Blue accent with slight transparency */
+    bg-glass: rgba(49, 50, 68, 0.35);     /* Very transparent glass overlay */
+    fg0:    #cdd6f4;                      /* Text */
+    fg1:    #f5e0dc;                      /* Rosewater highlight */
+    fg2:    #bac2de;                      /* Subtext1 */
+    fg3:    #6c7086;                      /* Overlay0 */
+
+    /* Glass border colors */
+    border-light: rgba(205, 214, 244, 0.20);
+    border-accent: rgba(137, 180, 250, 0.60);
 }
 
 * {
@@ -23,65 +28,73 @@
 
 window {
     location:       north;
-    y-offset:       calc(50%- 210px);
-    width:          480;
-    border-radius:  24px;
-    border:         2px;
-    border-color:   @bg3;
+    y-offset:       calc(50%- 180px);
+    width:          680;
+    border-radius:  28px;
+    border:         1px;
+    border-color:   @border-light;
 
     background-color:   @bg0;
 }
 
 mainbox {
-    padding:    12px;
+    padding:    16px;
 }
 
 inputbar {
     background-color:   @bg1;
-    border-color:       @bg3;
+    border-color:       @border-accent;
 
-    border:         2px;
-    border-radius:  16px;
+    border:         1px;
+    border-radius:  20px;
 
-    padding:    8px 16px;
-    spacing:    8px;
+    padding:    12px 20px;
+    spacing:    12px;
     children:   [ prompt, entry ];
 }
 
 prompt {
     text-color: @fg2;
+    font: "Inter 13";
 }
 
 entry {
     placeholder:        "Search";
     placeholder-color:  @fg3;
+    font: "Inter 13";
 }
 
 message {
-    margin:             12px 0 0;
-    border-radius:      16px;
-    border-color:       @bg2;
+    margin:             16px 0 0;
+    border-radius:      20px;
+    border:             1px;
+    border-color:       @border-light;
     background-color:   @bg2;
 }
 
 textbox {
-    padding:    8px 24px;
+    padding:    12px 24px;
 }
 
 listview {
     background-color:   transparent;
 
-    margin:     12px 0 0;
-    lines:      8;
+    margin:     16px 0 0;
+    lines:      6;
     columns:    1;
 
     fixed-height: false;
+    spacing:    2px;
 }
 
 element {
-    padding:        8px 16px;
-    spacing:        8px;
-    border-radius:  16px;
+    padding:        8px 20px;
+    spacing:        12px;
+    border-radius:  18px;
+    border:         1px;
+    border-color:   transparent;
+
+    background-color: transparent;
 }
 
 element normal active {
@@ -94,17 +107,35 @@ element alternate active {
 
 element selected normal, element selected active {
     background-color:   @bg3;
+    border-color:       @border-accent;
 }
 
+
+
 element-icon {
-    size:           1em;
+    size:           1.2em;
     vertical-align: 0.5;
 }
 
 element-text {
     text-color: inherit;
+    vertical-align: 0.5;
 }
 
 element selected {
-    text-color: @bg1;
+    text-color: @bg0;
+}
+
+element selected element-text {
+    text-color: @bg0;
+    font: "Inter 13";
+}
+
+scrollbar {
+    width:        4px;
+    border:       0;
+    handle-color: @border-accent;
+    handle-width: 4px;
+    padding:      0;
+    margin:       0 4px 0 0;
 }
