@@ -1,3 +1,7 @@
+:root {
+    --notification-icon-size: 48px;
+}
+
 * {
     all: unset;
     font-size: 14px;
@@ -650,7 +654,15 @@ slider {
 }
 
 .widget-buttons-grid {
-    padding-top: 1rem;
+    padding: 1rem;
+}
+
+.widget-buttons-grid > flowbox {
+    margin: -0.4rem;
+}
+
+.widget-buttons-grid > flowbox > flowboxchild {
+    margin: 0.4rem;
 }
 
 .widget-buttons-grid > flowbox > flowboxchild > button {
@@ -664,6 +676,9 @@ slider {
     box-shadow:
         0 4px 12px rgba(0, 0, 0, 0.3),
         inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    padding: 0.5rem 0.75rem;
+    min-width: 80px;
+    min-height: 50px;
 }
 
 .widget-buttons-grid > flowbox > flowboxchild > button:hover {
@@ -679,7 +694,7 @@ slider {
 }
 
 .widget-buttons-grid > flowbox > flowboxchild > button label {
-    font-size: 2.5rem;
+    font-size: 0.9rem;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
@@ -727,4 +742,6 @@ slider {
     padding-right: 0.5rem;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    width: var(--notification-icon-size);
+    height: var(--notification-icon-size);
 }
