@@ -154,5 +154,6 @@
   "window.menuBarVisibility": "compact",
   "chat.editor.fontFamily": "FiraCode Nerd Font",
   "debug.console.fontFamily": "FiraCode Nerd Font",
-  "workbench.colorTheme": "Catppuccin Mocha"
+  "workbench.colorTheme": "Catppuccin Mocha",
+  "editor.formatOnSave": true
 }

@@ -19,6 +19,9 @@ alias ipinfo='ip -br -c a'
 alias graph='git log --oneline --graph --all --decorate'
 alias sudo='sudo -A'
 alias vim='nvim'
+alias gs='git status'
+alias gss='git status'
+alias ga='git add'
 
 # Env variables
 export EDITOR=nvim

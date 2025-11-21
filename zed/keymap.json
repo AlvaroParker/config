@@ -27,6 +27,7 @@
       "space g": "git_panel::ToggleFocus",
       "space g s": "git::StashAll",
       "space s": "git::ViewStash",
+      "space w": "git::Worktree",
       "space g p": "git::StashPop",
       "space o": "outline_panel::ToggleFocus",
       "ctrl-shift-t": "workspace::NewTerminal",

@@ -88,6 +88,18 @@ offset = { x = 0, y = 0 }
 
 
 [window]
-opacity = 0.6
+opacity = 0.45
 dimensions = { columns = 106, lines = 26 }
-padding = { x = 0, y = 0 }
+padding = { x = 10, y = 10 }
+
+[[keyboard.bindings]]
+key = "J"
+mods = "Control"
+mode = "Vi"
+action = "ScrollLineDown"
+
+[[keyboard.bindings]]
+key = "K"
+mods = "Control"
+mode = "Vi"
+action = "ScrollLineUp"

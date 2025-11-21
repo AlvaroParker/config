@@ -114,6 +114,18 @@ window#waybar {
 }
 
 /* Right side modules */
+#idle_inhibitor {
+    background: rgba(88, 91, 112, 0.2);
+    color: #6c7086;
+    border: 1px solid rgba(88, 91, 112, 0.4);
+}
+
+#idle_inhibitor.activated {
+    background: rgba(180, 190, 254, 0.15);
+    color: #b4befe;
+    border: 1px solid rgba(180, 190, 254, 0.3);
+}
+
 #battery {
     background: rgba(166, 218, 149, 0.15);
     color: #a6da95;
@@ -207,6 +219,7 @@ window#waybar {
 
 /* Hover effects for interactive modules */
 #custom-launcher:hover,
+#idle_inhibitor:hover,
 #battery:hover,
 #backlight:hover,
 #custom-wl-gammarelay-temperature:hover,
