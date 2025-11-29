@@ -127,7 +127,7 @@
   },
 
   "features": {
-    "edit_prediction_provider": "zed"
+    "edit_prediction_provider": "copilot"
   },
   "icon_theme": {
     "mode": "dark",
@@ -169,7 +169,7 @@
     "use_modifier_to_send": false,
     "play_sound_when_agent_done": false,
     "always_allow_tool_actions": true,
-    "default_profile": "ask",
+    "default_profile": "write",
     "default_model": {
       "provider": "copilot_chat",
       "model": "claude-sonnet-4.5"
@@ -277,7 +277,7 @@
   "format_on_save": "on",
   "file_scan_exclusions": [".next", ".turbo", "node_modules", "dist"],
   "project_panel": {
-    "hide_hidden": true,
+    "hide_hidden": false,
     "drag_and_drop": false,
     "sticky_scroll": false,
     "dock": "left",
@@ -285,7 +285,7 @@
     "scrollbar": {
       "show": "never"
     },
-    "hide_gitignore": true
+    "hide_gitignore": false
   },
   "lsp": {
     "rust-analyzer": {

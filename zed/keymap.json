@@ -128,7 +128,6 @@
   {
     "context": "MessageEditor > Editor && VimControl",
     "bindings": {
-      "space a": "agent::ToggleContextPicker",
       "space m": "agent::ToggleModelSelector",
       "space t": "agent::ToggleProfileSelector"
     }
