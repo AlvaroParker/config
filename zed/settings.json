@@ -285,7 +285,7 @@
     "scrollbar": {
       "show": "never"
     },
-    "hide_gitignore": false
+    "hide_gitignore": true
   },
   "lsp": {
     "rust-analyzer": {
