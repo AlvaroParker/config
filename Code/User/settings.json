@@ -155,5 +155,6 @@
   "chat.editor.fontFamily": "FiraCode Nerd Font",
   "debug.console.fontFamily": "FiraCode Nerd Font",
   "workbench.colorTheme": "Catppuccin Mocha",
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "github.copilot.nextEditSuggestions.enabled": true
 }

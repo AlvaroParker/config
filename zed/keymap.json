@@ -2,21 +2,30 @@
   {
     "bindings": {
       "ctrl-p": "menu::SelectPrevious",
-      "ctrl-shift-enter": "terminal_panel::Toggle"
-    }
+      "ctrl-shift-enter": "terminal_panel::Toggle",
+    },
   },
   {
     "context": "Workspace",
     "bindings": {
       "ctrl-shift-t": "workspace::NewTerminal",
-      "ctrl-shift-backspace": "workspace::ToggleZoom"
-    }
+      "ctrl-shift-backspace": "workspace::ToggleZoom",
+    },
   },
   {
     "context": "ProjectPanel",
     "bindings": {
       // "g c": "project_panel::DeployContextMenu"
-    }
+    },
+  },
+  {
+    "context": "FileHistoryView",
+    "bindings": {
+      "j": "menu::SelectNext",
+      "k": "menu::SelectPrevious",
+      "g g": "menu::SelectFirst",
+      "shift-g": "menu::SelectLast",
+    },
   },
   {
     "context": "Editor && vim_mode == normal",
@@ -43,7 +52,7 @@
       "shift-alt-k": "editor::AddSelectionAbove", // Insert Cursor Above
       "shift-alt-j": "editor::AddSelectionBelow", // Insert Cursor Below
 
-      "ctrl-shift-backspace": "workspace::ToggleZoom"
+      "ctrl-shift-backspace": "workspace::ToggleZoom",
       // "ctrl-w ctrl-h": [
       //   "workspace::SendKeystrokes",
       //   "ctrl-shift-backspace ctrl-w h ctrl-shift-backspace"
@@ -52,69 +61,69 @@
       //   "workspace::SendKeystrokes",
       //   "ctrl-shift-backspace ctrl-w l ctrl-shift-backspace"
       // ]
-    }
+    },
   },
   {
     "context": "Editor && vim_mode == visual",
     "bindings": {
-      "space a": "assistant::InlineAssist"
-    }
+      "space a": "assistant::InlineAssist",
+    },
   },
   {
     "context": "Editor",
     "bindings": {
-      "ctrl-\\": "pane::SplitAndMoveRight"
-    }
+      "ctrl-\\": "pane::SplitAndMoveRight",
+    },
   },
   {
     "context": "Editor && VimControl",
     "bindings": {
       "g c": "editor::OpenContextMenu",
       "space t": "tab_switcher::ToggleAll",
-      "space d": "editor::ToggleSelectedDiffHunks"
-    }
+      "space d": "editor::ToggleSelectedDiffHunks",
+    },
   },
   {
     "context": "OutlinePanel && not_editing",
     "bindings": {
-      "enter": "outline_panel::OpenSelectedEntry"
-    }
+      "enter": "outline_panel::OpenSelectedEntry",
+    },
   },
   {
     "context": "OutlinePanel && !not_editing",
     "bindings": {
-      "enter": ["workspace::SendKeystrokes", "tab"]
-    }
+      "enter": ["workspace::SendKeystrokes", "tab"],
+    },
   },
   {
-    "context": "vim_mode == visual"
+    "context": "vim_mode == visual",
   },
   {
     "context": "Editor && vim_mode == visual || vim_mode == normal",
     "bindings": {
-      "space /": "editor::ToggleComments"
-    }
+      "space /": "editor::ToggleComments",
+    },
   },
   {
     "context": "Pane",
     "bindings": {
       "ctrl-k l": [
         "workspace::MoveItemToPaneInDirection",
-        { "direction": "right" }
+        { "direction": "right" },
       ],
       "ctrl-k h": [
         "workspace::MoveItemToPaneInDirection",
-        { "direction": "left" }
+        { "direction": "left" },
       ],
       "ctrl-k j": [
         "workspace::MoveItemToPaneInDirection",
-        { "direction": "down" }
+        { "direction": "down" },
       ],
       "ctrl-k k": [
         "workspace::MoveItemToPaneInDirection",
-        { "direction": "up" }
-      ]
-    }
+        { "direction": "up" },
+      ],
+    },
   },
   {
     "context": "Terminal",
@@ -122,20 +131,20 @@
       "ctrl-w l": "workspace::ActivatePaneRight",
       "ctrl-w h": "workspace::ActivatePaneLeft",
       "ctrl-w j": "workspace::ActivatePaneDown",
-      "ctrl-w k": "workspace::ActivatePaneUp"
-    }
+      "ctrl-w k": "workspace::ActivatePaneUp",
+    },
   },
   {
     "context": "MessageEditor > Editor && VimControl",
     "bindings": {
       "space m": "agent::ToggleModelSelector",
-      "space t": "agent::ToggleProfileSelector"
-    }
+      "space t": "agent::ToggleProfileSelector",
+    },
   },
   {
     "context": "StashDiff > Editor",
     "bindings": {
-      "ctrl-shift-d": "git::DropCurrentStash"
-    }
-  }
+      "ctrl-shift-d": "git::DropCurrentStash",
+    },
+  },
 ]

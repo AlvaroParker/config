@@ -1,4 +1,7 @@
 {
+  "git_panel": {
+    "tree_view": true
+  },
   "calls": {
     "mute_on_join": true
   },
