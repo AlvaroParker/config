@@ -54,3 +54,4 @@ bindkey "^N" down-line-or-beginning-search
 source ~/.custom_zshrc
 eval "$(starship init zsh)"
 eval "$(zoxide init zsh)"
+eval "$(direnv hook zsh)"

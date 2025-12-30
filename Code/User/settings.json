@@ -15,98 +15,224 @@
   "vim.smartRelativeLine": true,
   "vim.insertModeKeyBindingsNonRecursive": [
     {
-      "before": ["<C-e>"],
-      "commands": ["editor.action.inlineSuggest.hide"]
+      "before": [
+        "<C-e>"
+      ],
+      "commands": [
+        "editor.action.inlineSuggest.hide"
+      ]
     }
   ],
   "vim.normalModeKeyBindingsNonRecursive": [
     {
-      "before": ["<leader>", "o"],
-      "commands": ["workbench.action.toggleSidebarVisibility"]
+      "before": [
+        "<leader>",
+        "o"
+      ],
+      "commands": [
+        "workbench.action.toggleSidebarVisibility"
+      ]
     },
     {
-      "before": ["<leader>", "l", "b"],
-      "commands": ["workbench.action.toggleActivityBarVisibility"]
+      "before": [
+        "<leader>",
+        "l",
+        "b"
+      ],
+      "commands": [
+        "workbench.action.toggleActivityBarVisibility"
+      ]
     },
     {
-      "before": ["<leader>", "e"],
-      "commands": ["workbench.view.explorer"]
+      "before": [
+        "<leader>",
+        "e"
+      ],
+      "commands": [
+        "workbench.view.explorer"
+      ]
     },
     {
-      "before": ["<leader>", "h"],
-      "commands": ["outline.focus"]
+      "before": [
+        "<leader>",
+        "h"
+      ],
+      "commands": [
+        "outline.focus"
+      ]
     },
     {
-      "before": ["<leader>", "r", "r"],
-      "commands": ["editor.action.rename"]
+      "before": [
+        "<leader>",
+        "r",
+        "r"
+      ],
+      "commands": [
+        "editor.action.rename"
+      ]
     },
     {
-      "before": ["<leader>", "l", "a"],
-      "commands": ["editor.action.quickFix"]
+      "before": [
+        "<leader>",
+        "l",
+        "a"
+      ],
+      "commands": [
+        "editor.action.quickFix"
+      ]
     },
     {
-      "before": ["<leader>", "c"],
-      "commands": ["workbench.action.closeActiveEditor"]
+      "before": [
+        "<leader>",
+        "c"
+      ],
+      "commands": [
+        "workbench.action.closeActiveEditor"
+      ]
     },
     {
-      "before": ["<leader>", "/"],
-      "commands": ["editor.action.commentLine"]
+      "before": [
+        "<leader>",
+        "/"
+      ],
+      "commands": [
+        "editor.action.commentLine"
+      ]
     },
     {
-      "before": ["<leader>", "t", "v"],
-      "commands": ["workbench.action.terminal.toggleTerminal"]
+      "before": [
+        "<leader>",
+        "t",
+        "v"
+      ],
+      "commands": [
+        "workbench.action.terminal.toggleTerminal"
+      ]
     },
     {
-      "before": ["K"],
-      "commands": ["editor.action.showHover"]
+      "before": [
+        "K"
+      ],
+      "commands": [
+        "editor.action.showHover"
+      ]
     },
     {
-      "before": ["<leader>", "f", "f"],
-      "commands": ["workbench.action.showCommands"]
+      "before": [
+        "<leader>",
+        "f",
+        "f"
+      ],
+      "commands": [
+        "workbench.action.showCommands"
+      ]
     },
     {
-      "before": ["<leader>", "f", "o"],
-      "commands": ["workbench.action.quickOpen"]
+      "before": [
+        "<leader>",
+        "f",
+        "o"
+      ],
+      "commands": [
+        "workbench.action.quickOpen"
+      ]
     },
     {
-      "before": ["<leader>", "p", "s"],
-      "commands": ["extension.fuzzySearch"]
+      "before": [
+        "<leader>",
+        "p",
+        "s"
+      ],
+      "commands": [
+        "extension.fuzzySearch"
+      ]
     },
     {
-      "before": ["<leader>", "n"],
-      "commands": ["workbench.action.files.newUntitledFile"]
+      "before": [
+        "<leader>",
+        "n"
+      ],
+      "commands": [
+        "workbench.action.files.newUntitledFile"
+      ]
     },
     {
-      "before": ["<leader>", "d", "b"],
-      "commands": ["editor.debug.action.toggleBreakpoint"]
+      "before": [
+        "<leader>",
+        "d",
+        "b"
+      ],
+      "commands": [
+        "editor.debug.action.toggleBreakpoint"
+      ]
     },
     {
-      "before": ["<leader>", "d", "c"],
-      "commands": ["workbench.action.debug.start"]
+      "before": [
+        "<leader>",
+        "d",
+        "c"
+      ],
+      "commands": [
+        "workbench.action.debug.start"
+      ]
     },
     {
-      "before": ["<leader>", "d", "n"],
-      "commands": ["workbench.action.debug.continue"]
+      "before": [
+        "<leader>",
+        "d",
+        "n"
+      ],
+      "commands": [
+        "workbench.action.debug.continue"
+      ]
     },
     {
-      "before": ["<leader>", "d", "r"],
-      "commands": ["workbench.action.debug.run"]
+      "before": [
+        "<leader>",
+        "d",
+        "r"
+      ],
+      "commands": [
+        "workbench.action.debug.run"
+      ]
     },
     {
-      "before": ["<leader>", "g"],
-      "commands": ["workbench.view.scm"]
+      "before": [
+        "<leader>",
+        "g"
+      ],
+      "commands": [
+        "workbench.view.scm"
+      ]
     },
     {
-      "before": ["<leader>", "a", "f"],
-      "commands": ["explorer.newFolder"]
+      "before": [
+        "<leader>",
+        "a",
+        "f"
+      ],
+      "commands": [
+        "explorer.newFolder"
+      ]
     },
     {
-      "before": ["<leader>", "a", "a"],
-      "commands": ["explorer.newFile"]
+      "before": [
+        "<leader>",
+        "a",
+        "a"
+      ],
+      "commands": [
+        "explorer.newFile"
+      ]
     },
     {
-      "before": ["<leader>", "/"],
-      "commands": ["editor.action.commentLine"]
+      "before": [
+        "<leader>",
+        "/"
+      ],
+      "commands": [
+        "editor.action.commentLine"
+      ]
     }
   ],
   "[rust]": {
@@ -115,7 +241,7 @@
   },
   "search.useGlobalIgnoreFiles": true,
   "notebook.output.textLineLimit": 100,
-  "editor.fontWeight": "600",
+  "editor.fontWeight": "500",
   "editor.inlineSuggest.enabled": true,
   "github.copilot.enable": {
     "*": true,
@@ -154,7 +280,17 @@
   "window.menuBarVisibility": "compact",
   "chat.editor.fontFamily": "FiraCode Nerd Font",
   "debug.console.fontFamily": "FiraCode Nerd Font",
-  "workbench.colorTheme": "Catppuccin Mocha",
+  "workbench.colorTheme": "One Dark Pro Monokai Darker",
   "editor.formatOnSave": true,
-  "github.copilot.nextEditSuggestions.enabled": true
+  "github.copilot.nextEditSuggestions.enabled": true,
+  "[dart]": {
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true,
+    "editor.rulers": [
+      80
+    ],
+    "editor.selectionHighlight": false,
+    "editor.tabCompletion": "onlySnippets",
+    "editor.wordBasedSuggestions": "off"
+  }
 }

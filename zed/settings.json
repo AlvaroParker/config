@@ -1,9 +1,9 @@
 {
   "git_panel": {
-    "tree_view": true
+    "tree_view": true,
   },
   "calls": {
-    "mute_on_join": true
+    "mute_on_join": true,
   },
   "ui_font_weight": 500.0,
   "confirm_quit": false,
@@ -21,57 +21,57 @@
                     "postfix": "arc",
                     "body": ["Arc::new(${receiver})"],
                     "requires": "std::sync::Arc",
-                    "scope": "expr"
+                    "scope": "expr",
                   },
                   "Some": {
                     "postfix": "some",
                     "body": ["Some(${receiver})"],
-                    "scope": "expr"
+                    "scope": "expr",
                   },
                   "Ok": {
                     "postfix": "ok",
                     "body": ["Ok(${receiver})"],
-                    "scope": "expr"
+                    "scope": "expr",
                   },
                   "Rc::new": {
                     "postfix": "rc",
                     "body": ["Rc::new(${receiver})"],
                     "requires": "std::rc::Rc",
-                    "scope": "expr"
+                    "scope": "expr",
                   },
                   "Box::pin": {
                     "postfix": "boxpin",
                     "body": ["Box::pin(${receiver})"],
                     "requires": "std::boxed::Box",
-                    "scope": "expr"
+                    "scope": "expr",
                   },
                   "vec!": {
                     "postfix": "vec",
                     "body": ["vec![${receiver}]"],
                     "description": "vec![]",
-                    "scope": "expr"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+                    "scope": "expr",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   },
   // "use_system_path_prompts": false,
   "load_direnv": "shell_hook",
   "agent_servers": {
     "claude": {
-      "default_mode": "default"
-    }
+      "default_mode": "default",
+    },
   },
   "collaboration_panel": {
-    "button": false
+    "button": false,
   },
   "telemetry": {
     "diagnostics": false,
-    "metrics": false
+    "metrics": false,
   },
   "disable_ai": false,
   "ssh_connections": [
@@ -81,9 +81,9 @@
       "args": [],
       "projects": [
         {
-          "paths": ["/home/admin/nixos-config"]
-        }
-      ]
+          "paths": ["/home/admin/nixos-config"],
+        },
+      ],
     },
     {
       "host": "192.168.68.115",
@@ -91,9 +91,9 @@
       "args": [],
       "projects": [
         {
-          "paths": ["/home/admin/server"]
-        }
-      ]
+          "paths": ["/home/admin/server"],
+        },
+      ],
     },
     {
       "host": "cloudanddigital",
@@ -101,9 +101,9 @@
       "args": [],
       "projects": [
         {
-          "paths": ["/home/admin/server"]
-        }
-      ]
+          "paths": ["/home/admin/server"],
+        },
+      ],
     },
     {
       "host": "127.0.0.1",
@@ -111,18 +111,29 @@
       "args": [],
       "projects": [
         {
-          "paths": ["/home/parker"]
+          "paths": ["/home/parker"],
         },
         {
-          "paths": ["/home/parker/test_dir"]
-        }
-      ]
-    }
+          "paths": ["/home/parker/test_dir"],
+        },
+      ],
+    },
+    {
+      "host": "146.83.233.14",
+      "username": "aparker",
+      "port": 1025,
+      "args": [],
+      "projects": [
+        {
+          "paths": ["/nfs_home/aparker/gitlab/tesis"],
+        },
+      ],
+    },
   ],
   "minimap": {
     "show": "always",
     "display_in": "active_editor",
-    "thumb": "always"
+    "thumb": "always",
   },
 
   "active_pane_modifiers": {
@@ -130,19 +141,19 @@
   },
 
   "features": {
-    "edit_prediction_provider": "copilot"
+    "edit_prediction_provider": "copilot",
   },
   "icon_theme": {
     "mode": "dark",
     "light": "Catppuccin Mocha",
-    "dark": "Catppuccin Mocha"
+    "dark": "Catppuccin Mocha",
   },
   "outline_panel": {
-    "dock": "right"
+    "dock": "right",
   },
   "soft_wrap": "editor_width",
   "file_types": {
-    "XML": ["*.csproj"]
+    "XML": ["*.csproj"],
   },
   "diagnostics": {
     "inline": {
@@ -150,13 +161,13 @@
       "update_debounce_ms": 150,
       "padding": 4,
       "min_column": 0,
-      "max_severity": null
-    }
+      "max_severity": null,
+    },
   },
   "show_edit_predictions": true,
   "edit_predictions": {
     "disabled_globs": ["/home/parker/Documents/playground/learn-ruby/*"],
-    "mode": "subtle"
+    "mode": "subtle",
   },
   "experimental.theme_overrides": {
     // "panel.background": "#00000000",
@@ -165,7 +176,7 @@
   "theme": "Zed Dark",
   "toolbar": {
     "breadcrumbs": true,
-    "quick_actions": true
+    "quick_actions": true,
   },
   "agent": {
     // "default_view": "text_thread",
@@ -175,39 +186,39 @@
     "default_profile": "write",
     "default_model": {
       "provider": "copilot_chat",
-      "model": "claude-sonnet-4.5"
-    }
+      "model": "claude-sonnet-4.5",
+    },
   },
 
   "git": {
     "inline_blame": {
-      "enabled": true
-    }
+      "enabled": true,
+    },
   },
   "tab_bar": {
-    "show": true
+    "show": true,
   },
   "tabs": {
     "git_status": true,
     "file_icons": true,
-    "show_diagnostics": "all"
+    "show_diagnostics": "all",
   },
   "terminal": {
     "dock": "bottom",
-    "default_height": 250
+    "default_height": 250,
     // "tab_bar": {
     //   "show": "auto"
     // }
   },
   "indent_guides": {
-    "coloring": "indent_aware"
+    "coloring": "indent_aware",
   },
   "languages": {
     "Shell Script": {
-      "show_edit_predictions": true
+      "show_edit_predictions": true,
     },
     "Nix": {
-      "format_on_save": "on"
+      "format_on_save": "on",
     },
     "TSX": {},
     "Python": {
@@ -216,48 +227,48 @@
       "formatter": [
         {
           "language_server": {
-            "name": "ruff"
-          }
+            "name": "ruff",
+          },
         },
         { "code_action": "source.fixAll.ruff" },
-        { "code_action": "source.organizeImports.ruff" }
-      ]
+        { "code_action": "source.organizeImports.ruff" },
+      ],
     },
     "Markdown": {
-      "soft_wrap": "editor_width"
+      "soft_wrap": "editor_width",
     },
     "TypeScript": {
-      "tab_size": 4
+      "tab_size": 4,
     },
     "Rust": {},
     "C": {
       "formatter": {
         "external": {
           "command": "bash",
-          "arguments": ["-c", "clang-format"]
-        }
+          "arguments": ["-c", "clang-format"],
+        },
       },
-      "format_on_save": "off"
+      "format_on_save": "off",
     },
     "Gleam": {
       "format_on_save": "on",
       "formatter": {
         "external": {
           "command": "gleam",
-          "arguments": ["format", "--stdin"]
-        }
-      }
+          "arguments": ["format", "--stdin"],
+        },
+      },
     },
     "C++": {
       "formatter": {
         "external": {
           "command": "bash",
-          "arguments": ["-c", "clang-format"]
-        }
+          "arguments": ["-c", "clang-format"],
+        },
       },
       "tab_size": 2,
-      "format_on_save": "off"
-    }
+      "format_on_save": "off",
+    },
   },
   "vim_mode": true,
   "base_keymap": "VSCode",
@@ -271,10 +282,10 @@
     "show": false,
     "show_menus": false,
     "show_branch_icon": true,
-    "show_onboarding_banner": false
+    "show_onboarding_banner": false,
   },
   "scrollbar": {
-    "show": "never"
+    "show": "never",
   },
 
   "format_on_save": "on",
@@ -286,15 +297,15 @@
     "dock": "left",
     "indent_size": 15,
     "scrollbar": {
-      "show": "never"
+      "show": "never",
     },
-    "hide_gitignore": true
+    "hide_gitignore": true,
   },
   "lsp": {
     "rust-analyzer": {
       "initialization_options": {
         "check": {
-          "command": "clippy"
+          "command": "clippy",
         },
         "completion": {
           "snippets": {
@@ -303,46 +314,46 @@
                 "postfix": "arc",
                 "body": ["Arc::new(${receiver})"],
                 "requires": "std::sync::Arc",
-                "scope": "expr"
+                "scope": "expr",
               },
               "Some": {
                 "postfix": "some",
                 "body": ["Some(${receiver})"],
-                "scope": "expr"
+                "scope": "expr",
               },
               "Ok": {
                 "postfix": "ok",
                 "body": ["Ok(${receiver})"],
-                "scope": "expr"
+                "scope": "expr",
               },
               "Rc::new": {
                 "postfix": "rc",
                 "body": ["Rc::new(${receiver})"],
                 "requires": "std::rc::Rc",
-                "scope": "expr"
+                "scope": "expr",
               },
               "Box::pin": {
                 "postfix": "boxpin",
                 "body": ["Box::pin(${receiver})"],
                 "requires": "std::boxed::Box",
-                "scope": "expr"
+                "scope": "expr",
               },
               "vec!": {
                 "postfix": "vec",
                 "body": ["vec![${receiver}]"],
                 "description": "vec![]",
-                "scope": "expr"
-              }
-            }
-          }
-        }
-      }
+                "scope": "expr",
+              },
+            },
+          },
+        },
+      },
     },
     "clangd": {
       "binary": {
         "path": "/home/parker/github/llvm-project/build/bin/clangd",
-        "arguments": ["--clang-tidy"]
-      }
+        "arguments": ["--clang-tidy"],
+      },
     },
     "pyright": {
       "settings": {
@@ -350,9 +361,9 @@
           "autoSearchPaths": true,
           "useLibraryCodeForTypes": true,
           "typeCheckingMode": "strict",
-          "reportUnusedVariable": "warning"
-        }
-      }
+          "reportUnusedVariable": "warning",
+        },
+      },
     },
     "ruff": {
       "initialization_options": {
@@ -371,11 +382,11 @@
               "C90", // Pylint rules for cyclomatic complexity and code structure
               "N", // PEP8 Naming conventions
               "B", // Bugbear (detects potential code issues like mutable default arguments)
-              "A" // flake8-builtins (detects misuse of Python built-ins like `list`, `dict`, etc.)
-            ]
-          }
-        }
-      }
-    }
-  }
+              "A", // flake8-builtins (detects misuse of Python built-ins like `list`, `dict`, etc.)
+            ],
+          },
+        },
+      },
+    },
+  },
 }
