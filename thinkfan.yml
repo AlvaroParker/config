@@ -1,0 +1,24 @@
+# Using `sensors` output
+
+sensors:
+  - chip: coretemp-isa-0000
+    ids: ["Package id 0"]
+
+  - chip: thinkpad-isa-0000
+    ids: [CPU]
+
+  - chip: nvme-pci-0400
+    ids: [Composite]
+
+fans:
+  - tpacpi: /proc/acpi/ibm/fan
+
+levels:
+  - ["level auto", 0, 45]
+  - [1, 42, 50]
+  - [2, 47, 55]
+  - [3, 52, 60]
+  - [4, 57, 65]
+  - [5, 62, 70]
+  - [6, 67, 75]
+  - [7, 72, 255]
