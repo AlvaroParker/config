@@ -1,4 +1,8 @@
 {
+  "search": {
+    "include_ignored": false,
+  },
+  "diff_view_style": "split",
   "word_diff_enabled": true,
   "git_panel": {
     "tree_view": true,
@@ -63,12 +67,19 @@
   // "use_system_path_prompts": false,
   "load_direnv": "shell_hook",
   "agent_servers": {
-    "claude": {
-      "default_mode": "default",
+    "gemini": {
+      "default_model": "gemini-3.1-pro-preview",
+      "type": "registry"
+    },
+    "opencode": {
+      "type": "registry",
+    },
+    "codex-acp": {
+      "type": "registry",
     },
   },
   "collaboration_panel": {
-    "button": false,
+    "button": true,
   },
   "telemetry": {
     "diagnostics": false,
@@ -130,6 +141,22 @@
         },
       ],
     },
+    {
+      "host": "cloudanddigital",
+      "username": "admin",
+      "args": [],
+      "projects": [
+        {
+          "paths": ["/home/admin/repos/pos-qwtc"],
+        },
+        {
+          "paths": ["/home/admin/server"],
+        },
+        {
+          "paths": ["/home/admin/stuff/self-hosting"],
+        },
+      ],
+    },
   ],
   "minimap": {
     "show": "always",
@@ -139,10 +166,6 @@
 
   "active_pane_modifiers": {
     // "border_size": 5
-  },
-
-  "features": {
-    "edit_prediction_provider": "zed",
   },
   "icon_theme": {
     "mode": "dark",
@@ -167,6 +190,7 @@
   },
   "show_edit_predictions": true,
   "edit_predictions": {
+    "provider": "zed",
     "disabled_globs": ["/home/parker/Documents/playground/learn-ruby/*"],
     "mode": "subtle",
   },
@@ -174,20 +198,24 @@
     // "panel.background": "#00000000",
     // "background": "#ffffff"
   },
-  "theme": "Zed Dark",
+  "theme": "Zed One Dark",
   "toolbar": {
     "breadcrumbs": true,
     "quick_actions": true,
   },
   "agent": {
     // "default_view": "text_thread",
+    "tool_permissions": {
+      "default": "allow",
+    },
     "use_modifier_to_send": false,
     "play_sound_when_agent_done": false,
-    "always_allow_tool_actions": true,
     "default_profile": "write",
     "default_model": {
-      "provider": "copilot_chat",
-      "model": "claude-sonnet-4.5",
+      "effort": "high",
+      "enable_thinking": true,
+      "provider": "zed.dev",
+      "model": "claude-sonnet-4-6",
     },
   },
 
@@ -207,21 +235,11 @@
   "terminal": {
     "dock": "bottom",
     "default_height": 250,
-    // "tab_bar": {
-    //   "show": "auto"
-    // }
   },
   "indent_guides": {
     "coloring": "indent_aware",
   },
   "languages": {
-    "Shell Script": {
-      "show_edit_predictions": true,
-    },
-    "Nix": {
-      "format_on_save": "on",
-    },
-    "TSX": {},
     "Python": {
       "language_servers": ["ruff", "pyright"],
       "format_on_save": "on",
@@ -240,8 +258,22 @@
     },
     "TypeScript": {
       "tab_size": 4,
+      "language_servers": ["typescript-language-server", "!vtsls", "..."],
     },
-    "Rust": {},
+    "JavaScript": {
+      "tab_size": 4,
+      "language_servers": ["typescript-language-server", "!vtsls", "..."],
+    },
+    "TSX": {
+      "tab_size": 4,
+      "language_servers": ["typescript-language-server", "!vtsls", "..."],
+    },
+    "CSS": {
+      "language_servers": [
+        "tailwindcss-intellisense-css",
+        "!vscode-css-language-server",
+      ],
+    },
     "C": {
       "formatter": {
         "external": {
@@ -250,15 +282,6 @@
         },
       },
       "format_on_save": "off",
-    },
-    "Gleam": {
-      "format_on_save": "on",
-      "formatter": {
-        "external": {
-          "command": "gleam",
-          "arguments": ["format", "--stdin"],
-        },
-      },
     },
     "C++": {
       "formatter": {
@@ -280,7 +303,6 @@
   "buffer_font_size": 12.5,
   "title_bar": {
     "show_user_picture": true,
-    "show": false,
     "show_menus": false,
     "show_branch_icon": true,
     "show_onboarding_banner": false,
@@ -300,7 +322,7 @@
     "scrollbar": {
       "show": "never",
     },
-    "hide_gitignore": true,
+    "hide_gitignore": false,
   },
   "lsp": {
     "rust-analyzer": {
@@ -350,12 +372,12 @@
         },
       },
     },
-    "clangd": {
-      "binary": {
-        "path": "/home/parker/github/llvm-project/build/bin/clangd",
-        "arguments": ["--clang-tidy"],
-      },
-    },
+    // "clangd": {
+    // "binary": {
+    // "path": "/home/parker/github/llvm-project/build/bin/clangd",
+    // "arguments": ["--clang-tidy"],
+    // },
+    // },
     "pyright": {
       "settings": {
         "analysis": {

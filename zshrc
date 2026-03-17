@@ -6,8 +6,14 @@ fi
 # Oh-my-zsh configurations
 export ZSH="$HOME/.oh-my-zsh"
 # ZSH_THEME="agnoster"
-plugins=(git zsh-autosuggestions zsh-syntax-highlighting)
+plugins=(git zsh-autosuggestions zsh-syntax-highlighting zsh-fzf-history-search)
 source $ZSH/oh-my-zsh.sh
+
+bindkey -v # enable vi mode
+bindkey '^F' forward-char
+bindkey "^P" up-line-or-beginning-search
+bindkey "^N" down-line-or-beginning-search
+bindkey "^R" fzf_history_search
 
 prompt_context(){}
 
@@ -22,6 +28,7 @@ alias vim='nvim'
 alias gs='git status'
 alias gss='git status'
 alias ga='git add'
+alias fixtail='sudo tailscale down && sudo tailscale up'
 
 # Env variables
 export EDITOR=nvim
@@ -41,15 +48,6 @@ export PATH="$PATH:$ANDROID_HOME/emulator"
 export PATH="$PATH:$HOME/.dotnet"
 export PATH=$GEM_HOME/bin:$PATH
 export PATH="$PATH:$HOME/.dotnet/tools"
-
-# export PATH="$PATH:$HOME/github/chromium-project/depot_tools"
-
-
-# Key bindings
-bindkey -v # enable vi mode
-bindkey '^F' forward-char
-bindkey "^P" up-line-or-beginning-search
-bindkey "^N" down-line-or-beginning-search
 
 source ~/.custom_zshrc
 eval "$(starship init zsh)"
