@@ -67,6 +67,12 @@
   // "use_system_path_prompts": false,
   "load_direnv": "shell_hook",
   "agent_servers": {
+    "github-copilot-cli": {
+      "type": "registry"
+    },
+    "claude-acp": {
+      "type": "registry"
+    },
     "gemini": {
       "default_model": "gemini-3.1-pro-preview",
       "type": "registry"
@@ -322,7 +328,7 @@
     "scrollbar": {
       "show": "never",
     },
-    "hide_gitignore": false,
+    "hide_gitignore": true,
   },
   "lsp": {
     "rust-analyzer": {

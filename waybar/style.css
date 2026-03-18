@@ -2,8 +2,8 @@
     padding: 0;
     margin: 0;
     font-family: JetBrainsMono NF;
-    font-size: 14px;
-    font-weight: 900;
+    font-size: 13px;
+    font-weight: 700;
     border: none;
     border-radius: 0;
     min-height: 0;
@@ -13,213 +13,229 @@ window#waybar {
     background-color: transparent;
 }
 
-/* Remove default module group backgrounds */
 .modules-left,
 .modules-center,
 .modules-right {
     background: transparent;
 }
 
-/* Base module styling - transparent pills */
+/* Base module styling */
 .module {
-    background: rgba(30, 32, 48, 0.8);
-    border-radius: 12px;
+    background: rgba(15, 25, 55, 0.92);
+    border-radius: 14px;
     margin: 0px 0;
-    padding: 0px 12px;
-    color: #cdd6f4;
-    border: 1px solid rgba(88, 91, 112, 0.3);
-    font-weight: 900;
+    padding: 0px 10px;
+    color: #c0d0ee;
+    border: 1px solid rgba(40, 100, 240, 0.35);
 }
 
-/* Individual module styling with Catppuccin Mocha colors */
+/* Launcher */
 #custom-launcher {
-    background: rgba(137, 180, 250, 0.15);
-    color: #89b4fa;
-    font-size: 18px;
-    padding-left: 14px;
-    padding-right: 19px;
-    border: 1px solid rgba(137, 180, 250, 0.3);
+    background: rgba(15, 25, 55, 0.92);
+    color: #4090ff;
+    font-size: 17px;
+    padding-left: 12px;
+    padding-right: 16px;
+    border: 1px solid rgba(40, 100, 240, 0.35);
 }
 
 #custom-launcher:hover {
-    background: rgba(137, 180, 250, 0.25);
+    background: rgba(22, 38, 78, 0.94);
+    border: 1px solid rgba(50, 120, 255, 0.45);
 }
 
+/* System monitors */
 #cpu {
-    background: rgba(238, 212, 159, 0.15);
-    color: #eed49f;
-    border: 1px solid rgba(238, 212, 159, 0.3);
+    background: rgba(15, 25, 55, 0.92);
+    color: #b8ccea;
+    border: 1px solid rgba(40, 100, 240, 0.35);
+}
+
+#temperature {
+    background: rgba(15, 25, 55, 0.92);
+    color: #b8ccea;
+    border: 1px solid rgba(40, 100, 240, 0.35);
+}
+
+#temperature.critical {
+    background: rgba(25, 15, 30, 0.92);
+    color: #b8ccea;
+    border: 1px solid rgba(40, 100, 240, 0.35);
 }
 
 #memory {
-    background: rgba(166, 218, 149, 0.15);
-    color: #a6da95;
-    border: 1px solid rgba(166, 218, 149, 0.3);
+    background: rgba(15, 25, 55, 0.92);
+    color: #b8ccea;
+    border: 1px solid rgba(40, 100, 240, 0.35);
 }
 
 #custom-window-name {
-    background: rgba(205, 214, 244, 0.1);
-    color: #cdd6f4;
-    border: 1px solid rgba(205, 214, 244, 0.2);
-    font-weight: 900;
+    background: rgba(15, 25, 55, 0.92);
+    color: #b0c4e4;
+    border: 1px solid rgba(40, 100, 240, 0.35);
 }
 
 #custom-pacman-update-icon {
-    background: rgba(139, 213, 202, 0.2);
-    color: #8bd5ca;
-    border: 1px solid rgba(139, 213, 202, 0.4);
+    background: rgba(15, 25, 55, 0.92);
+    color: #b8ccea;
+    border: 1px solid rgba(40, 100, 240, 0.35);
     padding: 0px 10px;
 }
 
 #custom-pacman-update {
-    background: rgba(139, 213, 202, 0.1);
-    color: #8bd5ca;
-    border: 1px solid rgba(139, 213, 202, 0.3);
+    background: rgba(15, 25, 55, 0.92);
+    color: #b8ccea;
+    border: 1px solid rgba(40, 100, 240, 0.35);
 }
 
 #tray {
-    background: rgba(88, 91, 112, 0.2);
-    border: 1px solid rgba(88, 91, 112, 0.4);
+    background: rgba(15, 25, 55, 0.92);
+    border: 1px solid rgba(40, 100, 240, 0.35);
     padding: 0px 8px;
 }
 
-/* Workspaces styling */
+/* Workspaces */
 #workspaces {
-    background: rgba(49, 50, 68, 0.8);
-    border-radius: 16px;
-    padding-right: 10px;
-    padding-left: 10px;
-    border: 1px solid rgba(88, 91, 112, 0.3);
+    background: rgba(12, 20, 48, 0.94);
+    border-radius: 14px;
+    padding-right: 8px;
+    padding-left: 8px;
+    border: 1px solid rgba(40, 100, 240, 0.35);
 }
 
 #workspaces button {
     background: transparent;
-    color: #6c7086;
-    border-radius: 10px;
-    padding: 0px 2px;
-    margin: 2px;
-    transition: all 0.3s ease;
+    color: #3a4a70;
+    border-radius: 6px;
+    padding: 0px 3px;
+    margin: 2px 1px;
+    transition: all 0.2s ease;
 }
 
 #workspaces button.active {
-    color: #b4befe;
+    color: #4090ff;
 }
 
 #workspaces button:hover {
-    color: #cdd6f4;
+    color: #b8ccea;
 }
 
 #workspaces button.urgent {
-    color: #f38ba8;
+    color: #ff4070;
 }
 
 /* Right side modules */
 #idle_inhibitor {
-    background: rgba(88, 91, 112, 0.2);
-    color: #6c7086;
-    border: 1px solid rgba(88, 91, 112, 0.4);
+    background: rgba(15, 25, 55, 0.92);
+    color: #506080;
+    border: 1px solid rgba(40, 100, 240, 0.35);
+}
+
+#power-profiles-daemon {
+    background: rgba(15, 25, 55, 0.92);
+    color: #b8ccea;
+    border: 1px solid rgba(40, 100, 240, 0.35);
 }
 
 #idle_inhibitor.activated {
-    background: rgba(180, 190, 254, 0.15);
-    color: #b4befe;
-    border: 1px solid rgba(180, 190, 254, 0.3);
+    background: rgba(20, 40, 100, 0.4);
+    color: #4090ff;
+    border: 1px solid rgba(40, 100, 240, 0.5);
 }
 
 #battery {
-    background: rgba(166, 218, 149, 0.15);
-    color: #a6da95;
-    border: 1px solid rgba(166, 218, 149, 0.3);
+    background: rgba(15, 25, 55, 0.92);
+    color: #b8ccea;
+    border: 1px solid rgba(40, 100, 240, 0.35);
 }
 
 #battery.warning {
-    background: rgba(249, 226, 175, 0.2);
-    color: #f9e2af;
-    border: 1px solid rgba(249, 226, 175, 0.4);
+    background: rgba(20, 22, 45, 0.92);
+    color: #e0c050;
+    border: 1px solid rgba(180, 150, 40, 0.35);
 }
 
 #battery.critical {
-    background: rgba(243, 139, 168, 0.2);
-    color: #f38ba8;
-    border: 1px solid rgba(243, 139, 168, 0.4);
+    background: rgba(25, 15, 30, 0.92);
+    color: #ff4070;
+    border: 1px solid rgba(220, 50, 80, 0.4);
 }
 
 #battery.charging {
-    background: rgba(166, 218, 149, 0.25);
-    color: #a6da95;
-    border: 1px solid rgba(166, 218, 149, 0.5);
+    background: rgba(12, 22, 45, 0.92);
+    color: #40e0a0;
+    border: 1px solid rgba(40, 180, 120, 0.35);
 }
 
 #backlight {
-    background: rgba(238, 212, 159, 0.15);
-    color: #eed49f;
-    border: 1px solid rgba(238, 212, 159, 0.3);
+    background: rgba(15, 25, 55, 0.92);
+    color: #b8ccea;
+    border: 1px solid rgba(40, 100, 240, 0.35);
 }
 
 #custom-wl-gammarelay-temperature {
-    background: rgba(245, 194, 231, 0.15);
-    color: #f5c2e7;
-    border: 1px solid rgba(245, 194, 231, 0.3);
+    background: rgba(15, 25, 55, 0.92);
+    color: #b8ccea;
+    border: 1px solid rgba(40, 100, 240, 0.35);
 }
 
 #pulseaudio {
-    font-weight: 900;
-    background: rgba(145, 215, 227, 0.15);
-    color: #91d7e3;
-    border: 1px solid rgba(145, 215, 227, 0.3);
+    background: rgba(15, 25, 55, 0.92);
+    color: #b8ccea;
+    border: 1px solid rgba(40, 100, 240, 0.35);
 }
 
 #pulseaudio.muted {
-    background: rgba(88, 91, 112, 0.2);
-    color: #6c7086;
-    border: 1px solid rgba(88, 91, 112, 0.4);
+    background: rgba(15, 25, 55, 0.92);
+    color: #3a4a70;
+    border: 1px solid rgba(30, 70, 180, 0.25);
 }
 
 #network {
-    background: rgba(116, 199, 236, 0.15);
-    color: #74c7ec;
-    border: 1px solid rgba(116, 199, 236, 0.3);
+    background: rgba(15, 25, 55, 0.92);
+    color: #b8ccea;
+    border: 1px solid rgba(40, 100, 240, 0.35);
 }
 
 #network.disconnected {
-    background: rgba(243, 139, 168, 0.15);
-    color: #f38ba8;
-    border: 1px solid rgba(243, 139, 168, 0.3);
+    background: rgba(25, 15, 30, 0.92);
+    color: #ff4070;
+    border: 1px solid rgba(220, 50, 80, 0.3);
 }
 
 #clock {
-    background: rgba(203, 166, 247, 0.15);
-    color: #cba6f7;
-    border: 1px solid rgba(203, 166, 247, 0.3);
-    font-weight: 900;
-    padding: 0px 14px;
+    background: rgba(15, 25, 55, 0.92);
+    color: #c4d8f0;
+    border: 1px solid rgba(40, 100, 240, 0.35);
+    padding: 0px 12px;
 }
 
 /* Music module */
 #custom-music {
-    background: rgba(245, 194, 231, 0.15);
-    color: #f5c2e7;
-    border: 1px solid rgba(245, 194, 231, 0.3);
-    border-radius: 12px;
-    padding: 0px 12px;
+    background: rgba(15, 25, 55, 0.92);
+    color: #b8ccea;
+    border: 1px solid rgba(40, 100, 240, 0.35);
+    border-radius: 14px;
+    padding: 0px 10px;
 }
 
 #custom-music.Playing {
-    background: rgba(245, 194, 231, 0.25);
-    border: 1px solid rgba(245, 194, 231, 0.5);
-    font-weight: 900;
+    background: rgba(20, 40, 100, 0.4);
+    color: #4090ff;
+    border: 1px solid rgba(40, 100, 240, 0.5);
 }
 
 #custom-music.Paused,
 #custom-music.Stopped {
-    background: rgba(88, 91, 112, 0.2);
-    color: #6c7086;
-    border: 1px solid rgba(88, 91, 112, 0.4);
+    background: rgba(15, 25, 55, 0.92);
+    color: #3a4a70;
+    border: 1px solid rgba(30, 70, 180, 0.25);
 }
 
-/* Hover effects for interactive modules */
+/* Hover effects */
 #custom-launcher:hover,
 #idle_inhibitor:hover,
+#power-profiles-daemon:hover,
 #battery:hover,
 #backlight:hover,
 #custom-wl-gammarelay-temperature:hover,
@@ -227,21 +243,24 @@ window#waybar {
 #network:hover,
 #clock:hover,
 #cpu:hover,
+#temperature:hover,
 #memory:hover,
+#custom-pacman-update:hover,
 #custom-pacman-update-icon:hover,
 #custom-music:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    background: rgba(22, 38, 78, 0.94);
+    border: 1px solid rgba(50, 120, 255, 0.45);
 }
 
-/* Tooltip styling */
+/* Tooltip */
 tooltip {
-    background: rgba(30, 32, 48, 0.95);
-    border: 1px solid rgba(88, 91, 112, 0.5);
-    border-radius: 8px;
-    color: #cdd6f4;
+    background: rgba(10, 18, 42, 0.96);
+    border: 1px solid rgba(40, 100, 240, 0.45);
+    border-radius: 6px;
+    color: #b8ccea;
 }
 
 tooltip label {
-    color: #cdd6f4;
+    color: #b8ccea;
     padding: 0px 4px;
 }

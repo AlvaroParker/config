@@ -1,15 +1,16 @@
 {
   "layer": "top",
   "position": "top",
-  "height": 30,
-  "margin-top": 2,
-  "margin-left": 2,
-  "margin-right": 2,
-  "margin-bottom": 5,
-  "spacing": 8,
+  "height": 28,
+  "margin-top": 4,
+  "margin-left": 6,
+  "margin-right": 6,
+  "margin-bottom": 4,
+  "spacing": 6,
   "modules-left": [
     "custom/launcher",
     "cpu",
+    "temperature",
     "memory",
     "custom/window-name",
     "custom/pacman-update",
@@ -18,6 +19,7 @@
   "modules-center": ["hyprland/workspaces"],
   "modules-right": [
     "idle_inhibitor",
+    "power-profiles-daemon",
     "custom/music",
     "battery",
     "backlight",
@@ -64,11 +66,31 @@
     },
   },
 
+  "power-profiles-daemon": {
+    "format": "{icon} {profile}",
+    "tooltip-format": "Power profile: {profile}",
+    "tooltip": true,
+    "format-icons": {
+      "default": "",
+      "performance": "",
+      "balanced": "",
+      "power-saver": "",
+    },
+  },
+
   "clock": {
     "interval": 1,
     "format": "󱑅 <b>{:%I:%M:%S %p}</b>",
     "format-alt": "󱑅 <b>{:%a.%d,%b}</b>",
     "tooltip-format": "<big>{:%B %Y}</big>\n<tt><small>{calendar}</small></tt>",
+  },
+  "temperature": {
+    "thermal-zone": 8,
+    "critical-threshold": 90,
+    "format": " {temperatureC}°C",
+    "format-critical": " {temperatureC}°C",
+    "interval": 5,
+    "tooltip": false,
   },
   "cpu": {
     "interval": 5,
@@ -91,7 +113,10 @@
     "format-wifi": "  {essid}",
     "on-click": "iwgtk",
     "format-ethernet": "󰈀 wired",
-    "tooltip": false,
+    "tooltip": true,
+    "tooltip-format-wifi": "  {essid}\n  {ipaddr}/{cidr}\n󰕒  {bandwidthUpBits}\n󰇚  {bandwidthDownBits}",
+    "tooltip-format-ethernet": "󰈀  {ipaddr}/{cidr}\n󰕒  {bandwidthUpBits}\n󰇚  {bandwidthDownBits}",
+    "tooltip-format-disconnected": "Disconnected",
     "format-disconnected": "󰖪",
   },
   "pulseaudio": {
