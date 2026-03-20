@@ -29,6 +29,7 @@ alias gs='git status'
 alias gss='git status'
 alias ga='git add'
 alias fixtail='sudo tailscale down && sudo tailscale up'
+alias ex='exit 0'
 
 # Env variables
 export EDITOR=nvim
