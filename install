@@ -46,7 +46,7 @@ else
 fi
 
 # Install AUR packages
-aur_packages=("light" "hyprpicker" "rate-mirrors-bin" "swayosd-git" "zen-browser-bin" "visual-studio-code-bin" "wl-gammarelay-rs" "clipse-bin")
+aur_packages=("light" "hyprpicker" "rate-mirrors-bin" "swayosd-git" "zen-browser-bin" "visual-studio-code-bin" "wl-gammarelay-rs" "clipse")
 aur_to_install=()
 
 for pkg in "${aur_packages[@]}"; do

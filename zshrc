@@ -49,8 +49,14 @@ export PATH="$PATH:$ANDROID_HOME/emulator"
 export PATH="$PATH:$HOME/.dotnet"
 export PATH=$GEM_HOME/bin:$PATH
 export PATH="$PATH:$HOME/.dotnet/tools"
+export AWS_PROFILE=hra-test
+# export AWS_PROFILE=admin
 
 source ~/.custom_zshrc
 eval "$(starship init zsh)"
 eval "$(zoxide init zsh)"
 eval "$(direnv hook zsh)"
+
+autoload -U +X bashcompinit && bashcompinit
+complete -o nospace -C /usr/bin/terraform terraform
+eval "$(forge zsh plugin)"
