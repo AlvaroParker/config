@@ -5,6 +5,7 @@
   "diff_view_style": "split",
   "word_diff_enabled": true,
   "git_panel": {
+    "dock": "left",
     "tree_view": true,
   },
   "calls": {
@@ -16,45 +17,47 @@
   "zoomed_padding": false,
   "profiles": {
     "rust-no-clippy": {
-      "lsp": {
-        "rust-analyzer": {
-          "initialization_options": {
-            "completion": {
-              "snippets": {
-                "custom": {
-                  "Arc::new": {
-                    "postfix": "arc",
-                    "body": ["Arc::new(${receiver})"],
-                    "requires": "std::sync::Arc",
-                    "scope": "expr",
-                  },
-                  "Some": {
-                    "postfix": "some",
-                    "body": ["Some(${receiver})"],
-                    "scope": "expr",
-                  },
-                  "Ok": {
-                    "postfix": "ok",
-                    "body": ["Ok(${receiver})"],
-                    "scope": "expr",
-                  },
-                  "Rc::new": {
-                    "postfix": "rc",
-                    "body": ["Rc::new(${receiver})"],
-                    "requires": "std::rc::Rc",
-                    "scope": "expr",
-                  },
-                  "Box::pin": {
-                    "postfix": "boxpin",
-                    "body": ["Box::pin(${receiver})"],
-                    "requires": "std::boxed::Box",
-                    "scope": "expr",
-                  },
-                  "vec!": {
-                    "postfix": "vec",
-                    "body": ["vec![${receiver}]"],
-                    "description": "vec![]",
-                    "scope": "expr",
+      "settings": {
+        "lsp": {
+          "rust-analyzer": {
+            "initialization_options": {
+              "completion": {
+                "snippets": {
+                  "custom": {
+                    "Arc::new": {
+                      "postfix": "arc",
+                      "body": ["Arc::new(${receiver})"],
+                      "requires": "std::sync::Arc",
+                      "scope": "expr",
+                    },
+                    "Some": {
+                      "postfix": "some",
+                      "body": ["Some(${receiver})"],
+                      "scope": "expr",
+                    },
+                    "Ok": {
+                      "postfix": "ok",
+                      "body": ["Ok(${receiver})"],
+                      "scope": "expr",
+                    },
+                    "Rc::new": {
+                      "postfix": "rc",
+                      "body": ["Rc::new(${receiver})"],
+                      "requires": "std::rc::Rc",
+                      "scope": "expr",
+                    },
+                    "Box::pin": {
+                      "postfix": "boxpin",
+                      "body": ["Box::pin(${receiver})"],
+                      "requires": "std::boxed::Box",
+                      "scope": "expr",
+                    },
+                    "vec!": {
+                      "postfix": "vec",
+                      "body": ["vec![${receiver}]"],
+                      "description": "vec![]",
+                      "scope": "expr",
+                    },
                   },
                 },
               },
@@ -67,15 +70,19 @@
   // "use_system_path_prompts": false,
   "load_direnv": "shell_hook",
   "agent_servers": {
+    // "custom-opencode": {
+    //   "type": "custom",
+    //   "command": "/home/parker/github/opencode/test.sh",
+    // },
     "github-copilot-cli": {
-      "type": "registry"
+      "type": "registry",
     },
     "claude-acp": {
-      "type": "registry"
+      "type": "registry",
     },
     "gemini": {
       "default_model": "gemini-3.1-pro-preview",
-      "type": "registry"
+      "type": "registry",
     },
     "opencode": {
       "type": "registry",
@@ -85,6 +92,7 @@
     },
   },
   "collaboration_panel": {
+    "dock": "right",
     "button": true,
   },
   "telemetry": {
@@ -211,11 +219,13 @@
   },
   "agent": {
     // "default_view": "text_thread",
+    "sidebar_side": "right",
+    "dock": "right",
     "tool_permissions": {
       "default": "allow",
     },
     "use_modifier_to_send": false,
-    "play_sound_when_agent_done": false,
+    "play_sound_when_agent_done": "never",
     "default_profile": "write",
     "default_model": {
       "effort": "high",
