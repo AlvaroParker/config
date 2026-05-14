@@ -1,8 +1,13 @@
 {
+  "outline_panel": {
+    "dock": "right",
+  },
+  "code_lens": "menu",
+  "cli_default_open_behavior": "new_window",
   "search": {
     "include_ignored": false,
   },
-  "diff_view_style": "split",
+  "diff_view_style": "unified",
   "word_diff_enabled": true,
   "git_panel": {
     "dock": "left",
@@ -70,29 +75,29 @@
   // "use_system_path_prompts": false,
   "load_direnv": "shell_hook",
   "agent_servers": {
-    // "custom-opencode": {
-    //   "type": "custom",
-    //   "command": "/home/parker/github/opencode/test.sh",
-    // },
-    "github-copilot-cli": {
-      "type": "registry",
-    },
     "claude-acp": {
-      "type": "registry",
-    },
-    "gemini": {
-      "default_model": "gemini-3.1-pro-preview",
       "type": "registry",
     },
     "opencode": {
       "type": "registry",
     },
+    // "opencode-test": {
+    //   "type": "custom",
+    //   "command": "bash",
+    //   "args": ["/home/parker/github/opencode/test.sh"],
+    // },
     "codex-acp": {
+      "favorite_config_option_values": {
+        "mode": ["auto"],
+      },
+      "default_config_options": {
+        "mode": "auto",
+      },
       "type": "registry",
     },
   },
   "collaboration_panel": {
-    "dock": "right",
+    "dock": "left",
     "button": true,
   },
   "telemetry": {
@@ -186,9 +191,6 @@
     "light": "Catppuccin Mocha",
     "dark": "Catppuccin Mocha",
   },
-  "outline_panel": {
-    "dock": "right",
-  },
   "soft_wrap": "editor_width",
   "file_types": {
     "XML": ["*.csproj"],
@@ -212,7 +214,11 @@
     // "panel.background": "#00000000",
     // "background": "#ffffff"
   },
-  "theme": "Zed One Dark",
+  "theme": {
+    "mode": "dark",
+    "light": "One Light",
+    "dark": "ultraViolet",
+  },
   "toolbar": {
     "breadcrumbs": true,
     "quick_actions": true,
@@ -249,6 +255,9 @@
     "show_diagnostics": "all",
   },
   "terminal": {
+    "scrollbar": {
+      "show": "always",
+    },
     "dock": "bottom",
     "default_height": 250,
   },
@@ -257,17 +266,21 @@
   },
   "languages": {
     "Python": {
-      "language_servers": ["ruff", "pyright"],
-      "format_on_save": "on",
-      "formatter": [
-        {
-          "language_server": {
-            "name": "ruff",
-          },
-        },
-        { "code_action": "source.fixAll.ruff" },
-        { "code_action": "source.organizeImports.ruff" },
+      "language_servers": [
+        // ty handles Python semantics; ruff handles linting and formatting.
+        // Omitting "..." prevents Zed from enabling pylsp/pyright/basedpyright.
+        "ty",
+        "ruff",
       ],
+      "code_actions_on_format": {
+        "source.organizeImports.ruff": true,
+      },
+      "formatter": {
+        "language_server": {
+          "name": "ruff",
+        },
+      },
+      "format_on_save": "on",
     },
     "Markdown": {
       "soft_wrap": "editor_width",
@@ -318,9 +331,9 @@
   "buffer_font_weight": 500,
   "buffer_font_size": 12.5,
   "title_bar": {
+    "show_branch_status_icon": true,
     "show_user_picture": true,
     "show_menus": false,
-    "show_branch_icon": true,
     "show_onboarding_banner": false,
   },
   "scrollbar": {
@@ -401,29 +414,6 @@
           "useLibraryCodeForTypes": true,
           "typeCheckingMode": "strict",
           "reportUnusedVariable": "warning",
-        },
-      },
-    },
-    "ruff": {
-      "initialization_options": {
-        "settings": {
-          // Ruff server settings goes here
-          // "lineLength": 120,
-          "lint": {
-            "extendSelect": [
-              // Recommended rules for Python linting
-              "I", // isort (sorts imports)
-              "ARG", // flake8-unused-arguments detects unused arguments in functions
-              "F841", // Warn about unused variables
-              "E", // Pycodestyle errors (style issues like indentation, whitespace, etc.)
-              "F", // Pyflakes rules (includes F841 for unused variables, and other common Python errors)
-              "W", // Pycodestyle warnings (like line breaks before binary operators)
-              "C90", // Pylint rules for cyclomatic complexity and code structure
-              "N", // PEP8 Naming conventions
-              "B", // Bugbear (detects potential code issues like mutable default arguments)
-              "A", // flake8-builtins (detects misuse of Python built-ins like `list`, `dict`, etc.)
-            ],
-          },
         },
       },
     },

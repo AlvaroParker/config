@@ -31,6 +31,14 @@ alias ga='git add'
 alias fixtail='sudo tailscale down && sudo tailscale up'
 alias ex='exit 0'
 
+b() {
+  local root
+  root=$(git rev-parse --show-toplevel 2>/dev/null) || {
+    echo "Not inside a Git repository"
+    return 1
+  }
+  cd "$root"
+}
 # Env variables
 export EDITOR=nvim
 export ANDROID_HOME=$HOME/Android/Sdk
@@ -49,7 +57,9 @@ export PATH="$PATH:$ANDROID_HOME/emulator"
 export PATH="$PATH:$HOME/.dotnet"
 export PATH=$GEM_HOME/bin:$PATH
 export PATH="$PATH:$HOME/.dotnet/tools"
-export AWS_PROFILE=hra-test
+export PATH="$HOME/.bun/bin:$PATH"
+
+export AWS_PROFILE=hra-prod
 # export AWS_PROFILE=admin
 
 source ~/.custom_zshrc
@@ -60,3 +70,5 @@ eval "$(direnv hook zsh)"
 autoload -U +X bashcompinit && bashcompinit
 complete -o nospace -C /usr/bin/terraform terraform
 eval "$(forge zsh plugin)"
+# CF CLI completions
+[[ -f "/home/parker/.config/cf/completions/_cf.zsh" ]] && source "/home/parker/.config/cf/completions/_cf.zsh"

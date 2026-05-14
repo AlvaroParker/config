@@ -3,6 +3,8 @@
     "bindings": {
       "ctrl-p": "menu::SelectPrevious",
       "ctrl-shift-enter": "terminal_panel::Toggle",
+      "ctrl-k b": "git::CopyBranchName",
+      "ctrl-k p": "workspace::CopyRelativePath",
     },
   },
   {
