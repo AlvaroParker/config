@@ -1,0 +1,65 @@
+# Migrated from ../alacritty/alacritty.toml.
+# Ghostty uses key = value syntax; see https://ghostty.org/docs/config.
+
+font-family = FiraCode Nerd Font
+font-style = SemiBold
+font-size = 10
+
+background = #1E1E2E
+foreground = #CDD6F4
+background-opacity = 0.45
+background-opacity-cells = false
+
+selection-foreground = #1E1E2E
+selection-background = #F5E0DC
+
+cursor-style = block
+cursor-style-blink = true
+cursor-color = #F5E0DC
+cursor-text = #1E1E2E
+
+search-foreground = #1E1E2E
+search-background = #A6ADC8
+search-selected-foreground = #1E1E2E
+search-selected-background = #A6E3A1
+
+palette = 0=#45475A
+palette = 1=#F38BA8
+palette = 2=#A6E3A1
+palette = 3=#F9E2AF
+palette = 4=#89B4FA
+palette = 5=#F5C2E7
+palette = 6=#94E2D5
+palette = 7=#BAC2DE
+palette = 8=#7F849C
+palette = 9=#F38BA8
+palette = 10=#A6E3A1
+palette = 11=#F9E2AF
+palette = 12=#89B4FA
+palette = 13=#F5C2E7
+palette = 14=#94E2D5
+palette = 15=#A6ADC8
+palette = 16=#FAB387
+palette = 17=#F5E0DC
+
+window-width = 106
+window-height = 26
+window-padding-x = 10
+window-padding-y = 10
+
+# Compact GTK tabs/titlebar.
+gtk-toolbar-style = flat
+gtk-wide-tabs = false
+
+term = xterm-256color
+
+# Alacritty-only settings without direct Ghostty equivalents:
+# - colors.hints.start / colors.hints.end
+# - colors.vi_mode_cursor
+# - cursor.blink_interval / cursor.blink_timeout / cursor.unfocused_hollow
+#
+# The original Ctrl-J / Ctrl-K scroll bindings were limited to Alacritty Vi mode.
+# Binding them globally in Ghostty would consume normal terminal Ctrl-J/Ctrl-K input.
+# Uncomment these only if you want that global behavior:
+# keybind = ctrl+j=scroll_page_lines:1
+# keybind = ctrl+k=scroll_page_lines:-1
