@@ -7,7 +7,7 @@
   "search": {
     "include_ignored": false,
   },
-  "diff_view_style": "unified",
+  "diff_view_style": "split",
   "word_diff_enabled": true,
   "git_panel": {
     "dock": "left",
@@ -225,6 +225,9 @@
   },
   "agent": {
     // "default_view": "text_thread",
+    "profiles": {
+      
+    },
     "sidebar_side": "right",
     "dock": "right",
     "tool_permissions": {
@@ -234,10 +237,10 @@
     "play_sound_when_agent_done": "never",
     "default_profile": "write",
     "default_model": {
-      "effort": "high",
+      "effort": "xhigh",
       "enable_thinking": true,
-      "provider": "zed.dev",
-      "model": "claude-sonnet-4-6",
+      "provider": "openai-subscribed",
+      "model": "gpt-5.5",
     },
   },
 

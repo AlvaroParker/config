@@ -141,6 +141,7 @@
     "bindings": {
       "space m": "agent::ToggleModelSelector",
       "space t": "agent::ToggleProfileSelector",
+      "space e": "agent::ToggleThinkingEffortMenu",
     },
   },
   {

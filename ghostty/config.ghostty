@@ -53,6 +53,10 @@ gtk-wide-tabs = false
 
 term = xterm-256color
 
+# Send Ctrl-W for editor-style "delete previous word" behavior.
+keybind = ctrl+backspace=text:\x17
+keybind = ctrl+enter=unbind
+
 # Alacritty-only settings without direct Ghostty equivalents:
 # - colors.hints.start / colors.hints.end
 # - colors.vi_mode_cursor
@@ -63,3 +67,5 @@ term = xterm-256color
 # Uncomment these only if you want that global behavior:
 # keybind = ctrl+j=scroll_page_lines:1
 # keybind = ctrl+k=scroll_page_lines:-1
+
+window-inherit-working-directory = false
