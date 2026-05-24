@@ -1,0 +1,42 @@
+#!/bin/bash
+set -euo pipefail
+
+fail() {
+    notify-send -i dialog-error -a grim -u normal "$1" -t 2000 || true
+    echo "$1" >&2
+    exit 1
+}
+
+screenshot_dir="${HOME}/Pictures/Screenshots"
+mkdir -p "$screenshot_dir"
+
+cursor_json="$(hyprctl -j cursorpos)" || fail "Could not get cursor position from Hyprland"
+
+monitor="$(
+    hyprctl -j monitors | jq -er --argjson cursor "$cursor_json" '
+        def transformed:
+            ((.transform // 0) % 2) == 1;
+
+        def logical_width:
+            (if transformed then .height else .width end) / (.scale // 1);
+
+        def logical_height:
+            (if transformed then .width else .height end) / (.scale // 1);
+
+        [
+            .[]
+            | select(
+                ($cursor.x >= .x)
+                and ($cursor.x < (.x + logical_width))
+                and ($cursor.y >= .y)
+                and ($cursor.y < (.y + logical_height))
+            )
+            | .name
+        ][0] // empty
+    '
+)" || fail "Could not find a Hyprland monitor under the cursor"
+
+file="${screenshot_dir}/Screenshot-$(date +%F_%T).png"
+
+grim -o "$monitor" - | tee "$file" | wl-copy --type image/png || fail "Could not capture screenshot on $monitor"
+notify-send -i "$file" -a wl-copy -u normal "Screenshot of $monitor taken" -t 1000 || true

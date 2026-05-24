@@ -1,9 +1,0 @@
-#!/bin/bash
-
-# Check if the process "sunamu" is running
-if pgrep -x "sunamu" > /dev/null
-then
-    killall sunamu
-else
-    sunamu
-fi
