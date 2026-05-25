@@ -1,0 +1,33 @@
+/* Keep internal pages' initial paint and wallpaper fallback in sync with user.js. */
+
+@-moz-document url("about:blank"), url("about:privatebrowsing") {
+    :root {
+        color-scheme: dark !important;
+    }
+
+    html,
+    body {
+        background-color: #1c1b22 !important;
+    }
+}
+
+@-moz-document url("about:newtab"), url("about:home") {
+    :root {
+        color-scheme: dark !important;
+        --newtab-background-color: #1c1b22 !important;
+    }
+
+    html,
+    body,
+    #root,
+    .outer-wrapper,
+    .nova-outer-wrapper {
+        background-color: #1c1b22 !important;
+    }
+
+    body.activity-stream {
+        --newtab-wallpaper: "" !important;
+        --newtab-wallpaper-color: #1c1b22 !important;
+        --newtab-wallpaper-backgroundPosition: center !important;
+    }
+}
