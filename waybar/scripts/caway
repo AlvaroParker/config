@@ -12,7 +12,7 @@ do
 done
 
 # write cava config
-config_file="/tmp/polybar_cava_config"
+config_file="/tmp/waybar_cava_config"
 echo "
 [general]
 bars = 10

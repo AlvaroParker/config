@@ -1,4 +1,4 @@
-# Arch Linux and Hyprland/i3 dot files
+# Arch Linux and Hyprland dot files
 
 Checkout the NixOS dotfiles for this config! At [AlvaroParker/NixOS-config](https://github.com/AlvaroParker/NixOS-config)
 

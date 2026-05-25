@@ -16,7 +16,7 @@ create_symlinks() {
     done
 }
 
-packages=("wget" "ranger" "tmux" "curl" "unzip" "rustup" "base-devel" "hyprland" "xdg-desktop-portal-hyprland" "alacritty" "nautilus" "flatpak" "gammastep" "grim" "wl-clipboard" "slurp" "swaync" "waybar" "blueman" "btop" "zsh" "neovim" "zathura" "lsd" "fastfetch" "bat" "picom" "i3" "polybar" "ttf-jetbrains-mono-nerd" "ttf-firacode-nerd" "qemu-system-x86" "qemu-system-x86-firmware" "libvirt" "bridge-utils" "virt-manager" "qemu-hw-display-virtio-gpu-gl" "qemu-hw-display-virtio-gpu" "qemu-hw-display-virtio-gpu-pci" "qemu-hw-display-virtio-gpu-pci-gl" "dnsmasq" "qemu-img" "docker" "docker-compose" "hyprpaper" "hyprlock" "ripgrep" "qt5-wayland" "qt6-wayland" "lib32-glibc" "lib32-gcc-libs" "easyeffects" "network-manager-applet" "feh" "xorg-server" "lxappearance" "zathura-pdf-poppler" "gnome-tweaks" "gnome-themes-extra" "plymouth" "obsidian" "polkit-kde-agent" "qemu-full" "gdb" "vlc" "jq" "man-pages" "hypridle" "vulkan-radeon" "exa" "rsync" "firefox" "rofi" "less" "git-delta" "discord" "zoxide" "gnome-tweaks" "pavucontrol" "go" "nodejs" "hyprsunset")
+packages=("wget" "ranger" "tmux" "curl" "unzip" "rustup" "base-devel" "hyprland" "xdg-desktop-portal-hyprland" "alacritty" "nautilus" "flatpak" "gammastep" "grim" "wl-clipboard" "slurp" "swaync" "waybar" "blueman" "btop" "zsh" "neovim" "zathura" "lsd" "fastfetch" "bat" "ttf-jetbrains-mono-nerd" "ttf-firacode-nerd" "qemu-system-x86" "qemu-system-x86-firmware" "libvirt" "bridge-utils" "virt-manager" "qemu-hw-display-virtio-gpu-gl" "qemu-hw-display-virtio-gpu" "qemu-hw-display-virtio-gpu-pci" "qemu-hw-display-virtio-gpu-pci-gl" "dnsmasq" "qemu-img" "docker" "docker-compose" "hyprpaper" "hyprlock" "ripgrep" "qt5-wayland" "qt6-wayland" "lib32-glibc" "lib32-gcc-libs" "easyeffects" "network-manager-applet" "feh" "xorg-server" "lxappearance" "zathura-pdf-poppler" "gnome-tweaks" "gnome-themes-extra" "plymouth" "obsidian" "polkit-kde-agent" "qemu-full" "gdb" "vlc" "jq" "man-pages" "hypridle" "vulkan-radeon" "exa" "rsync" "firefox" "rofi" "less" "git-delta" "discord" "zoxide" "gnome-tweaks" "pavucontrol" "go" "nodejs" "hyprsunset")
 # Filter out already installed packages
 to_install=()
 for pkg in "${packages[@]}"; do
@@ -62,17 +62,6 @@ fi
 
 cd $current_dir
 
-# Enable tap to click on i3
-sudo mkdir -p /etc/X11/xorg.conf.d && sudo tee <<'EOF' /etc/X11/xorg.conf.d/90-touchpad.conf 1> /dev/null
-Section "InputClass"
-        Identifier "touchpad"
-        MatchIsTouchpad "on"
-        Driver "libinput"
-        Option "Tapping" "on"
-EndSection
-
-EOF
-
 # Install AstroNvim
 rm -rf ~/.config/nvim ~/.local/share/nvim ~/.local/state/nvim ~/.cache/nvim
 ln -s  "${current_dir}/nvim" ~/.config/nvim
@@ -110,18 +99,6 @@ ln -s "${current_dir}/waybar" ~/.config/waybar
 # Install zathura config
 rm -rf ~/.config/zathura
 ln -s "${current_dir}/zathura" ~/.config/zathura
-
-# Install polybar config
-rm -rf ~/.config/polybar
-ln -s "${current_dir}/polybar" ~/.config/polybar
-
-# Install picom config
-rm -rf ~/.config/picom
-ln -s "${current_dir}/picom" ~/.config/picom
-
-# Install i3 config
-rm -rf ~/.config/i3
-ln -s "${current_dir}/i3" ~/.config/i3
 
 # Install fonts
 # Needed for waybar
