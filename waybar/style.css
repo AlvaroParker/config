@@ -69,10 +69,18 @@ window#waybar {
     border: 1px solid rgba(40, 100, 240, 0.35);
 }
 
-#custom-window-name {
+#window {
     background: rgba(15, 25, 55, 0.92);
     color: #b0c4e4;
     border: 1px solid rgba(40, 100, 240, 0.35);
+}
+
+window#waybar.empty #window {
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
 }
 
 #custom-pacman-update-icon {

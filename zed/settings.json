@@ -235,7 +235,7 @@
     },
     "use_modifier_to_send": false,
     "play_sound_when_agent_done": "never",
-    "default_profile": "ask",
+    "default_profile": "write",
     "default_model": {
       "effort": "xhigh",
       "enable_thinking": true,

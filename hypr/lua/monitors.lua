@@ -1,5 +1,7 @@
+local monitor_names = require("lua.monitor_names")
+
 hl.monitor({
-    output = "eDP-1",
+    output = monitor_names.laptop,
     mode = "3072x1920@120",
     position = "0x0",
     scale = 2,
@@ -8,7 +10,7 @@ hl.monitor({
 })
 
 hl.monitor({
-    output = "desc:Samsung Electric Company LS27C33xG H9TX400275",
+    output = monitor_names.external,
     mode = "1920x1080@100",
     position = "auto",
     scale = 1,

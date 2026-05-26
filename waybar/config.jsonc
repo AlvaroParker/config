@@ -12,7 +12,7 @@
     "cpu",
     "temperature",
     "memory",
-    "custom/window-name",
+    "hyprland/window",
     "custom/pacman-update",
     "tray",
   ],
@@ -37,10 +37,9 @@
   "hyprland/workspaces": {
     "all-outputs": true,
     "active-only": false,
-    "on-click": "activate",
     "format": "{icon}",
-    "on-scroll-up": "hyprctl dispatch workspace e+1",
-    "on-scroll-down": "hyprctl dispatch workspace e-1",
+    "on-scroll-up": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e+1\" })'",
+    "on-scroll-down": "hyprctl dispatch 'hl.dsp.focus({ workspace = \"e-1\" })'",
     "format-icons": {
       "1": "",
       "2": "",
@@ -150,10 +149,9 @@
     "on-click": "rofi -show drun",
   },
 
-  "custom/window-name": {
-    "format": "<b>{}</b>",
-    "interval": 1,
-    "exec": "hyprctl activewindow | grep \"class:\" | awk '{print $2}' | sed 's/\\([[:alpha:]]\\)/\\U\\1/'",
+  "hyprland/window": {
+    "format": "<b>{class}</b>",
+    "separate-outputs": false,
   },
 
   "custom/pacman-update": {

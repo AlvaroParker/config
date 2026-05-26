@@ -25,7 +25,7 @@ hl.window_rule({
 hl.window_rule({
     name = "clipse-clipboard",
     match = {
-        class = "clipse",
+        class = "app.clipse",
     },
     float = true,
     size = { 622, 652 },
