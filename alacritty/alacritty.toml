@@ -88,7 +88,7 @@ offset = { x = 0, y = 0 }
 
 
 [window]
-opacity = 0.45
+opacity = 0.62
 dimensions = { columns = 106, lines = 26 }
 padding = { x = 10, y = 10 }
 

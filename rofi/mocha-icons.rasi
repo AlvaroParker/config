@@ -1,18 +1,19 @@
 * {
-    /* Catppuccin Mocha mapped colors with glass effect */
-    bg0:    rgba(30, 30, 46, 0.85);       /* Base with transparency */
-    bg1:    rgba(49, 50, 68, 0.75);       /* Surface0 with transparency */
-    bg2:    rgba(69, 71, 90, 0.70);       /* Surface1 with transparency */
-    bg3:    rgba(137, 180, 250, 0.90);    /* Blue accent with slight transparency */
-    bg-glass: rgba(49, 50, 68, 0.35);     /* Very transparent glass overlay */
-    fg0:    #cdd6f4;                      /* Text */
-    fg1:    #f5e0dc;                      /* Rosewater highlight */
-    fg2:    #bac2de;                      /* Subtext1 */
-    fg3:    #6c7086;                      /* Overlay0 */
+    /* Muted midnight glass palette */
+    bg0:    rgba(10, 16, 36, 0.92);
+    bg1:    rgba(15, 25, 55, 0.82);
+    bg2:    rgba(24, 42, 78, 0.52);
+    bg3:    rgba(52, 76, 126, 0.86);
+    bg-glass: rgba(24, 42, 78, 0.28);
+    fg0:    #aebbd8;
+    fg1:    #c58d74;
+    fg2:    #98a9cb;
+    fg3:    #5d6f96;
+    fg-selected: #bdcbea;
 
     /* Glass border colors */
-    border-light: rgba(205, 214, 244, 0.20);
-    border-accent: rgba(137, 180, 250, 0.60);
+    border-light: rgba(67, 88, 140, 0.32);
+    border-accent: rgba(92, 118, 174, 0.48);
 }
 
 * {
@@ -30,7 +31,7 @@ window {
     location:       north;
     y-offset:       calc(50%- 180px);
     width:          680;
-    border-radius:  28px;
+    border-radius:  22px;
     border:         1px;
     border-color:   @border-light;
 
@@ -46,7 +47,7 @@ inputbar {
     border-color:       @border-accent;
 
     border:         1px;
-    border-radius:  20px;
+    border-radius:  16px;
 
     padding:    12px 20px;
     spacing:    12px;
@@ -66,7 +67,7 @@ entry {
 
 message {
     margin:             16px 0 0;
-    border-radius:      20px;
+    border-radius:      16px;
     border:             1px;
     border-color:       @border-light;
     background-color:   @bg2;
@@ -90,7 +91,7 @@ listview {
 element {
     padding:        8px 20px;
     spacing:        12px;
-    border-radius:  18px;
+    border-radius:  14px;
     border:         1px;
     border-color:   transparent;
 
@@ -98,11 +99,11 @@ element {
 }
 
 element normal active {
-    text-color: @bg3;
+    text-color: @fg1;
 }
 
 element alternate active {
-    text-color: @bg3;
+    text-color: @fg1;
 }
 
 element selected normal, element selected active {
@@ -110,7 +111,10 @@ element selected normal, element selected active {
     border-color:       @border-accent;
 }
 
-
+element selected element-icon,
+element selected element-text {
+    text-color: @fg-selected;
+}
 
 element-icon {
     size:           1.2em;
@@ -123,11 +127,11 @@ element-text {
 }
 
 element selected {
-    text-color: @bg0;
+    text-color: @fg-selected;
 }
 
 element selected element-text {
-    text-color: @bg0;
+    text-color: @fg-selected;
     font: "Inter 13";
 }
 

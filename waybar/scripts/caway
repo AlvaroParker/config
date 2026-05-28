@@ -1,5 +1,9 @@
 #! /bin/bash
 
+if ! command -v cava >/dev/null 2>&1; then
+    exit 0
+fi
+
 bar="▁▂▃▄▅▆▇█"
 dict="s/;//g;"
 

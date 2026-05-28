@@ -62,7 +62,7 @@ hl.config({
         },
     },
     decoration = {
-        rounding = 8,
+        rounding = 10,
         active_opacity = 1.0,
         inactive_opacity = 0.98,
         fullscreen_opacity = 1.0,
@@ -77,11 +77,11 @@ hl.config({
             noise = 0.01,
         },
         shadow = {
-            enabled = false,
-            range = 12,
+            enabled = true,
+            range = 10,
             render_power = 2,
-            color = "rgba(89b4fa66)",
-            color_inactive = "rgba(1e1e2e66)",
+            color = "rgba(00000044)",
+            color_inactive = "rgba(00000022)",
         },
     },
     dwindle = {

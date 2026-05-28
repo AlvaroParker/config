@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 
-pkgs=$(checkupdates 2>/dev/null | wc -l)
+pkgs=$("$HOME/.config/waybar/scripts/checkupdates" 2>/dev/null | wc -l)
 
-if [ "$pkgs" == 0 ]; then
-    echo ""
-else
-    echo $pkgs
+if [ "$pkgs" -gt 0 ]; then
+    echo "$pkgs"
 fi
