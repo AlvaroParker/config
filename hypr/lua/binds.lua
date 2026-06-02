@@ -48,6 +48,7 @@ bind(main_mod .. " + C", hl.dsp.workspace.toggle_special("pocket"))
 bind(main_mod .. " + SHIFT + O", hl.dsp.window.move({ workspace = "special:other" }))
 bind(main_mod .. " + O", hl.dsp.workspace.toggle_special("other"))
 
+-- code:21 = `=` key
 bind(main_mod .. " + SHIFT + code:21", hl.dsp.window.move({ workspace = "special:aux" }))
 bind(main_mod .. " + code:21", hl.dsp.workspace.toggle_special("aux"))
 

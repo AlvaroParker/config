@@ -225,9 +225,8 @@
   },
   "agent": {
     // "default_view": "text_thread",
-    "profiles": {
-      
-    },
+    "notify_when_agent_waiting": "all_screens",
+    "profiles": {},
     "sidebar_side": "right",
     "dock": "right",
     "tool_permissions": {
@@ -258,6 +257,7 @@
     "show_diagnostics": "all",
   },
   "terminal": {
+    "bell": "off",
     "scrollbar": {
       "show": "always",
     },
@@ -344,7 +344,13 @@
   },
 
   "format_on_save": "on",
-  "file_scan_exclusions": [".next", ".turbo", "node_modules", "dist"],
+  "file_scan_exclusions": [
+    "**/.next",
+    "**/.turbo",
+    "**/node_modules",
+    "**/dist",
+    "**/.git",
+  ],
   "project_panel": {
     "hide_hidden": false,
     "drag_and_drop": false,
