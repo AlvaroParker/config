@@ -10,7 +10,6 @@ local startup_commands = {
     "systemctl --user start hyprpolkitagent",
     "hyprpaper",
     "hyprctl setcursor Bibata-Modern-Classic 20",
-    "wl-gammarelay-rs",
     "hypridle",
     "clipse -listen",
 }

@@ -198,12 +198,6 @@ window#waybar.empty #window {
     border: 1px solid rgba(40, 100, 240, 0.35);
 }
 
-#custom-wl-gammarelay-temperature {
-    background: rgba(15, 25, 55, 0.92);
-    color: #b8ccea;
-    border: 1px solid rgba(40, 100, 240, 0.35);
-}
-
 #pulseaudio {
     background: rgba(15, 25, 55, 0.92);
     color: #b8ccea;
@@ -264,7 +258,6 @@ window#waybar.empty #window {
 #power-profiles-daemon:hover,
 #battery:hover,
 #backlight:hover,
-#custom-wl-gammarelay-temperature:hover,
 #pulseaudio:hover,
 #network:hover,
 #clock:hover,

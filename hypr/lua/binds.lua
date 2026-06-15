@@ -92,16 +92,14 @@ bind(main_mod .. " + SHIFT + N", exec("hyprctl hyprsunset temperature 3500"))
 bind(main_mod .. " + SHIFT + M", exec("hyprctl hyprsunset identity"))
 bind(main_mod .. " + up", exec("hyprctl hyprsunset temperature +10"), { repeating = true })
 bind(main_mod .. " + down", exec("hyprctl hyprsunset temperature -10"), { repeating = true })
-bind(main_mod .. " + SHIFT + I", exec("busctl --user call rs.wl-gammarelay / rs.wl.gammarelay ToggleInverted"),
-    { repeating = true })
 
 bind(main_mod .. " + SHIFT + W", exec("hyprlock"))
 bind(main_mod .. " + N", exec("swaync-client --toggle-panel"))
 
 bind("XF86MonBrightnessUp", exec("swayosd-client --brightness=raise"), { locked = true, repeating = true })
 bind("XF86MonBrightnessDown", exec("swayosd-client --brightness=lower"), { locked = true, repeating = true })
-bind(main_mod .. " + XF86MonBrightnessUp", exec("light -S 100"))
-bind(main_mod .. " + XF86MonBrightnessDown", exec("light -S 0"))
+bind(main_mod .. " + XF86MonBrightnessUp", exec("brightnessctl set 100%"))
+bind(main_mod .. " + XF86MonBrightnessDown", exec("brightnessctl set 0%"))
 
 bind("XF86AudioRaiseVolume", exec("swayosd-client --output-volume raise"), { repeating = true })
 bind("XF86AudioLowerVolume", exec("swayosd-client --output-volume lower"), { repeating = true })

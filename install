@@ -47,7 +47,7 @@ fi
 
 # Install AUR packages
 # waybar-git includes Hyprland Lua dispatch support needed by Hyprland >= 0.54 workspace clicks.
-aur_packages=("waybar-git" "rate-mirrors-bin" "visual-studio-code-bin" "wl-gammarelay-rs" "clipse")
+aur_packages=("waybar-git" "rate-mirrors-bin" "visual-studio-code-bin" "clipse")
 aur_to_install=()
 
 for pkg in "${aur_packages[@]}"; do
