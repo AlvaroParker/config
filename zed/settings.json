@@ -225,7 +225,7 @@
   },
   "agent": {
     // "default_view": "text_thread",
-    "notify_when_agent_waiting": "all_screens",
+    "notify_when_agent_waiting": "primary_screen",
     "profiles": {},
     "sidebar_side": "right",
     "dock": "right",
@@ -233,9 +233,10 @@
       "default": "allow",
     },
     "use_modifier_to_send": false,
-    "play_sound_when_agent_done": "never",
+    "play_sound_when_agent_done": "always",
     "default_profile": "write",
     "default_model": {
+      "speed": "standard",
       "effort": "xhigh",
       "enable_thinking": true,
       "provider": "openai-subscribed",
@@ -330,7 +331,7 @@
   "base_keymap": "VSCode",
   "ui_font_family": ".ZedSans",
   "ui_font_size": 16,
-  "buffer_font_family": "FiraCode Nerd Font Propo",
+  "buffer_font_family": "JetBrainsMono Nerd Font Mono",
   "buffer_font_weight": 500,
   "buffer_font_size": 12.5,
   "title_bar": {

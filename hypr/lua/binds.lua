@@ -1,6 +1,20 @@
+local default_apps = require("lua.default_apps")
 local screenshots = require("lua.screenshots")
 
 local main_mod = "SUPER"
+
+
+local alacritty = {
+    terminal = "alacritty",
+    clipboard = "alacritty --class app.clipse -e 'clipse'"
+}
+
+local ghostty = {
+    terminal = "ghostty",
+    clipboard = "ghostty --class=app.clipse -e 'clipse'"
+}
+
+local default_terminal = ghostty
 
 local function bind(keys, dispatcher, opts)
     return hl.bind(keys, dispatcher, opts)
@@ -27,7 +41,7 @@ bind(main_mod .. " + SHIFT + K", hl.dsp.window.move({ direction = "u" }))
 bind(main_mod .. " + SHIFT + J", hl.dsp.window.move({ direction = "d" }))
 
 bind(main_mod .. " + F", hl.dsp.window.fullscreen())
-bind(main_mod .. " + SHIFT + F", hl.dsp.window.fullscreen_state({ internal = 2, client = 0 }))
+bind(main_mod .. " + SHIFT + F", hl.dsp.window.fullscreen_state({ internal = 2, client = 0, action = "toggle" }))
 
 bind(main_mod .. " + X", hl.dsp.group.toggle())
 bind(main_mod .. " + CTRL + H", hl.dsp.group.prev())
@@ -67,11 +81,11 @@ hl.define_submap("resize", function()
     bind("escape", hl.dsp.submap("reset"))
 end)
 
-bind(main_mod .. " + return", exec("ghostty"))
-bind(main_mod .. " + SHIFT + return", exec("ghostty -e ~/.local/bin/auto_tmux"))
+bind(main_mod .. " + return", exec(default_terminal.terminal))
+bind(main_mod .. " + SHIFT + return", exec(default_terminal.terminal .. " -e ~/.local/bin/auto_tmux"))
 bind(main_mod .. " + E", exec("nautilus"))
 bind(main_mod .. " + D", exec("rofi -show drun"))
-bind(main_mod .. " + I", exec("firefox"))
+bind(main_mod .. " + I", exec(default_apps.browser))
 bind(main_mod .. " + T", exec("/opt/teams-for-linux/teams-for-linux --ozone-platform=x11"))
 
 bind(main_mod .. " + SHIFT + N", exec("hyprctl hyprsunset temperature 3500"))
@@ -107,6 +121,6 @@ bind("Print", screenshots.current_monitor)
 bind("XF86SelectiveScreenshot", screenshots.region)
 
 bind(main_mod .. " + SHIFT + B", exec("killall -SIGUSR1 waybar"))
-bind(main_mod .. " + V", exec("ghostty --class=app.clipse -e 'clipse'"))
+bind(main_mod .. " + V", exec(default_terminal.clipboard))
 
 hl.gesture({ fingers = 3, direction = "horizontal", action = "workspace" })

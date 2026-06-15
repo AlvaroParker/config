@@ -1,3 +1,4 @@
+local default_apps = require("lua.default_apps")
 local monitor_names = require("lua.monitor_names")
 
 hl.workspace_rule({
@@ -29,5 +30,5 @@ hl.workspace_rule({
     workspace = "10",
     monitor = monitor_names.external,
     default = true,
-    on_created_empty = "firefox",
+    on_created_empty = default_apps.browser,
 })

@@ -150,4 +150,10 @@
       "ctrl-shift-d": "git::DropCurrentStash",
     },
   },
+  {
+    "context": "AcpThread > Editor && vim_mode == insert",
+    "bindings": {
+      "ctrl-v": "editor::Paste",
+    },
+  },
 ]
