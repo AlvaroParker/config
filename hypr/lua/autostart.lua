@@ -11,7 +11,7 @@ local startup_commands = {
     "hyprpaper",
     "hyprctl setcursor Bibata-Modern-Classic 20",
     "hypridle",
-    "clipse -listen",
+    "wl-paste --watch cliphist store",
 }
 
 hl.on("hyprland.start", function()

@@ -1,0 +1,5 @@
+#!/bin/bash
+
+systemctl --user enable wireplumber
+systemctl --user start wireplumber
+systemctl --user restart pipewire pipewire-pulse wireplumber

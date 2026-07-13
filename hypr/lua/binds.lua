@@ -6,12 +6,12 @@ local main_mod = "SUPER"
 
 local alacritty = {
     terminal = "alacritty",
-    clipboard = "alacritty --class app.clipse -e 'clipse'"
+    clipboard = "alacritty --class app.cliphist -e ~/.local/bin/cliphist-menu"
 }
 
 local ghostty = {
     terminal = "ghostty",
-    clipboard = "ghostty --class=app.clipse -e 'clipse'"
+    clipboard = "ghostty --class=app.cliphist -e ~/.local/bin/cliphist-menu"
 }
 
 local default_terminal = ghostty

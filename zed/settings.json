@@ -91,7 +91,9 @@
         "mode": ["auto"],
       },
       "default_config_options": {
-        "mode": "auto",
+        "reasoning_effort": "medium",
+        "fast-mode": false,
+        "mode": "agent",
       },
       "type": "registry",
     },
@@ -187,7 +189,7 @@
     // "border_size": 5
   },
   "icon_theme": {
-    "mode": "dark",
+    "mode": "light",
     "light": "Catppuccin Mocha",
     "dark": "Catppuccin Mocha",
   },
@@ -204,10 +206,9 @@
       "max_severity": null,
     },
   },
-  "show_edit_predictions": true,
+  "show_edit_predictions": false,
   "edit_predictions": {
     "provider": "zed",
-    "disabled_globs": ["/home/parker/Documents/playground/learn-ruby/*"],
     "mode": "subtle",
   },
   "experimental.theme_overrides": {
@@ -217,7 +218,7 @@
   "theme": {
     "mode": "dark",
     "light": "One Light",
-    "dark": "Zed One Dark",
+    "dark": "Vercel Dark",
   },
   "toolbar": {
     "breadcrumbs": true,
@@ -236,7 +237,7 @@
     "play_sound_when_agent_done": "always",
     "default_profile": "write",
     "default_model": {
-      "speed": "standard",
+      "speed": "fast",
       "effort": "xhigh",
       "enable_thinking": true,
       "provider": "openai-subscribed",

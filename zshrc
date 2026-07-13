@@ -30,6 +30,9 @@ alias gss='git status'
 alias ga='git add'
 alias fixtail='sudo tailscale down && sudo tailscale up'
 alias ex='exit 0'
+gbc() {
+  printf '`%s`' "$(git branch --show-current)" | wl-copy
+}
 
 b() {
   local root
@@ -72,3 +75,7 @@ complete -o nospace -C /usr/bin/terraform terraform
 eval "$(forge zsh plugin)"
 # CF CLI completions
 [[ -f "/home/parker/.config/cf/completions/_cf.zsh" ]] && source "/home/parker/.config/cf/completions/_cf.zsh"
+
+# opencode
+export PATH=/home/parker/.opencode/bin:$PATH
+eval "$(rbenv init - zsh)"
