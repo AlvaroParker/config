@@ -92,7 +92,7 @@
       },
       "default_config_options": {
         "reasoning_effort": "medium",
-        "fast-mode": false,
+        "fast-mode": true,
         "mode": "agent",
       },
       "type": "registry",
@@ -206,7 +206,7 @@
       "max_severity": null,
     },
   },
-  "show_edit_predictions": false,
+  "show_edit_predictions": true,
   "edit_predictions": {
     "provider": "zed",
     "mode": "subtle",
@@ -238,10 +238,10 @@
     "default_profile": "write",
     "default_model": {
       "speed": "fast",
-      "effort": "xhigh",
+      "effort": "max",
       "enable_thinking": true,
       "provider": "openai-subscribed",
-      "model": "gpt-5.5",
+      "model": "gpt-5.6-sol",
     },
   },
 

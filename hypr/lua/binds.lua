@@ -104,7 +104,7 @@ bind(main_mod .. " + XF86MonBrightnessDown", exec("brightnessctl set 0%"))
 bind("XF86AudioRaiseVolume", exec("swayosd-client --output-volume raise"), { repeating = true })
 bind("XF86AudioLowerVolume", exec("swayosd-client --output-volume lower"), { repeating = true })
 bind("XF86AudioMute", exec("swayosd-client --output-volume mute-toggle"))
-bind("XF86AudioMicMute", exec("swayosd-client --input-volume mute-toggle"))
+bind("XF86AudioMicMute", exec("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"))
 bind(main_mod .. " + CTRL + M", exec("swayosd-client --input-volume mute-toggle"))
 
 bind("XF86AudioPlay", exec("playerctl play-pause"))
