@@ -5,22 +5,34 @@ fi
 
 # Oh-my-zsh configurations
 export ZSH="$HOME/.oh-my-zsh"
-# ZSH_THEME="agnoster"
 plugins=(git zsh-autosuggestions zsh-syntax-highlighting zsh-fzf-history-search)
 source $ZSH/oh-my-zsh.sh
 
 bindkey -v # enable vi mode
+KEYTIMEOUT=1 # leave insert mode immediately on Esc
 bindkey '^F' forward-char
 bindkey "^P" up-line-or-beginning-search
 bindkey "^N" down-line-or-beginning-search
 bindkey "^R" fzf_history_search
 
-prompt_context(){}
+# Cursor follows the vi mode: a block in normal mode, a bar while typing.
+# Defined before starship, which wraps this widget to redraw its prompt mark.
+_nocturne_cursor() {
+  if [[ $KEYMAP == vicmd ]]; then
+    printf '\e[2 q'
+  else
+    printf '\e[6 q'
+  fi
+}
+zle-keymap-select() { _nocturne_cursor }
+zle-line-init() { _nocturne_cursor }
+zle -N zle-keymap-select
+zle -N zle-line-init
 
 # Aliases
 alias ls='lsd'
 alias nv='nvim'
-alias tree='exa --icons=always --tree'
+alias tree='eza --icons=always --tree'
 alias ipinfo='ip -br -c a'
 alias graph='git log --oneline --graph --all --decorate'
 alias sudo='sudo -A'
@@ -53,6 +65,10 @@ export LOCAL_NOTEBOOK_DEV=1
 export R_LIBS_USER=$HOME/R/x86_64-pc-linux-gnu-library/4.4
 export TIMEFMT=$'%E real\n%U user\n%S sys'
 
+# Nocturne colours for terminal tools (see DESIGN.md).
+export FZF_DEFAULT_OPTS_FILE="$HOME/.config/nocturne/fzfrc"
+export BAT_THEME=Nocturne # bat/themes/Nocturne.tmTheme
+
 # Path exports
 export PATH=$JAVA_HOME/bin:$PATH
 export PATH="$PATH:$HOME/.cargo/bin:$HOME/.local/share/gem/ruby/3.2.0/bin:$HOME/.local/bin:$HOME/go/bin:/usr/local/bin:$HOME/.dotnet:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools"
@@ -62,7 +78,8 @@ export PATH=$GEM_HOME/bin:$PATH
 export PATH="$PATH:$HOME/.dotnet/tools"
 export PATH="$HOME/.bun/bin:$PATH"
 
-source ~/.custom_zshrc
+# Machine-specific settings and secrets live here, outside the repo.
+[[ -r ~/.custom_zshrc ]] && source ~/.custom_zshrc
 eval "$(starship init zsh)"
 eval "$(zoxide init zsh)"
 eval "$(direnv hook zsh)"
@@ -71,8 +88,8 @@ autoload -U +X bashcompinit && bashcompinit
 complete -o nospace -C /usr/bin/terraform terraform
 eval "$(forge zsh plugin)"
 # CF CLI completions
-[[ -f "/home/parker/.config/cf/completions/_cf.zsh" ]] && source "/home/parker/.config/cf/completions/_cf.zsh"
+[[ -f "$HOME/.config/cf/completions/_cf.zsh" ]] && source "$HOME/.config/cf/completions/_cf.zsh"
 
 # opencode
-export PATH=/home/parker/.opencode/bin:$PATH
+export PATH=$HOME/.opencode/bin:$PATH
 eval "$(rbenv init - zsh)"

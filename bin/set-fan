@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Make sure to load the thinkpad_acpi module with fan control enabled
+# sudo modprobe -r thinkpad_acpi
+# sudo modprobe thinkpad_acpi fan_control=1
+
+FAN_PATH="/proc/acpi/ibm/fan"
+
+if (( EUID != 0 )); then
+    exec sudo -A "$0" "$@"
+fi
+
+if [[ ! -w "$FAN_PATH" ]]; then
+    echo "Fan control interface not writable: $FAN_PATH"
+    exit 1
+fi
+
+case "${1:-}" in
+    reset)
+        echo "level auto" > "$FAN_PATH"
+        echo "Fan control reset to automatic."
+        ;;
+    full)
+        echo "level 7" > "$FAN_PATH"
+        echo "Fan set to full speed."
+        ;;
+    max)
+        echo "level full-speed" > "$FAN_PATH"
+        echo "Fan set to max speed."
+        ;;
+    *)
+        echo "Usage: $0 {reset|full|max}"
+        exit 1
+        ;;
+esac

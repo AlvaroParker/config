@@ -1,0 +1,41 @@
+/* Nocturne for GTK 3 apps on Adwaita-dark. Linked to ~/.config/gtk-3.0/gtk.css.
+   Adwaita computes many colours at build time, so this tints the main
+   surfaces, text and selection rather than every widget. */
+
+@import url("../nocturne/palette.css");
+
+@define-color theme_bg_color @ink_1;
+@define-color theme_fg_color @text;
+@define-color theme_base_color @ink_1;
+@define-color theme_text_color @text;
+@define-color theme_selected_bg_color @accent_dim;
+@define-color theme_selected_fg_color @bright;
+
+@define-color theme_unfocused_bg_color @ink_1;
+@define-color theme_unfocused_fg_color @muted;
+@define-color theme_unfocused_base_color @ink_1;
+@define-color theme_unfocused_text_color @muted;
+@define-color theme_unfocused_selected_bg_color @ink_3;
+@define-color theme_unfocused_selected_fg_color @text;
+
+@define-color insensitive_bg_color @ink_1;
+@define-color insensitive_fg_color @faint;
+@define-color insensitive_base_color @ink_1;
+
+@define-color borders @line;
+@define-color unfocused_borders @line;
+
+@define-color warning_color @gold;
+@define-color error_color @red;
+@define-color success_color @green;
+
+headerbar,
+.titlebar {
+    background: @ink_0;
+    border-color: @line;
+}
+
+.sidebar,
+.navigation-sidebar {
+    background: @ink_0;
+}

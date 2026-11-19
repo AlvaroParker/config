@@ -1,0 +1,47 @@
+/* Nocturne for GTK 4 and libadwaita apps (Files, Settings, Volume).
+   Linked to ~/.config/gtk-4.0/gtk.css. */
+
+@import url("../nocturne/palette.css");
+
+@define-color accent_color @accent;
+@define-color accent_bg_color @accent;
+@define-color accent_fg_color @ink_1;
+
+@define-color window_bg_color @ink_1;
+@define-color window_fg_color @text;
+@define-color view_bg_color @ink_1;
+@define-color view_fg_color @text;
+
+@define-color headerbar_bg_color @ink_0;
+@define-color headerbar_fg_color @text;
+@define-color headerbar_border_color @line;
+@define-color headerbar_backdrop_color @ink_0;
+
+@define-color sidebar_bg_color @ink_0;
+@define-color sidebar_fg_color @text;
+@define-color sidebar_backdrop_color @ink_0;
+@define-color secondary_sidebar_bg_color @ink_1;
+@define-color secondary_sidebar_fg_color @text;
+@define-color secondary_sidebar_backdrop_color @ink_1;
+
+@define-color card_bg_color @ink_2;
+@define-color card_fg_color @text;
+@define-color dialog_bg_color @ink_2;
+@define-color dialog_fg_color @text;
+@define-color popover_bg_color @ink_2;
+@define-color popover_fg_color @text;
+@define-color thumbnail_bg_color @ink_2;
+@define-color thumbnail_fg_color @text;
+
+@define-color destructive_color @red;
+@define-color destructive_bg_color @red;
+@define-color destructive_fg_color @ink_1;
+@define-color success_color @green;
+@define-color success_bg_color @green;
+@define-color success_fg_color @ink_1;
+@define-color warning_color @gold;
+@define-color warning_bg_color @gold;
+@define-color warning_fg_color @ink_1;
+@define-color error_color @red;
+@define-color error_bg_color @red;
+@define-color error_fg_color @ink_1;

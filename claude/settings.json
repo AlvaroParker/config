@@ -1,0 +1,45 @@
+{
+  "env": {
+    "CLAUDE_CODE_TMUX_TRUECOLOR": "1"
+  },
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
+  "model": "opus",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "^(startup|resume|clear|compact|fork)$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$HOME/.claude/hooks/herdr-agent-state.sh\" session",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh",
+    "padding": 0
+  },
+  "enabledPlugins": {
+    "gopls-lsp@claude-plugins-official": true,
+    "rust-analyzer-lsp@claude-plugins-official": true
+  },
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "effortLevel": "high"
+    },
+    "claude-fable-5-2": {
+      "effortLevel": "high"
+    }
+  },
+  "tui": "fullscreen",
+  "agentPushNotifEnabled": true,
+  "voiceEnabled": false,
+  "feedbackDrafts": "off"
+}

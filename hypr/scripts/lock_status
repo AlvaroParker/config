@@ -1,33 +1,30 @@
 #!/usr/bin/env bash
+# One quiet status line for the lock screen: battery and connection.
+# Prints words, not network or device names.
 
 battery_dir="/sys/class/power_supply/BAT0"
-battery=""
+parts=()
 
 if [[ -r "$battery_dir/capacity" ]]; then
-    capacity=$(cat "$battery_dir/capacity")
-    status=""
-    [[ -r "$battery_dir/status" ]] && status=$(cat "$battery_dir/status")
-
+    capacity=$(<"$battery_dir/capacity")
+    status=$(<"$battery_dir/status")
     if [[ "$status" == "Charging" ]]; then
-        battery="󰂄 ${capacity}%"
+        parts+=("${capacity}% charging")
     else
-        battery="󰁹 ${capacity}%"
+        parts+=("${capacity}%")
     fi
 fi
 
 route=$(ip route get 1.1.1.1 2>/dev/null || true)
 dev=$(awk '{ for (i = 1; i <= NF; i++) if ($i == "dev") { print $(i + 1); exit } }' <<<"$route")
-network="󰖪 offline"
+case "$dev" in
+    "") parts+=("offline") ;;
+    wl*) parts+=("Wi-Fi") ;;
+    *) parts+=("wired") ;;
+esac
 
-if [[ -n "$dev" ]]; then
-    case "$dev" in
-        wl*) network=" ${dev}" ;;
-        *) network="󰈀 wired" ;;
-    esac
-fi
-
-if [[ -n "$battery" ]]; then
-    printf '%s  •  %s\n' "$battery" "$network"
-else
-    printf '%s\n' "$network"
-fi
+line="${parts[0]}"
+for part in "${parts[@]:1}"; do
+    line+=" · $part"
+done
+printf '%s\n' "$line"

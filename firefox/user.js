@@ -107,9 +107,9 @@ user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
  * Fonts
  ****************************************************************************/
 
-user_pref("font.name.monospace.x-western", "FiraCode Nerd Font Mono");
-user_pref("font.name.sans-serif.x-western", "Inter Display");
-user_pref("font.name.serif.x-western", "Inter Display");
+user_pref("font.name.monospace.x-western", "Lilex Nerd Font Mono");
+user_pref("font.name.sans-serif.x-western", "IBM Plex Sans");
+user_pref("font.name.serif.x-western", "IBM Plex Serif");
 
 /****************************************************************************
  * Passwords
@@ -225,5 +225,5 @@ user_pref(
 );
 user_pref(
     "browser.newtabpage.activity-stream.newtabWallpapers.wallpaper",
-    "solid-color-picker-#1c1b22",
+    "solid-color-picker-#0f121e",
 );

@@ -1,0 +1,36 @@
+# Nocturne: the only place colours are defined in this repo.
+#
+# Values are OKLCH: [lightness 0-1, chroma, hue in degrees].
+# Neutrals share one hue, so they only list lightness and chroma.
+# After editing, run ./nocturne/build to regenerate every app's colour file.
+# See DESIGN.md for what each colour is for.
+
+# The one warm light. It marks where you are: the focused window, the active
+# workspace, the cursor, a switch that is on. Choose from [accents].
+accent = "rose"
+
+[neutral]
+hue = 272                  # the wallpaper's blue, kept below 0.04 chroma
+ink-0 = [0.150, 0.022]     # bar, deepest surface
+ink-1 = [0.185, 0.026]     # window background
+ink-2 = [0.225, 0.030]     # raised panels, popups, notifications
+ink-3 = [0.275, 0.034]     # selected rows, hover, inactive toggles
+line = [0.335, 0.036]      # hairlines and unfocused borders
+faint = [0.625, 0.035]     # comments, placeholders, off states (5.2:1)
+muted = [0.730, 0.030]     # secondary text (7.8:1)
+text = [0.900, 0.020]      # body text (13.8:1)
+bright = [0.970, 0.010]    # emphasis, the one bold thing (17.1:1)
+
+[accents]
+rose = [0.800, 0.095, 12]
+ember = [0.760, 0.140, 42]
+ice = [0.930, 0.030, 272]
+
+# Colour is information: these carry meaning and are never decoration.
+[semantic]
+red = [0.680, 0.200, 27]   # error, offline, critical
+gold = [0.840, 0.120, 82]  # warning, modes, modified
+green = [0.810, 0.120, 155] # success, added
+blue = [0.770, 0.105, 258] # links
+foam = [0.830, 0.075, 205] # terminal cyan
+iris = [0.780, 0.105, 305] # terminal magenta, keywords

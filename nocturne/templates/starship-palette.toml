@@ -1,0 +1,10 @@
+[palettes.nocturne]
+faint = "{{faint}}"
+muted = "{{muted}}"
+text = "{{text}}"
+bright = "{{bright}}"
+accent = "{{accent}}"
+red = "{{red}}"
+gold = "{{gold}}"
+green = "{{green}}"
+foam = "{{foam}}"

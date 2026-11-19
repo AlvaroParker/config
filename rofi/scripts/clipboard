@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# rofi script mode: clipboard history from cliphist. Selecting an entry copies it.
+set -uo pipefail
+
+if [[ "${ROFI_RETV:-0}" == 1 && -n "${ROFI_INFO:-}" ]]; then
+    # wl-copy stays in the background to serve the clipboard after rofi closes.
+    cliphist decode "$ROFI_INFO" | wl-copy >/dev/null 2>&1
+    exit 0
+fi
+
+printf '\0no-custom\x1ftrue\n'
+printf '\0message\x1fEnter copies the entry\n'
+# rofi starts every section at launch, so this must be quick: one sed pass
+# turns "id<TAB>preview" into "preview<NUL>info<US>id<US>icon<US>edit-paste".
+cliphist list | sed -E 's/^([0-9]+)\t(.*)$/\2\x00info\x1f\1\x1ficon\x1fedit-paste/'

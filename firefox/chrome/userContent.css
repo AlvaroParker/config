@@ -1,4 +1,6 @@
-/* Keep internal pages' initial paint and wallpaper fallback in sync with user.js. */
+/* Keep internal pages' initial paint and wallpaper fallback in sync with the
+   window background. --uc-bg comes from nocturne.css (generated). */
+@import url("nocturne.css");
 
 @-moz-document url("about:blank"), url("about:privatebrowsing") {
     :root {
@@ -7,14 +9,14 @@
 
     html,
     body {
-        background-color: #1c1b22 !important;
+        background-color: var(--uc-bg) !important;
     }
 }
 
 @-moz-document url("about:newtab"), url("about:home") {
     :root {
         color-scheme: dark !important;
-        --newtab-background-color: #1c1b22 !important;
+        --newtab-background-color: var(--uc-bg) !important;
     }
 
     html,
@@ -22,12 +24,12 @@
     #root,
     .outer-wrapper,
     .nova-outer-wrapper {
-        background-color: #1c1b22 !important;
+        background-color: var(--uc-bg) !important;
     }
 
     body.activity-stream {
         --newtab-wallpaper: "" !important;
-        --newtab-wallpaper-color: #1c1b22 !important;
+        --newtab-wallpaper-color: var(--uc-bg) !important;
         --newtab-wallpaper-backgroundPosition: center !important;
     }
 }

@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# Keep the screen awake: holds a systemd idle inhibitor, which hypridle respects.
+#   keep-awake toggle | on | off
+#   keep-awake status    prints true or false (for the control centre)
+#   keep-awake waybar    prints JSON for the bar, or nothing when off
+set -uo pipefail
+
+who="nocturne-keep-awake"
+
+running() {
+    pgrep -f -- "--who=$who" >/dev/null
+}
+
+refresh_bar() {
+    pkill -RTMIN+9 waybar 2>/dev/null || true
+}
+
+on() {
+    running && return
+    setsid -f systemd-inhibit --what=idle --who="$who" --why="Keep awake is on" \
+        sleep infinity >/dev/null 2>&1
+    refresh_bar
+}
+
+off() {
+    pkill -f -- "--who=$who" 2>/dev/null || true
+    refresh_bar
+}
+
+case "${1:-toggle}" in
+    on) on ;;
+    off) off ;;
+    toggle) if running; then off; else on; fi ;;
+    status) if running; then echo true; else echo false; fi ;;
+    waybar)
+        if running; then
+            printf '{"text":"󰅶","class":"on","tooltip":"Keep awake is on: the screen will not dim, lock or sleep. Click to turn it off."}\n'
+        fi
+        ;;
+    *)
+        printf 'usage: keep-awake [toggle|on|off|status|waybar]\n' >&2
+        exit 2
+        ;;
+esac

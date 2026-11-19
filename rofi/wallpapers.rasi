@@ -1,0 +1,38 @@
+/* Wallpaper picker: a grid of previews. */
+@import "nocturne.rasi"
+
+window {
+    width: 920px;
+}
+
+entry {
+    placeholder: "Search wallpapers";
+}
+
+listview {
+    columns: 3;
+    lines: 2;
+    flow: horizontal;
+    spacing: 6px;
+    padding: 8px;
+}
+
+element {
+    orientation: vertical;
+    padding: 8px;
+    spacing: 8px;
+    children: [ element-icon, element-text ];
+}
+
+element-icon {
+    size: 270px;
+}
+
+element-text {
+    horizontal-align: 0.5;
+    font: "Lilex Nerd Font 9";
+}
+
+footer {
+    enabled: false;
+}

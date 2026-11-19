@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+# Switches for the control centre (swaync) and anything else that needs them.
+#   control NAME status        print true or false
+#   control NAME true|false    turn it on or off
+#   control NAME toggle        flip it
+# NAME is one of: wifi bluetooth nightlight dnd awake performance
+#
+# swaync runs commands through /bin/sh -c "...", so its config calls this
+# script instead of embedding shell with quotes.
+set -uo pipefail
+
+scripts="$(dirname "$(readlink -f "$0")")"
+name=${1:-}
+action=${2:-status}
+
+status() {
+    case "$name" in
+        wifi) [[ "$(nmcli radio wifi)" == enabled ]] ;;
+        bluetooth) ! rfkill list bluetooth | grep -q "Soft blocked: yes" ;;
+        nightlight) [[ "$("$scripts/nightlight" status)" == true ]] ;;
+        dnd) [[ "$(swaync-client --get-dnd --skip-wait)" == true ]] ;;
+        awake) [[ "$("$scripts/keep-awake" status)" == true ]] ;;
+        performance) [[ "$(tlpctl get 2>/dev/null)" == performance ]] ;;
+        *) return 2 ;;
+    esac
+}
+
+set_state() { # true|false
+    local on=$1
+    case "$name" in
+        wifi) nmcli radio wifi "$([[ $on == true ]] && echo on || echo off)" ;;
+        bluetooth) rfkill "$([[ $on == true ]] && echo unblock || echo block)" bluetooth ;;
+        nightlight) "$scripts/nightlight" "$([[ $on == true ]] && echo on || echo off)" ;;
+        dnd) swaync-client "$([[ $on == true ]] && echo --dnd-on || echo --dnd-off)" --skip-wait >/dev/null ;;
+        awake) "$scripts/keep-awake" "$([[ $on == true ]] && echo on || echo off)" ;;
+        performance) tlpctl set "$([[ $on == true ]] && echo performance || echo balanced)" >/dev/null ;;
+    esac
+}
+
+case "$name" in
+    wifi | bluetooth | nightlight | dnd | awake | performance) ;;
+    *)
+        printf 'usage: control {wifi|bluetooth|nightlight|dnd|awake|performance} {status|true|false|toggle}\n' >&2
+        exit 2
+        ;;
+esac
+
+case "$action" in
+    status) if status; then echo true; else echo false; fi ;;
+    true | false) set_state "$action" ;;
+    toggle) if status; then set_state false; else set_state true; fi ;;
+    *)
+        printf 'control: unknown action %s\n' "$action" >&2
+        exit 2
+        ;;
+esac

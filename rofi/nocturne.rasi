@@ -1,0 +1,160 @@
+/* Nocturne launcher: one glass surface, the query as the largest text,
+   sections in the footer. Colours come from palette.rasi (generated). */
+
+@import "palette.rasi"
+
+* {
+    font: "IBM Plex Sans 11";
+    background-color: transparent;
+    text-color: @text;
+    margin: 0;
+    padding: 0;
+    spacing: 0;
+}
+
+window {
+    location: center;
+    anchor: center;
+    y-offset: -64px;
+    width: 600px;
+    border: 1px;
+    border-color: @line;
+    border-radius: 10px;
+    background-color: @glass;
+}
+
+mainbox {
+    children: [ inputbar, message, listview, footer ];
+}
+
+/* Query */
+inputbar {
+    padding: 16px 18px;
+    spacing: 12px;
+    border: 0 0 1px 0;
+    border-color: @line;
+    children: [ textbox-search, entry ];
+}
+
+textbox-search {
+    expand: false;
+    str: "󰍉";
+    font: "Lilex Nerd Font 14";
+    text-color: @faint;
+    vertical-align: 0.5;
+}
+
+entry {
+    font: "IBM Plex Sans 15";
+    text-color: @bright;
+    cursor-color: @accent;
+    placeholder: "Search";
+    placeholder-color: @faint;
+    vertical-align: 0.5;
+}
+
+/* Confirmation questions and hints from script sections */
+message {
+    padding: 10px 18px;
+    border: 0 0 1px 0;
+    border-color: @line;
+}
+
+textbox {
+    text-color: @muted;
+}
+
+/* Results: a fixed height, so the launcher never resizes while you type. */
+listview {
+    expand: false;
+    lines: 8;
+    fixed-height: true;
+    padding: 6px;
+    spacing: 0;
+    scrollbar: false;
+}
+
+element {
+    padding: 9px 12px;
+    spacing: 12px;
+    border-radius: 6px;
+    children: [ element-icon, element-text ];
+}
+
+element normal.normal,
+element alternate.normal {
+    background-color: transparent;
+    text-color: @text;
+}
+
+element selected.normal {
+    background-color: @ink-3;
+    text-color: @bright;
+}
+
+/* "Active" rows are the current item: the running window, the current wallpaper. */
+element normal.active,
+element alternate.active {
+    background-color: transparent;
+    text-color: @accent;
+}
+
+element selected.active {
+    background-color: @ink-3;
+    text-color: @accent;
+}
+
+element normal.urgent,
+element alternate.urgent,
+element selected.urgent {
+    text-color: @red;
+}
+
+element-icon {
+    size: 20px;
+    vertical-align: 0.5;
+}
+
+element-text {
+    text-color: inherit;
+    vertical-align: 0.5;
+    highlight: bold;
+}
+
+/* Sections */
+footer {
+    expand: false;
+    orientation: horizontal;
+    padding: 0 18px;
+    border: 1px 0 0 0;
+    border-color: @line;
+    children: [ mode-switcher, textbox-hint ];
+}
+
+mode-switcher {
+    expand: false;
+    spacing: 20px;
+}
+
+button {
+    expand: false;
+    padding: 10px 0 8px;
+    font: "Lilex Nerd Font 9";
+    text-color: @faint;
+    border: 0 0 2px 0;
+    border-color: transparent;
+}
+
+button selected {
+    text-color: @bright;
+    border-color: @accent;
+}
+
+textbox-hint {
+    expand: true;
+    str: "tab to switch";
+    font: "Lilex Nerd Font 9";
+    text-color: @faint;
+    horizontal-align: 1;
+    vertical-align: 0.5;
+}

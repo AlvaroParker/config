@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# Dim the laptop panel before the screen locks, and restore it on activity.
+#   dim on    save the brightness and drop to 40% of it
+#   dim off   restore the saved brightness
+set -uo pipefail
+
+case "${1:-}" in
+    on)
+        current="$(brightnessctl get)"
+        brightnessctl --save >/dev/null
+        brightnessctl set "$((current * 4 / 10))" >/dev/null
+        ;;
+    off)
+        brightnessctl --restore >/dev/null
+        ;;
+    *)
+        printf 'usage: dim {on|off}\n' >&2
+        exit 2
+        ;;
+esac

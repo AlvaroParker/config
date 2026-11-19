@@ -1,0 +1,188 @@
+#!/usr/bin/env python3
+"""Paint the Nocturne wallpaper: a cold night field with a single warm light.
+
+    nocturne/wallpaper                      write hypr/wallpapers/nocturne.jpg
+    nocturne/wallpaper --seed 11            a different range of hills
+    nocturne/wallpaper --size 3072x1920 --out /tmp/test.png
+
+The scene is a night sky over receding hills, with a low moon in the accent
+colour. Every colour comes from nocturne/palette.toml, so changing the accent
+and re-running this repaints the moon. Needs numpy and Pillow.
+"""
+
+import argparse
+import importlib.machinery
+import importlib.util
+import math
+import tomllib
+from pathlib import Path
+
+import numpy as np
+from PIL import Image
+
+HERE = Path(__file__).resolve().parent
+ROOT = HERE.parent
+
+HORIZON = 0.64
+
+# Hill ranges from far to near. They bunch up towards the horizon, as distance
+# compresses them, and grow larger and simpler up close.
+#   base, amplitude, frequency, colour (L, C, hue offset), moon rim, glow kept
+RANGES = [
+    (HORIZON + 0.012, 0.045, 2.4, (0.235, 0.046, 6), 0.40, 0.45),
+    (0.690, 0.050, 1.7, (0.200, 0.040, 4), 0.12, 0.20),
+    (0.755, 0.065, 1.1, (0.170, 0.033, 2), 0.0, 0.08),
+    (0.845, 0.080, 0.75, (0.142, 0.027, 0), 0.0, 0.03),
+    (0.945, 0.100, 0.45, (0.115, 0.022, 0), 0.0, 0.0),
+]
+
+
+def load_build():
+    """Import nocturne/build (a script without .py) for its colour maths."""
+    loader = importlib.machinery.SourceFileLoader("nocturne_build", str(HERE / "build"))
+    spec = importlib.util.spec_from_loader("nocturne_build", loader)
+    module = importlib.util.module_from_spec(spec)
+    loader.exec_module(module)
+    return module
+
+
+build = load_build()
+
+
+def linear(lightness, chroma, hue):
+    """OKLCH to linear-light RGB, as a float32 array of three channels."""
+    rgb = np.array(build.oklch_to_rgb(lightness, chroma, hue), dtype=np.float32) / 255.0
+    return np.where(rgb <= 0.04045, rgb / 12.92, ((rgb + 0.055) / 1.055) ** 2.4)
+
+
+def encode(channel):
+    """Linear light to sRGB in 0..1."""
+    channel = np.clip(channel, 0.0, 1.0)
+    return np.where(channel <= 0.0031308, channel * 12.92, 1.055 * channel ** (1 / 2.4) - 0.055)
+
+
+def ridge(x, rng, base, amplitude, frequency, octaves=6):
+    """A hill line from 1D noise: rolling sines plus ridged noise for peaks.
+
+    Image y grows downwards, so peaks are where the line goes up (smaller y).
+    """
+    smooth = np.zeros_like(x)
+    peaks = np.zeros_like(x)
+    total = 0.0
+    for octave in range(octaves):
+        weight = 0.5**octave
+        f = frequency * 2.0**octave * rng.uniform(0.8, 1.25)
+        smooth += weight * np.sin(2 * math.pi * f * x + rng.uniform(0, 2 * math.pi))
+        peaks += weight * (1 - np.abs(np.sin(math.pi * f * x + rng.uniform(0, math.pi))))
+        total += weight
+    height = 0.5 * (smooth / total + 1) * 0.55 + (peaks / total) ** 2.2 * 0.6
+    return base - amplitude * height
+
+
+def paint(width, height, seed):
+    config = tomllib.loads((HERE / "palette.toml").read_text())
+    hue = config["neutral"]["hue"]
+    accent_l, accent_c, accent_h = config["accents"][config["accent"]]
+    rng = np.random.default_rng(seed)
+
+    # Coordinates in height units, so circles stay round on any aspect ratio.
+    aspect = width / height
+    ys = (np.arange(height, dtype=np.float32) + 0.5) / height
+    xs = (np.arange(width, dtype=np.float32) + 0.5) / height
+    X, Y = np.meshgrid(xs, ys)
+    pixel = 1.0 / height
+
+    lines = [ridge(xs, rng, base, amp, freq)[None, :] for base, amp, freq, *_ in RANGES]
+
+    # Sky: the bar's ink-0 at the top, a dim blue-violet towards the horizon.
+    stops_y = [0.0, 0.30, 0.50, HORIZON, 1.0]
+    stops_c = [
+        linear(0.145, 0.022, hue),
+        linear(0.170, 0.030, hue),
+        linear(0.215, 0.040, hue + 2),
+        linear(0.285, 0.050, hue + 6),
+        linear(0.285, 0.050, hue + 6),
+    ]
+    image = np.stack([np.interp(Y, stops_y, [c[i] for c in stops_c]) for i in range(3)], axis=-1)
+
+    # The one warm light: a low moon, off-centre so the lock-screen clock never
+    # sits on it, a third hidden behind the farthest range wherever that falls.
+    moon_x, moon_r = aspect * 0.70, 0.019
+    column = min(int(moon_x / pixel), width - 1)
+    moon_y = float(lines[0][0, column]) - moon_r * 0.35
+    glow_color = linear(accent_l, accent_c, accent_h)
+    dx, dy = (X - moon_x) / 1.6, Y - moon_y  # a wider-than-tall haze, like light on mist
+    distance = np.sqrt(dx * dx + dy * dy)
+    # Kept close to the moon, so the rest of the sky stays cold.
+    glow = 0.34 * np.exp(-((distance / 0.032) ** 1.3)) + 0.09 * np.exp(-distance / 0.09) + 0.015 * np.exp(-distance / 0.3)
+    image += glow[..., None] * glow_color
+
+    # Stars, fewer and fainter towards the horizon and the moon.
+    sky_mask = np.clip((HORIZON - 0.12 - Y) / 0.2, 0, 1) * np.clip(distance / 0.25, 0, 1)
+    stars = np.zeros((height, width), dtype=np.float32)
+    count = int(260 * aspect / 1.6)
+    sx = rng.uniform(0, width, count).astype(int)
+    sy = (rng.beta(1.2, 2.6, count) * HORIZON * height).astype(int)
+    brightness = rng.lognormal(-2.3, 0.7, count).clip(0, 0.6)
+    stars[sy.clip(0, height - 1), sx.clip(0, width - 1)] = brightness
+    stars = np.asarray(Image.fromarray(stars).resize((width // 2, height // 2), Image.BOX).resize((width, height), Image.BICUBIC))
+    image += (stars * 4.0 * sky_mask)[..., None] * linear(0.95, 0.015, hue)
+
+    # The moon disc, slightly darker at its edge, drawn before the hills cover it.
+    moon_d = np.sqrt((X - moon_x) ** 2 + (Y - moon_y) ** 2)
+    moon_cover = np.clip((moon_r - moon_d) / pixel + 0.5, 0, 1)[..., None]
+    limb = 1.0 - 0.18 * np.clip(moon_d / moon_r, 0, 1) ** 2
+    moon = linear(0.92, accent_c * 0.6, accent_h) * limb[..., None]
+    image = image * (1 - moon_cover) + moon * moon_cover
+
+    # Hills from far to near. Each is darker, less tinted by haze, and lit less
+    # by the moon along its crest. Mist pools in the valley behind each one.
+    mist_color = linear(0.34, 0.040, hue + 4)
+    near_moon = np.exp(-(((X - moon_x) / 0.22) ** 2))
+    for line, (_, _, _, (l, c, h), rim_strength, glow_kept) in zip(lines, RANGES):
+        below = Y - line
+        cover = np.clip(below / pixel + 0.5, 0, 1)[..., None]
+
+        mist = 0.12 * np.exp(-np.clip(-below, 0, None) / 0.035) * (below < 0)
+        image += mist[..., None] * mist_color
+
+        fill = linear(l, c, hue + h)
+        shade = 1.0 - 0.2 * np.clip(below / 0.14, 0, 1)  # a touch darker further down
+        layer = fill * shade[..., None] + (glow_kept * glow)[..., None] * glow_color
+        # Moonlight catching the crest, only on far ranges and only near the moon.
+        rim = rim_strength * np.exp(-np.clip(below, 0, None) / 0.0018) * near_moon
+        layer += rim[..., None] * glow_color
+        image = image * (1 - cover) + layer * cover
+
+    # A gentle vignette keeps the corners quiet.
+    cx, cy = (X - aspect / 2) / aspect, Y - 0.5
+    image *= (1 - 0.22 * np.clip((cx * cx + cy * cy) * 2.2, 0, 1))[..., None]
+
+    # Fine grain and dithering, so the long gradients never band.
+    out = encode(image) * 255.0
+    out += rng.normal(0, 1.1, out.shape)
+    out = np.floor(out + rng.uniform(0, 1, out.shape))
+    return Image.fromarray(out.clip(0, 255).astype(np.uint8), "RGB")
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--size", default="3840x2400", help="WIDTHxHEIGHT, default 3840x2400")
+    parser.add_argument("--seed", type=int, default=7, help="changes the shape of the hills")
+    parser.add_argument("--out", default=str(ROOT / "hypr/wallpapers/nocturne.jpg"))
+    args = parser.parse_args()
+
+    width, height = (int(v) for v in args.size.lower().split("x"))
+    image = paint(width, height, args.seed)
+    out = Path(args.out)
+    if out.suffix.lower() in (".jpg", ".jpeg"):
+        # JPEG at 95 with full colour resolution keeps the anti-banding grain;
+        # WebP smooths it away and halves colour detail, which shows as bands.
+        image.save(out, quality=95, subsampling=0)
+    else:
+        image.save(out)
+    print(f"wrote {out} ({width}x{height}, seed {args.seed})")
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+PATH_NO_TURBO="/sys/devices/system/cpu/intel_pstate/no_turbo"
+
+if (( EUID != 0 )); then
+    exec sudo "$0" "$@"
+fi
+
+if [[ ! -w "$PATH_NO_TURBO" ]]; then
+    echo "intel_pstate turbo control not available at $PATH_NO_TURBO"
+    exit 1
+fi
+
+case "${1:-}" in
+    enable)
+        echo 0 > "$PATH_NO_TURBO"
+        echo "Turbo Boost enabled"
+        ;;
+    disable)
+        echo 1 > "$PATH_NO_TURBO"
+        echo "Turbo Boost disabled"
+        ;;
+    *)
+        echo "Usage: $0 {enable|disable}"
+        exit 1
+        ;;
+esac

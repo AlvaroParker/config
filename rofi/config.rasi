@@ -1,96 +1,58 @@
 configuration {
-	/*---------- General setting ----------*/
-	modi: "drun,run,filebrowser";
-	case-sensitive: false;
-	cycle: true;
-	filter: "";
-	scroll-method: 0;
-	normalize-match: true;
-	show-icons: true;
-	icon-theme: "Reversal-dark";
-	steal-focus: false;
+    /* Sections are passed by ./launcher; this is what plain `rofi -show drun` uses. */
+    modes: "drun,window";
+    show-icons: true;
+    icon-theme: "Reversal-blue-dark";
+    terminal: "ghostty";
 
-	/*---------- Matching setting ----------*/
-	matching: "normal";
-	tokenize: true;
+    /* Matching */
+    case-sensitive: false;
+    normalize-match: true;
+    matching: "normal";
+    tokenize: true;
+    sort: false;
+    cycle: true;
 
-	/*---------- SSH settings ----------*/
-	ssh-client: "ssh";
-	ssh-command: "{terminal} -e {ssh-client} {host} [-p {port}]";
-	parse-hosts: true;
-	parse-known-hosts: true;
-
-	/*---------- Drun settings ----------*/
-	drun-categories: "";
-	drun-match-fields: "name,generic,exec,categories,keywords";
-	drun-display-format: "{name} [<span weight='light' size='small'><i>({generic})</i></span>]";
-	drun-show-actions: false;
-	drun-url-launcher: "xdg-open";
-	drun-use-desktop-cache: false;
-	drun-reload-desktop-cache: false;
-	drun {
-		/** Parse user desktop files. */
-		parse-user:   true;
-		/** Parse system desktop files. */
-		parse-system: true;
+    /* Apps */
+    display-drun: "Apps";
+    drun-match-fields: "name,generic,exec,categories,keywords";
+    drun-display-format: "{name}[  <span alpha='55%'>{generic}</span>]";
+    drun-show-actions: false;
+    drun-url-launcher: "xdg-open";
+    drun {
+        parse-user: true;
+        parse-system: true;
+    }
+    run,drun {
+        fallback-icon: "application-x-addon";
     }
 
-	/*---------- Run settings ----------*/
-	run-command: "{cmd}";
-	run-list-command: "";
-	run-shell-command: "{terminal} -e {cmd}";
+    /* Windows */
+    display-window: "Windows";
+    window-match-fields: "title,class";
+    window-format: "{c}   {t}";
 
-	/*---------- Fallback Icon ----------*/
-	run,drun {
-		fallback-icon: "application-x-addon";
-	}
+    /* History */
+    disable-history: false;
+    max-history-size: 25;
 
-	/*---------- Window switcher settings ----------*/
-	window-match-fields: "title,class,role,name,desktop";
-	window-command: "wmctrl -i -R {window}";
-	window-format: "{w} - {c} - {t:0}";
-	window-thumbnail: false;
+    /* Tab moves between sections; arrows move between rows. */
+    kb-mode-next: "Tab,Shift+Right,Control+Tab";
+    kb-mode-previous: "ISO_Left_Tab,Shift+Left,Control+ISO_Left_Tab";
+    kb-element-next: "";
+    kb-element-prev: "";
 
-	/*---------- Combi settings ----------*/
-/*	combi-modi: "window,run";*/
-/*	combi-hide-mode-prefix: false;*/
-/*	combi-display-format: "{mode} {text}";*/
+    click-to-exit: true;
+    steal-focus: false;
 
-	/*---------- History and Sorting ----------*/
-	disable-history: false;
-	sorting-method: "normal";
-	max-history-size: 25;
-
-	/*---------- Display setting ----------*/
-	display-window: "Windows";
-	display-windowcd: "Window CD";
-	display-run: "Run";
-	display-ssh: "SSH";
-	display-drun: "";
-	display-combi: "Combi";
-	display-keys: "Keys";
-	display-filebrowser: "Files";
-
-	/*---------- Misc setting ----------*/
-	terminal: "rofi-sensible-terminal";
-	font: "Inter-V 12";
-	sort: false;
-	threads: 0;
-	click-to-exit: true;
-/*	ignored-prefixes: "";*/
-/*	pid: "/run/user/1000/rofi.pid";*/
-
-	/*---------- File browser settings ----------*/
     filebrowser {
-/*	  directory: "/home";*/
-      directories-first: true;
-      sorting-method:    "name";
+        directories-first: true;
+        sorting-method: "name";
     }
-
-	/*---------- Other settings ----------*/
     timeout {
-      action: "kb-cancel";
-      delay:  0;
+        action: "kb-cancel";
+        delay: 0;
     }
 }
-@theme "mocha-icons"
+
+@theme "nocturne"

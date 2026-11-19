@@ -1,1 +1,25 @@
 icomoon/
+
+# Local scratch work, such as design studies and mock-ups
+/work/
+
+# Python bytecode, written when nocturne/wallpaper loads nocturne/build and
+# when ranger loads its plugins
+__pycache__/
+*.pyc
+
+# Personal data and credentials never belong here. Several folders are linked
+# into ~/.config, so apps can write these files into the repo; keep them out.
+**/hosts.yml
+**/auth.json
+**/.credentials.json
+**/credentials.json
+**/development_credentials
+**/global_settings.json
+**/settings.local.json
+**/allowed_signers
+**/*.pem
+**/*.key
+**/id_*
+**/.env
+**/.env.*

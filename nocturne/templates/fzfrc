@@ -1,0 +1,5 @@
+--color=bg:-1,bg+:{{ink-3}},gutter:-1,fg:{{muted}},fg+:{{bright}},query:{{bright}}
+--color=hl:{{accent}},hl+:{{accent}},prompt:{{accent}},pointer:{{accent}},marker:{{green}}
+--color=info:{{faint}},spinner:{{faint}},header:{{faint}},border:{{line}},separator:{{ink-3}},scrollbar:{{line}}
+--pointer=▌
+--marker=▌

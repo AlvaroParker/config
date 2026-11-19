@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# rofi script mode: searchable list of Hyprland key bindings that have a
+# description (see hypr/lua/binds.lua). Selecting one just closes the list.
+set -uo pipefail
+
+[[ -n "${ROFI_INFO:-}" ]] && exit 0
+
+printf '\0no-custom\x1ftrue\n'
+printf '\0markup-rows\x1ftrue\n'
+
+hyprctl binds -j | jq -r '
+    def mods:
+        [ (if . / 64 | floor % 2 == 1 then "Super" else empty end),
+          (if . / 4 | floor % 2 == 1 then "Ctrl" else empty end),
+          (if . / 8 | floor % 2 == 1 then "Alt" else empty end),
+          (if . % 2 == 1 then "Shift" else empty end) ];
+    def keyname:
+        { "return": "Enter", "code:21": "=", "slash": "/", "escape": "Esc",
+          "mouse:272": "Left drag", "mouse:273": "Right drag",
+          "mouse_down": "Scroll down", "mouse_up": "Scroll up" }[.] // .;
+    .[]
+    | select(.has_description)
+    | ((.modmask | mods) + [(.key | keyname)]) as $keys
+    | (if .submap != "" then .submap + " mode: " else "" end) as $prefix
+    | "\($prefix)\(.description | gsub("&"; "&amp;") | gsub("<"; "&lt;"))  <span alpha=\"55%\" font_family=\"monospace\">\($keys | join(" "))</span>\u0000icon\u001finput-keyboard\u001finfo\u001fkey"
+'

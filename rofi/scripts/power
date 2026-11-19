@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+# rofi script mode: session and power actions. Anything that ends the session
+# asks for confirmation first.
+set -uo pipefail
+
+row() { # label, icon, action
+    printf '%s\0icon\x1f%s\x1finfo\x1f%s\n' "$1" "$2" "$3"
+}
+
+# Run after rofi has closed, so the action never fights the launcher for focus.
+later() {
+    setsid -f sh -c "sleep 0.15; $1" >/dev/null 2>&1
+}
+
+menu() {
+    printf '\0no-custom\x1ftrue\n'
+    printf '\0markup-rows\x1ftrue\n'
+    row "Lock" system-lock-screen lock
+    row "Sleep" system-suspend suspend
+    row "Hibernate" system-hibernate hibernate
+    row "Log out" system-log-out ask:logout
+    row "Restart" system-reboot ask:reboot
+    row "Shut down" system-shutdown ask:shutdown
+
+    # Read over D-Bus: tlpctl is Python and adds ~80 ms to every launcher start.
+    local current
+    current="$(busctl --system get-property net.hadess.PowerProfiles /net/hadess/PowerProfiles \
+        net.hadess.PowerProfiles ActiveProfile 2>/dev/null | cut -d'"' -f2)"
+    local -A names=([performance]="Performance" [balanced]="Balanced" [power-saver]="Power saver")
+    for profile in performance balanced power-saver; do
+        local label="Power profile: ${names[$profile]}"
+        if [[ "$profile" == "$current" ]]; then
+            label="$label  <span alpha='55%'>current</span>"
+        fi
+        row "$label" "power-profile-$profile-symbolic" "profile:$profile"
+    done
+}
+
+confirm() { # action, question, yes label
+    printf '\0no-custom\x1ftrue\n'
+    printf '\0message\x1f%s\n' "$2"
+    row "$3" system-shutdown "do:$1"
+    row "Cancel" go-previous back
+}
+
+case "${ROFI_INFO:-}" in
+    "" | back) menu ;;
+    lock) later "loginctl lock-session" ;;
+    suspend) later "systemctl suspend" ;;
+    hibernate) later "systemctl hibernate" ;;
+    ask:logout) confirm logout "Log out and close every app?" "Log out" ;;
+    ask:reboot) confirm reboot "Restart the computer?" "Restart" ;;
+    ask:shutdown) confirm shutdown "Shut down the computer?" "Shut down" ;;
+    do:logout) later "hyprctl dispatch 'hl.dsp.exit()'" ;;
+    do:reboot) later "systemctl reboot" ;;
+    do:shutdown) later "systemctl poweroff" ;;
+    profile:*) later "tlpctl set ${ROFI_INFO#profile:}" ;;
+esac

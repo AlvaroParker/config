@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# Nocturne launcher: one picker for apps, windows, clipboard, Wi-Fi and power.
+# Tab and Shift+Tab move between the sections listed in the footer.
+#
+#   launcher             apps
+#   launcher window      open windows
+#   launcher clipboard   clipboard history
+#   launcher wifi        Wi-Fi networks
+#   launcher power       lock, sleep, log out, restart, shut down, power profile
+#   launcher wallpapers  wallpaper grid
+#   launcher bindings    searchable list of Hyprland key bindings
+set -euo pipefail
+
+here="$(dirname "$(readlink -f "$0")")"
+scripts="$here/scripts"
+section="${1:-drun}"
+
+# The same key closes the launcher when it is already open.
+if pkill -x rofi; then
+    exit 0
+fi
+
+# Script sections are named as they appear in the footer.
+main="drun,window,Clipboard:$scripts/clipboard,Wi-Fi:$scripts/wifi,Power:$scripts/power"
+
+case "$section" in
+    drun | apps) exec rofi -show drun -modes "$main" ;;
+    window) exec rofi -show window -modes "$main" ;;
+    clipboard) exec rofi -show Clipboard -modes "$main" ;;
+    wifi) exec rofi -show Wi-Fi -modes "$main" ;;
+    power) exec rofi -show Power -modes "$main" ;;
+    wallpapers) exec rofi -show Wallpapers -modes "Wallpapers:$scripts/wallpapers" -theme "$here/wallpapers.rasi" ;;
+    bindings | keys) exec rofi -show Keys -modes "Keys:$scripts/bindings" -theme "$here/single.rasi" ;;
+    *)
+        printf 'usage: launcher [apps|window|clipboard|wifi|power|wallpapers|bindings]\n' >&2
+        exit 2
+        ;;
+esac

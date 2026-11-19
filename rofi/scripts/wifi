@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+# rofi script mode: Wi-Fi networks through NetworkManager.
+# Known and open networks connect directly. New secured networks ask for the
+# password after the launcher closes (see wifi-password).
+set -uo pipefail
+
+here="$(dirname "$(readlink -f "$0")")"
+
+row() { # label, icon, action
+    printf '%s\0icon\x1f%s\x1finfo\x1f%s\n' "$1" "$2" "$3"
+}
+
+later() {
+    setsid -f "$@" >/dev/null 2>&1
+}
+
+signal_icon() {
+    local s=$1
+    if ((s >= 75)); then echo network-wireless-signal-excellent-symbolic
+    elif ((s >= 50)); then echo network-wireless-signal-good-symbolic
+    elif ((s >= 25)); then echo network-wireless-signal-ok-symbolic
+    else echo network-wireless-signal-weak-symbolic
+    fi
+}
+
+escape_markup() {
+    local s=${1//&/&amp;}
+    s=${s//</&lt;}
+    printf '%s' "${s//>/&gt;}"
+}
+
+menu() {
+    printf '\0no-custom\x1ftrue\n'
+    printf '\0markup-rows\x1ftrue\n'
+
+    if [[ "$(nmcli -t -f WIFI radio)" != enabled ]]; then
+        row "Turn Wi-Fi on" network-wireless-symbolic radio:on
+        row "Network settings" preferences-system-network net:settings
+        return
+    fi
+
+    # rofi starts every section at launch, so list from NetworkManager's last
+    # scan (instant) and ask for a fresh scan in the background for next time.
+    # A blocking rescan takes about 4 seconds; "Scan again" does that on request.
+    local rescan=no
+    if [[ "${1:-}" == rescan ]]; then
+        rescan=yes
+    else
+        setsid -f nmcli device wifi rescan >/dev/null 2>&1
+    fi
+
+    local -A seen=()
+    local in_use signal security ssid label
+    # -t escapes ':' inside fields as '\:'; SSID is last, so read keeps it whole.
+    while IFS=: read -r in_use signal security ssid; do
+        ssid=${ssid//\\:/:}
+        ssid=${ssid//\\\\/\\}
+        [[ -z "$ssid" || -n "${seen[$ssid]:-}" ]] && continue
+        seen[$ssid]=1
+        label="$(escape_markup "$ssid")"
+        if [[ "$in_use" == "*" ]]; then
+            label="$label  <span alpha='55%'>connected</span>"
+        elif [[ -n "$security" && "$security" != "--" ]]; then
+            label="$label  <span alpha='55%'>󰌾</span>"
+        fi
+        row "$label" "$(signal_icon "$signal")" "net:$security:$ssid"
+    done < <(nmcli -t -f IN-USE,SIGNAL,SECURITY,SSID device wifi list --rescan "$rescan" 2>/dev/null)
+
+    row "Scan again" view-refresh-symbolic scan
+    row "Turn Wi-Fi off" network-wireless-disabled-symbolic radio:off
+    row "Network settings" preferences-system-network net:settings
+}
+
+case "${ROFI_INFO:-}" in
+    "") menu ;;
+    scan) menu rescan ;;
+    radio:on) later nmcli radio wifi on ;;
+    radio:off) later nmcli radio wifi off ;;
+    net:settings) later nm-connection-editor ;;
+    net:*)
+        rest=${ROFI_INFO#net:}
+        security=${rest%%:*}
+        ssid=${rest#*:}
+        later "$here/wifi-connect" "$ssid" "$security"
+        ;;
+esac

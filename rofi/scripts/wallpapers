@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# rofi script mode: choose a wallpaper. The choice is saved outside the repo
+# by hypr/scripts/wallpaper.
+set -uo pipefail
+
+dir="$HOME/.config/hypr/wallpapers"
+setter="$HOME/.config/hypr/scripts/wallpaper"
+
+if [[ -n "${ROFI_INFO:-}" ]]; then
+    setsid -f "$setter" set "$ROFI_INFO" >/dev/null 2>&1
+    exit 0
+fi
+
+current="$("$setter" current 2>/dev/null || true)"
+printf '\0no-custom\x1ftrue\n'
+
+index=0
+while IFS= read -r -d '' file; do
+    name="$(basename "${file%.*}")"
+    printf '%s\0icon\x1f%s\x1finfo\x1f%s\n' "$name" "$file" "$file"
+    if [[ "$(readlink -f "$file")" == "$current" ]]; then
+        printf '\0active\x1f%d\n' "$index"
+    fi
+    index=$((index + 1))
+done < <(find -L "$dir" -maxdepth 1 -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' \) -print0 | sort -z)

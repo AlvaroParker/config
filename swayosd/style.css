@@ -1,0 +1,61 @@
+/* Nocturne on-screen display for volume, brightness and Caps Lock.
+   Colours come from ../nocturne/palette.css (generated). */
+
+@import url("../nocturne/palette.css");
+
+window#osd {
+    border: 1px solid @line;
+    border-radius: 10px;
+    background: alpha(@ink_2, 0.9);
+}
+
+window#osd #container {
+    margin: 12px 16px;
+}
+
+window#osd image,
+window#osd label {
+    color: @text;
+}
+
+window#osd label {
+    font-family: "Lilex Nerd Font", monospace;
+    font-size: 13px;
+}
+
+window#osd progressbar:disabled,
+window#osd image:disabled {
+    opacity: 0.5;
+}
+
+window#osd progressbar,
+window#osd segmentedprogress {
+    min-height: 4px;
+    border: none;
+    border-radius: 2px;
+    background: transparent;
+}
+
+window#osd trough,
+window#osd segment {
+    min-height: inherit;
+    border: none;
+    border-radius: inherit;
+    background: @ink_3;
+}
+
+window#osd progress,
+window#osd segment.active {
+    min-height: inherit;
+    border: none;
+    border-radius: inherit;
+    background: @text;
+}
+
+window#osd segment {
+    margin-left: 6px;
+}
+
+window#osd segment:first-child {
+    margin-left: 0;
+}

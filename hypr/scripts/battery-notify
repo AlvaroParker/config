@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Warn once at 15% and once at 5% while discharging. A colour change in the
+# bar is easy to miss; a notification is not. Started from autostart.lua.
+set -uo pipefail
+
+battery=/sys/class/power_supply/BAT0
+[[ -r "$battery/capacity" ]] || exit 0
+
+warned=100
+while true; do
+    capacity="$(<"$battery/capacity")"
+    status="$(<"$battery/status")"
+
+    if [[ "$status" != "Discharging" ]]; then
+        warned=100
+    elif ((capacity <= 5 && warned > 5)); then
+        notify-send -u critical -a Battery -i battery-empty-symbolic \
+            "Battery at ${capacity}%" "Plug in now. The laptop will shut down soon."
+        warned=5
+    elif ((capacity <= 15 && warned > 15)); then
+        notify-send -u normal -a Battery -i battery-caution-symbolic \
+            "Battery at ${capacity}%" "Plug in soon."
+        warned=15
+    fi
+
+    sleep 60
+done

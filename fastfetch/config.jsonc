@@ -13,47 +13,47 @@
   "modules": [
     {
         "type": "custom",
-        "format": "{#35}╭──────────────────────────────────────────╮"
+        "format": "{#90}╭──────────────────────────────────────────╮"
     },
     {
       "type": "os",
-      "key": "{#35}│ {#34} ",
-      "keyColor": "blue"
+      "key": "{#90}│ {#37} ",
+      "keyColor": "white"
     },
     {
       "type": "kernel",
-      "key": "{#35}│ {#34} ",
-      "keyColor": "blue"
+      "key": "{#90}│ {#37} ",
+      "keyColor": "white"
     },
     {
       "type": "uptime",
-      "key": "{#35}│ {#34} ",
-      "keyColor": "blue"
+      "key": "{#90}│ {#37} ",
+      "keyColor": "white"
     },
     {
       "type": "shell",
-      "key": "{#35}│ {#34} ",
-      "keyColor": "blue"
+      "key": "{#90}│ {#37} ",
+      "keyColor": "white"
     },
     {
       "type": "wm",
-      "key": "{#35}│ {#34} ",
-      "keyColor": "blue"
+      "key": "{#90}│ {#37} ",
+      "keyColor": "white"
     },
     {
       "type": "memory",
-      "key": "{#35}│ {#34} ",
-      "keyColor": "blue"
+      "key": "{#90}│ {#37} ",
+      "keyColor": "white"
     },
     {
       "type": "cpu",
-      "key": "{#35}│ {#34}󰍛 ",
-      "keyColor": "blue",
+      "key": "{#90}│ {#37}󰍛 ",
+      "keyColor": "white",
       "format": "{freq-max} - {cores-logical} cores {#34}"
     },
     {
         "type": "custom",
-        "format": "{#35}╰───────────────────── {#90} {#31} {#32} {#33} {#34} {#35} {#36} {#37} {#35}────╯"
+        "format": "{#90}╰───────────────────── {#90} {#31} {#32} {#33} {#34} {#35} {#36} {#37} {#90}────╯"
     }
   ]
 }

@@ -1,4 +1,6 @@
 #!/bin/bash
+# Install the packages and link this repository's configuration into place.
+# Warning: replaces existing configuration for every app listed below.
 current_dir=$(pwd)
 create_symlinks() {
     local source_directory="$1"
@@ -11,12 +13,19 @@ create_symlinks() {
     # Loop through each file in the source directory
     for file in "$full_source_directory"/*; do
         if [ -f "$file" ]; then
-            ln -s "$file" "$target_directory"
+            ln -sf "$file" "$target_directory"
         fi
     done
 }
 
-packages=("wget" "ranger" "tmux" "curl" "unzip" "rustup" "base-devel" "hyprland" "xdg-desktop-portal-hyprland" "alacritty" "nautilus" "flatpak" "gammastep" "grim" "wl-clipboard" "slurp" "swaync" "blueman" "btop" "zsh" "neovim" "zathura" "lsd" "fastfetch" "bat" "ttf-jetbrains-mono-nerd" "ttf-firacode-nerd" "qemu-system-x86" "qemu-system-x86-firmware" "libvirt" "bridge-utils" "virt-manager" "qemu-hw-display-virtio-gpu-gl" "qemu-hw-display-virtio-gpu" "qemu-hw-display-virtio-gpu-pci" "qemu-hw-display-virtio-gpu-pci-gl" "dnsmasq" "qemu-img" "docker" "docker-compose" "hyprpaper" "hyprlock" "ripgrep" "qt5-wayland" "qt6-wayland" "lib32-glibc" "lib32-gcc-libs" "easyeffects" "network-manager-applet" "feh" "xorg-server" "lxappearance" "zathura-pdf-poppler" "gnome-tweaks" "gnome-themes-extra" "plymouth" "obsidian" "hyprpolkitagent" "qemu-full" "gdb" "vlc" "jq" "man-pages" "hypridle" "vulkan-radeon" "exa" "rsync" "firefox" "rofi" "less" "git-delta" "discord" "zoxide" "gnome-tweaks" "pavucontrol" "go" "nodejs" "hyprsunset" "ghostty" "cava" "tlp" "qt6ct" "swayosd" "hyprpicker" "brightnessctl" "cliphist" "fzf")
+# link SOURCE TARGET: replace TARGET with a symlink to SOURCE in this repo.
+link() {
+    mkdir -p "$(dirname "$2")"
+    rm -rf "$2"
+    ln -s "${current_dir}/$1" "$2"
+}
+
+packages=("wget" "ranger" "tmux" "curl" "unzip" "rustup" "base-devel" "hyprland" "xdg-desktop-portal-hyprland" "nautilus" "flatpak" "grim" "wl-clipboard" "slurp" "swaync" "blueman" "btop" "zsh" "neovim" "zathura" "lsd" "fastfetch" "bat" "ttf-ibm-plex" "ttf-lilex-nerd" "ttf-jetbrains-mono-nerd" "qemu-system-x86" "qemu-system-x86-firmware" "libvirt" "bridge-utils" "virt-manager" "qemu-hw-display-virtio-gpu-gl" "qemu-hw-display-virtio-gpu" "qemu-hw-display-virtio-gpu-pci" "qemu-hw-display-virtio-gpu-pci-gl" "dnsmasq" "qemu-img" "docker" "docker-compose" "hyprpaper" "hyprlock" "ripgrep" "qt5-wayland" "qt6-wayland" "lib32-glibc" "lib32-gcc-libs" "easyeffects" "network-manager-applet" "feh" "xorg-server" "lxappearance" "zathura-pdf-poppler" "gnome-tweaks" "gnome-themes-extra" "plymouth" "obsidian" "hyprpolkitagent" "qemu-full" "gdb" "vlc" "jq" "man-pages" "hypridle" "vulkan-radeon" "eza" "rsync" "firefox" "rofi" "less" "git-delta" "discord" "zoxide" "pavucontrol" "go" "nodejs" "hyprsunset" "ghostty" "tlp" "qt6ct" "swayosd" "hyprpicker" "brightnessctl" "cliphist" "fzf" "playerctl" "libnotify" "python-numpy" "python-pillow" "quickshell" "chafa")
 # Filter out already installed packages
 to_install=()
 for pkg in "${packages[@]}"; do
@@ -63,23 +72,20 @@ fi
 
 cd $current_dir
 
+# Nocturne: the palette and its generated colour files. Several apps import
+# from ~/.config/nocturne, so this link comes first.
+link nocturne ~/.config/nocturne
+
 # Install AstroNvim
 rm -rf ~/.config/nvim ~/.local/share/nvim ~/.local/state/nvim ~/.cache/nvim
-ln -s  "${current_dir}/nvim" ~/.config/nvim
+ln -s "${current_dir}/nvim" ~/.config/nvim
 
-
-# Install tmux plugin manager
-rm -rf ~/.tmux.conf
-ln "${current_dir}/tmux.conf" ~/.tmux.conf
+# tmux, with the plugin manager
+link tmux.conf ~/.tmux.conf
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
-# Install alacritty config
-rm -rf ~/.config/alacritty
-ln -s "${current_dir}/alacritty" ~/.config/alacritty
-
-# Install ghostty config
-rm -rf ~/.config/ghostty
-ln -s "${current_dir}/ghostty" ~/.config/ghostty
+# Terminal
+link ghostty ~/.config/ghostty
 
 # Install herdr config, keeping runtime state outside the repository
 mkdir -p "$HOME/.config/herdr"
@@ -90,63 +96,116 @@ for plugin_dir in "${current_dir}"/herdr/plugins/*/; do
     ln -sfnT "${plugin_dir}config.toml" "$HOME/.config/herdr/plugins/config/${plugin_id}/config.toml"
 done
 
-# Install dunst config
-rm -rf ~/.config/swaync
-ln -s "${current_dir}/swaync" ~/.config/swaync
+# Desktop: compositor, bar, launcher, notifications, volume display
+link hypr ~/.config/hypr
+link waybar ~/.config/waybar
+link rofi ~/.config/rofi
+link swaync ~/.config/swaync
+link swayosd ~/.config/swayosd
+link quickshell ~/.config/quickshell
+link fastfetch ~/.config/fastfetch
 
-# Install hyprland config
-rm -rf ~/.config/hypr
-ln -s "${current_dir}/hypr" ~/.config/hypr
+# The desktop panel's weather needs a location. It is personal, so it is kept
+# outside the repo; quickshell/location.example.json shows the format.
+location_file="$HOME/.config/nocturne-location.json"
+if [ ! -f "$location_file" ] && [ -t 0 ]; then
+    read -r -p "City for the desktop weather (leave empty to skip): " city
+    if [ -n "$city" ]; then
+        # Open-Meteo's geocoder. Names repeat across countries, so list the
+        # matches and let the user pick. Coordinates are rounded to about 1 km.
+        matches=$(curl -fsS --get "https://geocoding-api.open-meteo.com/v1/search" \
+            --data-urlencode "name=$city" --data "count=5" |
+            jq -c '[.results[]? | {name, area: ([.admin1, .country] | map(select(.)) | join(", ")),
+                latitude: ((.latitude * 100 | round) / 100),
+                longitude: ((.longitude * 100 | round) / 100), timezone}]')
+        count=$(jq length <<<"${matches:-[]}")
+        if [ "$count" -gt 0 ]; then
+            jq -r 'to_entries[] | "  \(.key + 1)) \(.value.name), \(.value.area)"' <<<"$matches"
+            read -r -p "Which one? [1-$count]: " choice
+            if [[ "$choice" =~ ^[0-9]+$ ]] && [ "$choice" -ge 1 ] && [ "$choice" -le "$count" ]; then
+                jq ".[$((choice - 1))] | del(.area)" <<<"$matches" >"$location_file"
+                echo "Saved the weather location to $location_file"
+            fi
+        else
+            echo "No match for '$city'. Copy quickshell/location.example.json to $location_file and fill it in."
+        fi
+    fi
+fi
+link zathura ~/.config/zathura
 
-# Install neofetch config
-rm -rf ~/.config/fastfetch
-ln -s "${current_dir}/fastfetch" ~/.config/fastfetch
+# GTK and Qt apps
+link gtk/gtk-3.0.css ~/.config/gtk-3.0/gtk.css
+link gtk/gtk-4.0.css ~/.config/gtk-4.0/gtk.css
+gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+gsettings set org.gnome.desktop.interface font-name 'IBM Plex Sans 11'
+gsettings set org.gnome.desktop.interface monospace-font-name 'Lilex Nerd Font 10'
+gsettings set org.gnome.desktop.interface accent-color 'pink'
+if [ ! -f ~/.config/qt6ct/qt6ct.conf ]; then
+    mkdir -p ~/.config/qt6ct
+    printf '[Appearance]\ncolor_scheme_path=%s\ncustom_palette=true\nstyle=Fusion\n' \
+        "$HOME/.config/nocturne/qt6ct.conf" >~/.config/qt6ct/qt6ct.conf
+fi
 
-# Install rofi config
-rm -rf ~/.config/rofi
-ln -s "${current_dir}/rofi" ~/.config/rofi
+# Zen (Flatpak). The sandbox cannot see this repo, so allow read-only access
+# to the zen folder only, then link its files into the default profile.
+# Run Zen once first so the profile exists.
+if flatpak info app.zen_browser.zen >/dev/null 2>&1; then
+    flatpak override --user --filesystem="${current_dir}/zen:ro" app.zen_browser.zen
+    zen_root="$HOME/.var/app/app.zen_browser.zen/.zen"
+    zen_profile="$(sed -n 's/^Default=//p' "$zen_root/installs.ini" 2>/dev/null | head -n 1)"
+    if [ -n "$zen_profile" ]; then
+        mkdir -p "$zen_root/$zen_profile/chrome"
+        for f in userChrome.css userContent.css nocturne.css; do
+            ln -sfn "${current_dir}/zen/chrome/$f" "$zen_root/$zen_profile/chrome/$f"
+        done
+        ln -sfn "${current_dir}/zen/user.js" "$zen_root/$zen_profile/user.js"
+    fi
+fi
 
-# Install waybar config
-rm -rf ~/.config/waybar
-ln -s "${current_dir}/waybar" ~/.config/waybar
+# bat's Nocturne theme, also used by delta and ranger's previews
+link bat ~/.config/bat
+bat cache --build >/dev/null
 
-# Install zathura config
-rm -rf ~/.config/zathura
-ln -s "${current_dir}/zathura" ~/.config/zathura
+# Git: shared settings only. Name, email and keys stay in ~/.gitconfig.
+link git/config ~/.config/git/config
+link git/ignore ~/.config/git/ignore
 
-# Install fonts
-mkdir -p ~/.local/share/fonts
+# GitHub CLI and its dashboard. Logins (gh/hosts.yml) stay out of the repo.
+link gh/config.yml ~/.config/gh/config.yml
+link gh-dash/config.yml ~/.config/gh-dash/config.yml
 
-# https://github.com/rsms/inter/releases/download/v4.0/Inter-4.0.zip
-wget https://github.com/rsms/inter/releases/download/v4.0/Inter-4.0.zip
-unzip -d Inter Inter-4.0.zip
-mv "./Inter/extras/otf" ~/.local/share/fonts/Inter
-rm -rf Inter Inter-4.0.zip
+# Agent instructions and settings. Credentials and history stay in place.
+# Herdr writes its own hook scripts: run `herdr integration install claude`
+# and `herdr integration install codex` on each machine.
+link claude/CLAUDE.md ~/.claude/CLAUDE.md
+link claude/settings.json ~/.claude/settings.json
+link claude/statusline.sh ~/.claude/statusline.sh
+link codex/AGENTS.md ~/.codex/AGENTS.md
 
-# Reload cache
+# Chromium-based browsers on Wayland
+link chromium-flags.conf ~/.config/chromium-flags.conf
+link chromium-flags.conf ~/.config/helium-browser-flags.conf
+
+# Reload font cache
 fc-cache
 
 # Install code config
-mkdir -p ~/.config/Code/User
-rm -rf ~/.config/Code/User/settings.json ~/.config/Code/User/keybinds.json
-ln -s "${current_dir}/Code/User/keybinds.json" ~/.config/Code/User/keybinds.json
-ln -s "${current_dir}/Code/User/settings.json" ~/.config/Code/User/settings.json
+link Code/User/keybindings.json ~/.config/Code/User/keybindings.json
+link Code/User/settings.json ~/.config/Code/User/settings.json
 
 # Install zed config
 mkdir -p ~/.config/zed
-rm -rf ~/.config/zed/settings.json
-ln -s "${current_dir}/zed/settings.json" ~/.config/zed/settings.json
-ln -s "${current_dir}/zed/keymap.json" ~/.config/zed/keymap.json
-ln -s "${current_dir}/zed/themes" ~/.config/zed/themes
+link zed/settings.json ~/.config/zed/settings.json
+link zed/keymap.json ~/.config/zed/keymap.json
+link zed/themes ~/.config/zed/themes
 
 # Install bin
 create_symlinks "bin" "$HOME/.local/bin/"
 
-
-~/.local/bin/set_wallpaper ~/.config/hypr/wallpapers/wallpaper.png
-
 # Install pacman config
 sudo cp ./pacman.conf /etc/pacman.conf
+
+# Boot and Secure Boot files are not installed automatically; see system/README.md.
 
 # Ranger dev icons
 git clone https://github.com/alexanderjeurissen/ranger_devicons ~/.config/ranger/plugins/ranger_devicons
@@ -156,25 +215,19 @@ rm -rf ~/.config/ranger/rifle.conf
 ln -s "${current_dir}/ranger/rc.conf" ~/.config/ranger/rc.conf
 ln -s "${current_dir}/ranger/scope.sh" ~/.config/ranger/scope.sh
 ln -s "${current_dir}/ranger/rifle.conf" ~/.config/ranger/rifle.conf
+# Image previews in Ghostty, chafa drawings inside tmux or herdr
+link ranger/plugins/ghostty_images.py ~/.config/ranger/plugins/ghostty_images.py
 
-# Webcord flags
+# Electron apps on Wayland
 rm -f ~/.config/code-flags.conf
 ln -s "${current_dir}/electron-flags.conf" ~/.config/code-flags.conf
-
-# Webcord flags
 rm -f ~/.config/webcord-flags.conf
 ln -s "${current_dir}/electron-flags.conf" ~/.config/webcord-flags.conf
-
-# Obsidian flags
 rm -f ~/.config/obsidian/user-flags.conf
 ln -s "${current_dir}/electron-flags.conf" ~/.config/obsidian/user-flags.conf
 
-# Add shutdown, hibernate and suspend desktop entries for rofi
-ln -sf "${current_dir}/applications/suspend.desktop" ~/.local/share/applications/suspend.desktop
-ln -sf "${current_dir}/applications/shutdown.desktop" ~/.local/share/applications/shutdown.desktop
-ln -sf "${current_dir}/applications/hibernate.desktop" ~/.local/share/applications/hibernate.desktop
-
-# Add Wayland desktop entries
+# Wayland desktop entries. Power actions live in the launcher (SUPER + SHIFT + E).
+mkdir -p ~/.local/share/applications
 ln -sf "${current_dir}/applications/discord-wayland.desktop" ~/.local/share/applications/discord-wayland.desktop
 ln -sf "${current_dir}/applications/obsidian-wayland.desktop" ~/.local/share/applications/obsidian-wayland.desktop
 ln -sf "${current_dir}/applications/chatgpt-wayland.desktop" ~/.local/share/applications/chatgpt-wayland.desktop
@@ -211,6 +264,7 @@ sh -c "$(curl -sS https://starship.rs/install.sh)" -- --yes
 
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
 git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+git clone https://github.com/joshskidmore/zsh-fzf-history-search ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-fzf-history-search
 
-
+# Machine-specific settings and secrets go here, outside the repo.
 touch ~/.custom_zshrc

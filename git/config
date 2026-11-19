@@ -1,0 +1,51 @@
+# Shared git settings, linked to ~/.config/git/config.
+# Personal details (name, email, signing keys, credentials) stay in
+# ~/.gitconfig, which is not in this repo. Git reads both files, and
+# ~/.gitconfig wins where they overlap.
+
+[include]
+    path = ~/.config/nocturne/delta.gitconfig
+
+# Uses git-delta from the package by full path: another program named delta
+# may be earlier on PATH. Falls back to plain less until git-delta is installed.
+[core]
+    pager = "[ -x /usr/bin/delta ] && exec /usr/bin/delta || exec less"
+
+[interactive]
+    diffFilter = "[ -x /usr/bin/delta ] && exec /usr/bin/delta --color-only || exec cat"
+
+[init]
+    defaultBranch = main
+
+[pull]
+    rebase = true
+
+[rerere]
+    enabled = true
+
+[merge]
+    conflictStyle = diff3
+
+[diff]
+    colorMoved = default
+
+[filter "lfs"]
+    clean = git-lfs clean -- %f
+    smudge = git-lfs smudge -- %f
+    process = git-lfs filter-process
+    required = true
+
+[alias]
+    st = status --short --branch
+    plog = log --oneline --decorate --shortstat --color=always --pretty=format:\"%C(auto)%h %d %s %Cgreen[%an]\"
+    recent = log --oneline  --decorate=short --shortstat --color=always --date=relative --pretty=format:\"%C(auto)%h %C(auto)%d %s %n %C(yellow) └─> %Cgreen[%an] %C(bold blue)(%ad) %C(yellow)\" -10
+    nice-log = log --oneline  --decorate=short --shortstat --color=always --date=relative --pretty=format:\"%C(auto)%h %C(auto)%d %s %n %C(yellow) └─> %Cgreen[%an] %C(bold blue)(%ad) %C(yellow)\"
+    co = checkout
+    br = branch
+    cm = commit -m
+    df = diff
+    lg = log --oneline --graph --decorate --all
+    last = log -1 HEAD
+    unstage = reset HEAD --
+    amend = commit --amend
+    fu = fetch upstream

@@ -16,7 +16,7 @@
   "calls": {
     "mute_on_join": true,
   },
-  "ui_font_weight": 500.0,
+  "ui_font_weight": 400.0,
   "confirm_quit": false,
   "redact_private_values": false,
   "zoomed_padding": false,
@@ -84,7 +84,7 @@
     // "opencode-test": {
     //   "type": "custom",
     //   "command": "bash",
-    //   "args": ["/home/parker/github/opencode/test.sh"],
+    //   "args": ["~/github/opencode/test.sh"],
     // },
     "codex-acp": {
       "favorite_config_option_values": {
@@ -147,10 +147,11 @@
     // "panel.background": "#00000000",
     // "background": "#ffffff"
   },
+  // Nocturne is generated from nocturne/palette.toml into themes/nocturne.json.
   "theme": {
     "mode": "dark",
     "light": "One Light",
-    "dark": "Vercel Dark",
+    "dark": "Nocturne",
   },
   "toolbar": {
     "breadcrumbs": true,
@@ -264,11 +265,12 @@
   },
   "vim_mode": true,
   "base_keymap": "VSCode",
+  // Zed's built-in faces are IBM Plex Sans and Lilex: the desktop's two fonts.
   "ui_font_family": ".ZedSans",
   "ui_font_size": 16,
-  "buffer_font_family": "JetBrainsMono Nerd Font Mono",
-  "buffer_font_weight": 500,
-  "buffer_font_size": 12.5,
+  "buffer_font_family": ".ZedMono",
+  "buffer_font_weight": 400,
+  "buffer_font_size": 13,
   "title_bar": {
     "show_branch_status_icon": true,
     "show_user_picture": true,
@@ -348,7 +350,7 @@
     },
     // "clangd": {
     // "binary": {
-    // "path": "/home/parker/github/llvm-project/build/bin/clangd",
+    // "path": "~/github/llvm-project/build/bin/clangd",
     // "arguments": ["--clang-tidy"],
     // },
     // },

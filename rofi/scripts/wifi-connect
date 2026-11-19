@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+# Connect to a Wi-Fi network chosen in the launcher.
+#   wifi-connect SSID SECURITY
+# Saved networks reconnect. Open networks connect. WPA personal networks ask
+# for the password in a launcher prompt; the password goes to NetworkManager
+# through a file descriptor, never through the command line.
+set -uo pipefail
+
+ssid=$1
+security=${2:-}
+here="$(dirname "$(readlink -f "$0")")"
+
+notify() {
+    notify-send -a "Wi-Fi" -i network-wireless-symbolic "$@"
+}
+
+# Let the launcher finish closing before anything else opens.
+sleep 0.2
+
+if nmcli -t -f NAME connection show | grep -Fxq -- "$ssid"; then
+    if nmcli connection up id "$ssid" >/dev/null 2>&1; then
+        notify "Connected to $ssid"
+    else
+        notify -u critical "Could not connect to $ssid" "Check the saved password in Network settings."
+    fi
+    exit 0
+fi
+
+if [[ -z "$security" || "$security" == "--" ]]; then
+    if nmcli device wifi connect "$ssid" >/dev/null 2>&1; then
+        notify "Connected to $ssid"
+    else
+        notify -u critical "Could not connect to $ssid"
+    fi
+    exit 0
+fi
+
+if [[ "$security" == *802.1X* ]]; then
+    notify "$ssid needs a username" "Opening Network settings."
+    exec nm-connection-editor
+fi
+
+password="$(rofi -dmenu -password -no-fixed-num-lines -theme "$here/../single.rasi" \
+    -theme-str 'listview { enabled: false; }' \
+    -p "Password" -mesg "Password for $ssid")" || exit 0
+[[ -n "$password" ]] || exit 0
+
+nmcli connection add type wifi con-name "$ssid" ssid "$ssid" \
+    wifi-sec.key-mgmt wpa-psk >/dev/null 2>&1 || {
+    notify -u critical "Could not create a connection for $ssid"
+    exit 1
+}
+
+if nmcli connection up id "$ssid" passwd-file \
+    <(printf '802-11-wireless-security.psk:%s\n' "$password") >/dev/null 2>&1; then
+    notify "Connected to $ssid"
+else
+    nmcli connection delete id "$ssid" >/dev/null 2>&1
+    notify -u critical "Could not connect to $ssid" "The password may be wrong."
+fi

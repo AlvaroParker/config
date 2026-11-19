@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Night light through hyprsunset. The schedule lives in hypr/hyprsunset.conf;
+# this switches it by hand until the next scheduled change.
+#   nightlight toggle | on | off
+#   nightlight status    prints true or false (for the control centre)
+set -uo pipefail
+
+warm=4000
+
+current() {
+    hyprctl hyprsunset temperature 2>/dev/null | tr -dc '0-9'
+}
+
+is_on() {
+    local t
+    t="$(current)"
+    [[ -n "$t" && "$t" -lt 6000 ]]
+}
+
+case "${1:-toggle}" in
+    on) hyprctl hyprsunset temperature "$warm" >/dev/null ;;
+    off) hyprctl hyprsunset identity >/dev/null ;;
+    toggle)
+        if is_on; then
+            hyprctl hyprsunset identity >/dev/null
+        else
+            hyprctl hyprsunset temperature "$warm" >/dev/null
+        fi
+        ;;
+    status) if is_on; then echo true; else echo false; fi ;;
+    *)
+        printf 'usage: nightlight [toggle|on|off|status]\n' >&2
+        exit 2
+        ;;
+esac

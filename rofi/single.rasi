@@ -1,0 +1,6 @@
+/* One section only (key bindings, Wi-Fi password): no footer. */
+@import "nocturne.rasi"
+
+footer {
+    enabled: false;
+}

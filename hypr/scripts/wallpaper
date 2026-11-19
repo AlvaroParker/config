@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+# Wallpaper state. The chosen file is remembered outside the repo, in
+# ~/.local/state/nocturne, so switching wallpapers never changes tracked files.
+#   wallpaper start       start hyprpaper with the saved wallpaper (autostart)
+#   wallpaper set FILE    switch now and remember the choice
+#   wallpaper current     print the current wallpaper path
+set -uo pipefail
+
+state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/nocturne"
+state="$state_dir/wallpaper"
+conf="$state_dir/hyprpaper.conf"
+default="$HOME/.config/hypr/wallpapers/nocturne.jpg"
+
+current() {
+    local file
+    file="$(cat "$state" 2>/dev/null || true)"
+    if [[ -n "$file" && -r "$file" ]]; then
+        printf '%s\n' "$file"
+    else
+        readlink -f "$default"
+    fi
+}
+
+# How much the lock screen dims the wallpaper. Bright wallpapers keep 0.6, the
+# level tuned on abstract-fluent (average brightness 0.118); darker ones are
+# dimmed less, up to 1.0, so the lock screen keeps some presence.
+lock_brightness() {
+    python3 -I - "$1" 2>/dev/null <<'PY' || echo 0.6
+import sys
+from PIL import Image, ImageStat
+
+image = Image.open(sys.argv[1]).convert("L").resize((96, 60))
+mean = ImageStat.Stat(image).mean[0] / 255
+print(f"{min(1.0, max(0.6, 0.6 * (0.118 / max(mean, 0.01)) ** 1.5)):.2f}")
+PY
+}
+
+write_conf() {
+    mkdir -p "$state_dir"
+    printf 'splash = false\nipc = true\n\nwallpaper {\n    monitor =\n    path = %s\n    fit_mode = cover\n}\n' \
+        "$1" >"$conf"
+    # The lock screen shows the same wallpaper (hypr/hyprlock.conf sources this).
+    printf '# Written by hypr/scripts/wallpaper.\n$wallpaper = %s\n$lock_brightness = %s\n' \
+        "$1" "$(lock_brightness "$1")" >"$state_dir/hyprlock.conf"
+}
+
+case "${1:-}" in
+    start)
+        write_conf "$(current)"
+        exec hyprpaper -c "$conf"
+        ;;
+    set)
+        file="$(readlink -f "${2:-}")"
+        if [[ ! -r "$file" ]]; then
+            printf 'wallpaper: cannot read %s\n' "${2:-}" >&2
+            exit 1
+        fi
+        mkdir -p "$state_dir"
+        printf '%s\n' "$file" >"$state"
+        write_conf "$file"
+        # Switch in place; if hyprpaper is not listening, restart it.
+        if ! hyprctl hyprpaper wallpaper ",$file,cover" >/dev/null 2>&1; then
+            pkill -x hyprpaper
+            setsid -f hyprpaper -c "$conf" >/dev/null 2>&1
+        fi
+        ;;
+    current) current ;;
+    *)
+        printf 'usage: wallpaper {start|set FILE|current}\n' >&2
+        exit 2
+        ;;
+esac

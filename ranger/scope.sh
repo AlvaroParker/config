@@ -36,8 +36,6 @@ FILE_EXTENSION_LOWER=$(echo ${FILE_EXTENSION} | tr '[:upper:]' '[:lower:]')
 # Settings
 HIGHLIGHT_SIZE_MAX=262143  # 256KiB
 HIGHLIGHT_TABWIDTH=8
-HIGHLIGHT_STYLE='pablo'
-PYGMENTIZE_STYLE='autumn'
 
 
 handle_extension() {
@@ -167,27 +165,26 @@ handle_mime() {
     local mimetype="${1}"
     case "${mimetype}" in
         # Text
-        text/* | */xml)
+        text/* | */xml | */json)
             # Syntax highlight
             if [[ "$( stat --printf='%s' -- "${FILE_PATH}" )" -gt "${HIGHLIGHT_SIZE_MAX}" ]]; then
                 exit 2
             fi
-            if [[ "$( tput colors )" -ge 256 ]]; then
-                local pygmentize_format='terminal256'
-                local highlight_format='xterm256'
-            else
-                local pygmentize_format='terminal'
-                local highlight_format='ansi'
-            fi
-            highlight --replace-tabs="${HIGHLIGHT_TABWIDTH}" --out-format="${highlight_format}" \
-                --style="${HIGHLIGHT_STYLE}" --force -- "${FILE_PATH}" && exit 5
-            # pygmentize -f "${pygmentize_format}" -O "style=${PYGMENTIZE_STYLE}" -- "${FILE_PATH}" && exit 5
+            # bat/themes/Nocturne.tmTheme uses only the terminal's 16 colours.
+            # Set here rather than left to BAT_THEME, which is unset when ranger
+            # starts outside zsh: ranger cannot read the 24-bit colour codes
+            # other themes use.
+            bat --color=always --theme=Nocturne --style=plain --paging=never --wrap=never \
+                --tabs="${HIGHLIGHT_TABWIDTH}" -- "${FILE_PATH}" && exit 5
             exit 2;;
 
-        # Image
+        # Image, when the terminal cannot show pictures (inside tmux or herdr):
+        # draw it in coloured characters. ranger's previews understand 256
+        # colours at most, and the first 16 follow the terminal theme, which
+        # chafa cannot know, so it uses the other 240.
         image/*)
-            # Preview as text conversion
-            # img2txt --gamma=0.6 --width="${PV_WIDTH}" -- "${FILE_PATH}" && exit 4
+            chafa --format=symbols --colors=240 --color-space=din99d --polite=on \
+                --animate=off --size="${PV_WIDTH}x${PV_HEIGHT}" -- "${FILE_PATH}" && exit 4
             exiftool "${FILE_PATH}" && exit 5
             exit 1;;
 

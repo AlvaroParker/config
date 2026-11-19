@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Nocturne for bat, delta and ranger's previews. The same syntax colours as
+  nvim/colors/nocturne.lua.
+
+  Every colour names one of the terminal's 16 colour slots instead of a hex
+  value, so this file follows the palette without being generated, and ranger
+  (which cannot read 24-bit colour codes) can show it. bat reads #NN000000 as
+  slot NN and #00000001 as the terminal's own text colour. Ghostty's slots:
+
+    00 ink-3    01 red    02 green    03 gold    04 blue    05 iris
+    06 foam     07 muted  08 faint    0F bright
+
+  After editing, rebuild bat's cache; DESIGN.md has the command.
+-->
+<plist version="1.0">
+<dict>
+	<key>name</key>
+	<string>Nocturne</string>
+	<key>settings</key>
+	<array>
+		<dict>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#00000001</string>
+				<key>background</key>
+				<string>#00000001</string>
+				<key>gutterForeground</key>
+				<string>#08000000</string>
+				<key>lineHighlight</key>
+				<string>#00000000</string>
+			</dict>
+		</dict>
+
+		<!-- Comments are the faint grey; they recede. -->
+		<dict>
+			<key>name</key>
+			<string>Comment</string>
+			<key>scope</key>
+			<string>comment, punctuation.definition.comment</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#08000000</string>
+			</dict>
+		</dict>
+
+		<dict>
+			<key>name</key>
+			<string>String</string>
+			<key>scope</key>
+			<string>string, punctuation.definition.string, markup.raw</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#02000000</string>
+			</dict>
+		</dict>
+
+		<dict>
+			<key>name</key>
+			<string>Escape, regular expression, type</string>
+			<key>scope</key>
+			<string>constant.character.escape, string.regexp, constant.other.placeholder, entity.name.type, entity.name.class, entity.name.struct, entity.name.enum, entity.name.interface, entity.name.trait, entity.other.inherited-class, support.type, support.class</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#06000000</string>
+			</dict>
+		</dict>
+
+		<dict>
+			<key>name</key>
+			<string>Number, constant, attribute</string>
+			<key>scope</key>
+			<string>constant, support.constant, variable.other.constant, entity.other.attribute-name, meta.annotation, meta.decorator, entity.name.function.decorator, punctuation.definition.annotation, punctuation.definition.decorator, entity.name.label</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#03000000</string>
+			</dict>
+		</dict>
+
+		<dict>
+			<key>name</key>
+			<string>Keyword</string>
+			<key>scope</key>
+			<string>keyword, keyword.operator.word, storage, variable.language</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#05000000</string>
+			</dict>
+		</dict>
+
+		<dict>
+			<key>name</key>
+			<string>Function, tag</string>
+			<key>scope</key>
+			<string>entity.name.function, support.function, variable.function, entity.name.tag</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#04000000</string>
+			</dict>
+		</dict>
+
+		<dict>
+			<key>name</key>
+			<string>Operator, punctuation</string>
+			<key>scope</key>
+			<string>keyword.operator, punctuation, meta.brace, markup.list punctuation.definition.list_item, markup.quote</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#07000000</string>
+			</dict>
+		</dict>
+
+		<dict>
+			<key>name</key>
+			<string>Tag brackets</string>
+			<key>scope</key>
+			<string>punctuation.definition.tag</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#08000000</string>
+			</dict>
+		</dict>
+
+		<!-- Keys in JSON, YAML, TOML and CSS read as plain text, like variables. -->
+		<dict>
+			<key>name</key>
+			<string>Key</string>
+			<key>scope</key>
+			<string>meta.mapping.key string, meta.mapping.key punctuation.definition.string, support.type.property-name, entity.name.tag.yaml, entity.name.tag.toml, meta.tag.key.toml</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#00000001</string>
+			</dict>
+		</dict>
+
+		<dict>
+			<key>name</key>
+			<string>Heading, section</string>
+			<key>scope</key>
+			<string>markup.heading, markup.heading punctuation.definition.heading, entity.name.section, entity.name.table</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#0F000000</string>
+				<key>fontStyle</key>
+				<string>bold</string>
+			</dict>
+		</dict>
+
+		<dict>
+			<key>name</key>
+			<string>Bold</string>
+			<key>scope</key>
+			<string>markup.bold</string>
+			<key>settings</key>
+			<dict>
+				<key>fontStyle</key>
+				<string>bold</string>
+			</dict>
+		</dict>
+
+		<dict>
+			<key>name</key>
+			<string>Italic</string>
+			<key>scope</key>
+			<string>markup.italic</string>
+			<key>settings</key>
+			<dict>
+				<key>fontStyle</key>
+				<string>italic</string>
+			</dict>
+		</dict>
+
+		<dict>
+			<key>name</key>
+			<string>Link text</string>
+			<key>scope</key>
+			<string>string.other.link, meta.link.inline.description</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#04000000</string>
+			</dict>
+		</dict>
+
+		<dict>
+			<key>name</key>
+			<string>Link address</string>
+			<key>scope</key>
+			<string>markup.underline.link</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#06000000</string>
+				<key>fontStyle</key>
+				<string>underline</string>
+			</dict>
+		</dict>
+
+		<dict>
+			<key>name</key>
+			<string>Diff: added</string>
+			<key>scope</key>
+			<string>markup.inserted</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#02000000</string>
+			</dict>
+		</dict>
+
+		<dict>
+			<key>name</key>
+			<string>Diff: removed, invalid</string>
+			<key>scope</key>
+			<string>markup.deleted, invalid</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#01000000</string>
+			</dict>
+		</dict>
+
+		<dict>
+			<key>name</key>
+			<string>Diff: changed</string>
+			<key>scope</key>
+			<string>markup.changed</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#03000000</string>
+			</dict>
+		</dict>
+
+		<dict>
+			<key>name</key>
+			<string>Diff: headers</string>
+			<key>scope</key>
+			<string>meta.diff, meta.diff.header</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#08000000</string>
+			</dict>
+		</dict>
+
+		<dict>
+			<key>name</key>
+			<string>Diff: line ranges</string>
+			<key>scope</key>
+			<string>meta.diff.range</string>
+			<key>settings</key>
+			<dict>
+				<key>foreground</key>
+				<string>#05000000</string>
+			</dict>
+		</dict>
+	</array>
+</dict>
+</plist>
