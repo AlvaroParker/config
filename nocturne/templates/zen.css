@@ -14,7 +14,9 @@
     /* Zen's derived surfaces, mapped to the ink ramp. */
     --zen-branding-dark: {{ink-0}} !important;
     --zen-branding-paper: {{bright}} !important;
-    --zen-themed-toolbar-bg-transparent: {{ink-0}} !important;
+    /* Paints the whole window behind the sidebar: keep it clear, so the glass
+       below (#zen-browser-background) shows the blurred desktop. */
+    --zen-themed-toolbar-bg-transparent: transparent !important;
     --zen-colors-primary: {{ink-3}} !important;
     --zen-colors-secondary: {{ink-3}} !important;
     --zen-colors-tertiary: {{ink-1}} !important;
@@ -86,13 +88,16 @@ zen-workspace,
     --zen-split-view-active-tab-bg: {{ink-3}} !important;
 }
 
-/* The window background: one flat surface instead of the workspace gradient. */
+/* The window background: one flat surface instead of the workspace gradient,
+   as glass. zen/user.js makes the window transparent and Hyprland blurs what
+   is behind. At 40%, sidebar text keeps 7.7:1 and secondary text dips to 4.3:1
+   over the moon on the wallpaper. Web pages stay solid. */
 #zen-browser-background,
 #zen-toolbar-background {
-    --zen-main-browser-background: {{ink-0}} !important;
-    --zen-main-browser-background-toolbar: {{ink-0}} !important;
-    --zen-main-browser-background-old: {{ink-0}} !important;
-    --zen-main-browser-background-toolbar-old: {{ink-0}} !important;
+    --zen-main-browser-background: rgba({{ink-0:rgb}}, 0.4) !important;
+    --zen-main-browser-background-toolbar: rgba({{ink-0:rgb}}, 0.4) !important;
+    --zen-main-browser-background-old: rgba({{ink-0:rgb}}, 0.4) !important;
+    --zen-main-browser-background-toolbar-old: rgba({{ink-0:rgb}}, 0.4) !important;
 }
 
 /* The floating address bar: a solid raised surface with one hairline. */

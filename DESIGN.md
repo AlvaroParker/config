@@ -95,7 +95,7 @@ use `leave` (0.4, 0, 1, 1) and take about three quarters of the time.
 
 | Surface | Treatment |
 | --- | --- |
-| Bar | `ink-0`, flush to the top, 30 px. Workspaces as numbers, the current one underlined in the accent. Right side: icons in `muted`, warnings in gold, errors in red. |
+| Bar | `ink-0`, a floating island 34 px tall with 12 px corners, 8 px from the screen edges like the windows below it. Workspaces as numbers, the current one underlined in the accent. Right side: icons in `muted`, warnings in gold, errors in red. |
 | Windows | Opaque, 1 px border, 10 px radius. Unfocused windows dim by 8%. |
 | Launcher | One glass surface, query on top, sections in the footer, fixed height. Dims the screen behind it. |
 | Notifications | `ink-2` at 90%, one hairline, actions under a hairline. Inside the control centre they become rows, not cards. |
@@ -103,7 +103,7 @@ use `leave` (0.4, 0, 1, 1) and take about three quarters of the time.
 | Wallpaper | `hypr/wallpapers/nocturne.jpg`, painted by `nocturne/wallpaper` from the palette: a night sky that starts at `ink-0` under the bar, receding hills, and a low moon in the accent colour, right of centre so the lock-screen clock never covers it. Run it after changing the accent; `--seed` gives a different skyline. |
 | Desktop | Shown on empty workspaces only, below every window. Text only, left-aligned in the empty sky so the moon stays the one warm light: the date in small capitals, a large light clock, one line of weather, and the current track while something plays or is paused (click it to play or pause). No cards, boxes or glow. |
 | Lock screen | Your current wallpaper, heavily blurred; open windows never show. Darker wallpapers are dimmed less (0.6 for the brightest, up to 1.0), measured when the wallpaper is chosen. Date in small capitals above a clock about 100 px tall, password dots in the accent below it. A soft dark shadow keeps the text readable on any wallpaper. |
-| Terminal | `ink-1`, Lilex 10.5 pt, a steady block cursor in the accent (a bar while typing in zsh). |
+| Terminal | `ink-1` glass at 85% with Hyprland's blur behind, text solid, Lilex 10.5 pt, a steady block cursor in the accent (a bar while typing in zsh). |
 
 ## Where things live
 
@@ -152,7 +152,9 @@ Zen paints a gradient per workspace and derives its colours from an accent,
 both written as inline styles. `zen/chrome/nocturne.css` pins those variables
 with `!important`, which a user stylesheet is allowed to do over inline
 styles, so the sidebar stays one flat `ink-0` surface whatever theme a
-workspace has. The selected tab is a lighter row with bright text, like the
+workspace has. That surface is glass: Zen's Linux transparency is on
+(`zen/user.js`) and the sidebar is tinted 40%, so Hyprland's blur shows
+through; text stays at 7.7:1 even over the moon. Web pages stay solid. The selected tab is a lighter row with bright text, like the
 launcher; the accent is kept for focus rings, toggles and primary buttons.
 
 The Flatpak sandbox gets read-only access to `zen/` only

@@ -4,7 +4,9 @@
 {
   "layer": "top",
   "position": "top",
-  "height": 30,
+  // A floating island, 8 px from the screen edges like the windows below it.
+  "height": 34,
+  "margin": "8 8 0 8",
   "spacing": 0,
 
   "modules-left": [

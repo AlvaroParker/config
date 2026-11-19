@@ -1,6 +1,6 @@
 # Arch Linux and Hyprland dotfiles
 
-![Nocturne desktop with a large clock, date, and weather over a dark wallpaper](./screenshots/1-desktop.jpg)
+![Nocturne desktop with a floating Waybar, a large clock, and weather over a moonlit landscape](./screenshots/1-desktop.jpg)
 
 These dotfiles follow **Nocturne**, a design system built around a cold, dark
 palette with a single warm accent. See [DESIGN.md](./DESIGN.md) for the design
@@ -11,12 +11,15 @@ The [NixOS version](https://github.com/AlvaroParker/NixOS-config) is also availa
 ## Screenshots
 
 <p>
-  <a href="./screenshots/2-terminal.jpg"><img width="49%" src="./screenshots/2-terminal.jpg" alt="A floating Ghostty terminal showing fastfetch"></a>
+  <a href="./screenshots/2-terminal.jpg"><img width="49%" src="./screenshots/2-terminal.jpg" alt="Ghostty showing fastfetch with the blurred wallpaper visible through the terminal"></a>
   <a href="./screenshots/3-ranger.jpg"><img width="49%" src="./screenshots/3-ranger.jpg" alt="ranger browsing the Nocturne folder with palette.toml in the preview column"></a>
 </p>
 <p>
   <a href="./screenshots/4-btop.jpg"><img width="49%" src="./screenshots/4-btop.jpg" alt="btop showing CPU, memory, disks, network, and processes"></a>
   <a href="./screenshots/5-zed.jpg"><img width="49%" src="./screenshots/5-zed.jpg" alt="Zed with the repository file tree and install script open"></a>
+</p>
+<p>
+  <a href="./screenshots/6-zen.jpg"><img width="100%" src="./screenshots/6-zen.jpg" alt="Zen’s translucent sidebar beside the browser layout settings"></a>
 </p>
 
 ## Installation

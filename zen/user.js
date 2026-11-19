@@ -11,6 +11,10 @@ user_pref("zen.theme.accent-color", "#f4a4ad");
 user_pref("zen.theme.border-radius", 10);
 user_pref("zen.theme.content-element-separation", 8);
 
+// A transparent window, so the sidebar and toolbar can be glass (zen/chrome/
+// nocturne.css sets the tint). Takes effect when Zen restarts.
+user_pref("zen.widget.linux.transparency", true);
+
 // The desktop's fonts for pages that do not choose their own.
 user_pref("font.name.sans-serif.x-western", "IBM Plex Sans");
 user_pref("font.name.serif.x-western", "IBM Plex Serif");
