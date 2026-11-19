@@ -1,7 +1,17 @@
 #!/bin/bash
 # Install the packages and link this repository's configuration into place.
 # Warning: replaces existing configuration for every app listed below.
-current_dir=$(pwd)
+set -e -o pipefail
+
+current_dir=$(dirname -- "$(realpath -- "${BASH_SOURCE[0]}")")
+
+clone_if_missing() {
+    local url=$1 destination=$2
+    if [[ ! -e "$destination/.git" ]]; then
+        git clone -- "$url" "$destination"
+    fi
+}
+
 create_symlinks() {
     local source_directory="$1"
     local target_directory="$2"
@@ -20,12 +30,16 @@ create_symlinks() {
 
 # link SOURCE TARGET: replace TARGET with a symlink to SOURCE in this repo.
 link() {
+    if [[ ! -e "$current_dir/$1" ]]; then
+        printf 'Missing link source: %s\n' "$current_dir/$1" >&2
+        return 1
+    fi
     mkdir -p "$(dirname "$2")"
     rm -rf "$2"
     ln -s "${current_dir}/$1" "$2"
 }
 
-packages=("wget" "ranger" "tmux" "curl" "unzip" "rustup" "base-devel" "hyprland" "xdg-desktop-portal-hyprland" "nautilus" "flatpak" "grim" "wl-clipboard" "slurp" "swaync" "blueman" "btop" "zsh" "neovim" "zathura" "lsd" "fastfetch" "bat" "ttf-ibm-plex" "ttf-lilex-nerd" "ttf-jetbrains-mono-nerd" "qemu-system-x86" "qemu-system-x86-firmware" "libvirt" "bridge-utils" "virt-manager" "qemu-hw-display-virtio-gpu-gl" "qemu-hw-display-virtio-gpu" "qemu-hw-display-virtio-gpu-pci" "qemu-hw-display-virtio-gpu-pci-gl" "dnsmasq" "qemu-img" "docker" "docker-compose" "hyprpaper" "hyprlock" "ripgrep" "qt5-wayland" "qt6-wayland" "lib32-glibc" "lib32-gcc-libs" "easyeffects" "network-manager-applet" "feh" "xorg-server" "lxappearance" "zathura-pdf-poppler" "gnome-tweaks" "gnome-themes-extra" "plymouth" "obsidian" "hyprpolkitagent" "qemu-full" "gdb" "vlc" "jq" "man-pages" "hypridle" "vulkan-radeon" "eza" "rsync" "firefox" "rofi" "less" "git-delta" "discord" "zoxide" "pavucontrol" "go" "nodejs" "hyprsunset" "ghostty" "tlp" "qt6ct" "swayosd" "hyprpicker" "brightnessctl" "cliphist" "fzf" "playerctl" "libnotify" "python-numpy" "python-pillow" "quickshell" "chafa")
+packages=("wget" "ranger" "tmux" "curl" "unzip" "rustup" "base-devel" "git" "hyprland" "xdg-desktop-portal-hyprland" "nautilus" "flatpak" "grim" "wl-clipboard" "slurp" "swaync" "blueman" "btop" "zsh" "starship" "neovim" "zathura" "lsd" "fastfetch" "bat" "ttf-ibm-plex" "ttf-lilex-nerd" "ttf-jetbrains-mono-nerd" "qemu-system-x86" "qemu-system-x86-firmware" "libvirt" "virt-manager" "qemu-hw-display-virtio-gpu-gl" "qemu-hw-display-virtio-gpu" "qemu-hw-display-virtio-gpu-pci" "qemu-hw-display-virtio-gpu-pci-gl" "dnsmasq" "qemu-img" "docker" "docker-compose" "hyprpaper" "hyprlock" "ripgrep" "qt5-wayland" "qt6-wayland" "lib32-glibc" "lib32-gcc-libs" "easyeffects" "network-manager-applet" "feh" "xorg-server" "lxappearance" "zathura-pdf-poppler" "gnome-tweaks" "gnome-themes-extra" "plymouth" "obsidian" "hyprpolkitagent" "qemu-full" "gdb" "vlc" "jq" "man-pages" "hypridle" "vulkan-radeon" "eza" "rsync" "firefox" "rofi" "less" "git-delta" "discord" "zoxide" "pavucontrol" "go" "nodejs" "hyprsunset" "ghostty" "tlp" "qt6ct" "swayosd" "hyprpicker" "brightnessctl" "cliphist" "fzf" "playerctl" "libnotify" "python-numpy" "python-pillow" "quickshell" "chafa")
 # Filter out already installed packages
 to_install=()
 for pkg in "${packages[@]}"; do
@@ -44,12 +58,14 @@ rm -rf "$HOME/.cargo/config.toml"
 ln -s "${current_dir}/cargo/config.toml" "$HOME/.cargo/config.toml"
 
 # Install paru
-if ! pacman -Qq paru &>/dev/null; then
-    mkdir -p ~/aur
-    cd ~/aur
-    git clone https://aur.archlinux.org/paru-bin.git
-    cd paru-bin
-    makepkg -si --noconfirm
+if ! command -v paru >/dev/null; then
+    (
+        build_dir=$(mktemp -d)
+        trap 'rm -rf -- "$build_dir"' EXIT
+        git clone https://aur.archlinux.org/paru-bin.git "$build_dir"
+        cd "$build_dir"
+        makepkg -si --noconfirm
+    )
 else
     echo "Paru already installed."
 fi
@@ -70,8 +86,6 @@ else
     echo "AUR dependencies already installed."
 fi
 
-cd $current_dir
-
 # Nocturne: the palette and its generated colour files. Several apps import
 # from ~/.config/nocturne, so this link comes first.
 link nocturne ~/.config/nocturne
@@ -82,7 +96,7 @@ ln -s "${current_dir}/nvim" ~/.config/nvim
 
 # tmux, with the plugin manager
 link tmux.conf ~/.tmux.conf
-git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+clone_if_missing https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
 # Terminal
 link ghostty ~/.config/ghostty
@@ -109,20 +123,19 @@ link fastfetch ~/.config/fastfetch
 # outside the repo; quickshell/location.example.json shows the format.
 location_file="$HOME/.config/nocturne-location.json"
 if [ ! -f "$location_file" ] && [ -t 0 ]; then
-    read -r -p "City for the desktop weather (leave empty to skip): " city
-    if [ -n "$city" ]; then
+    if read -r -p "City for the desktop weather (leave empty to skip): " city && [[ -n "$city" ]]; then
         # Open-Meteo's geocoder. Names repeat across countries, so list the
         # matches and let the user pick. Coordinates are rounded to about 1 km.
         matches=$(curl -fsS --get "https://geocoding-api.open-meteo.com/v1/search" \
             --data-urlencode "name=$city" --data "count=5" |
             jq -c '[.results[]? | {name, area: ([.admin1, .country] | map(select(.)) | join(", ")),
                 latitude: ((.latitude * 100 | round) / 100),
-                longitude: ((.longitude * 100 | round) / 100), timezone}]')
+                longitude: ((.longitude * 100 | round) / 100), timezone}]') || matches='[]'
         count=$(jq length <<<"${matches:-[]}")
         if [ "$count" -gt 0 ]; then
             jq -r 'to_entries[] | "  \(.key + 1)) \(.value.name), \(.value.area)"' <<<"$matches"
-            read -r -p "Which one? [1-$count]: " choice
-            if [[ "$choice" =~ ^[0-9]+$ ]] && [ "$choice" -ge 1 ] && [ "$choice" -le "$count" ]; then
+            if read -r -p "Which one? [1-$count]: " choice &&
+               [[ "$choice" =~ ^[1-5]$ ]] && (( choice <= count )); then
                 jq ".[$((choice - 1))] | del(.area)" <<<"$matches" >"$location_file"
                 echo "Saved the weather location to $location_file"
             fi
@@ -152,8 +165,11 @@ fi
 if flatpak info app.zen_browser.zen >/dev/null 2>&1; then
     flatpak override --user --filesystem="${current_dir}/zen:ro" app.zen_browser.zen
     zen_root="$HOME/.var/app/app.zen_browser.zen/.zen"
-    zen_profile="$(sed -n 's/^Default=//p' "$zen_root/installs.ini" 2>/dev/null | head -n 1)"
-    if [ -n "$zen_profile" ]; then
+    zen_profile=""
+    if [[ -f "$zen_root/installs.ini" ]]; then
+        zen_profile=$(awk '/^Default=/ { sub(/^Default=/, ""); print; exit }' "$zen_root/installs.ini")
+    fi
+    if [[ -n "$zen_profile" ]]; then
         mkdir -p "$zen_root/$zen_profile/chrome"
         for f in userChrome.css userContent.css nocturne.css; do
             ln -sfn "${current_dir}/zen/chrome/$f" "$zen_root/$zen_profile/chrome/$f"
@@ -203,12 +219,12 @@ link zed/themes ~/.config/zed/themes
 create_symlinks "bin" "$HOME/.local/bin/"
 
 # Install pacman config
-sudo cp ./pacman.conf /etc/pacman.conf
+sudo cp "$current_dir/pacman.conf" /etc/pacman.conf
 
 # Boot and Secure Boot files are not installed automatically; see system/README.md.
 
 # Ranger dev icons
-git clone https://github.com/alexanderjeurissen/ranger_devicons ~/.config/ranger/plugins/ranger_devicons
+clone_if_missing https://github.com/alexanderjeurissen/ranger_devicons ~/.config/ranger/plugins/ranger_devicons
 rm -rf ~/.config/ranger/rc.conf
 rm -rf ~/.config/ranger/scope.sh
 rm -rf ~/.config/ranger/rifle.conf
@@ -223,8 +239,8 @@ rm -f ~/.config/code-flags.conf
 ln -s "${current_dir}/electron-flags.conf" ~/.config/code-flags.conf
 rm -f ~/.config/webcord-flags.conf
 ln -s "${current_dir}/electron-flags.conf" ~/.config/webcord-flags.conf
-rm -f ~/.config/obsidian/user-flags.conf
-ln -s "${current_dir}/electron-flags.conf" ~/.config/obsidian/user-flags.conf
+mkdir -p ~/.config/obsidian
+ln -sfnT "${current_dir}/electron-flags.conf" ~/.config/obsidian/user-flags.conf
 
 # Wayland desktop entries. Power actions live in the launcher (SUPER + SHIFT + E).
 mkdir -p ~/.local/share/applications
@@ -243,7 +259,10 @@ sudo systemctl enable tlp.service --now
 
 # Configure virtual machines
 sudo systemctl enable libvirtd.service --now
-sudo virsh net-start default
+active_networks=$(sudo virsh net-list --name)
+if ! grep -Fxq default <<< "$active_networks"; then
+    sudo virsh net-start default
+fi
 sudo virsh net-autostart default
 
 sudo usermod -aG libvirt $USER
@@ -256,15 +275,18 @@ flatpak override --filesystem=~/.themes:ro --filesystem=~/.icons:ro --user
 mkdir -p ~/.icons
 
 # Install zed
-curl -f https://zed.dev/install.sh | ZED_CHANNEL=preview sh
+curl -fsSL https://zed.dev/install.sh | ZED_CHANNEL=preview sh
 
 ln -sf "${current_dir}/zshrc" ~/.zshrc
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" -- --unattended --keep-zshrc
-sh -c "$(curl -sS https://starship.rs/install.sh)" -- --yes
+if [[ ! -f "$HOME/.oh-my-zsh/oh-my-zsh.sh" ]]; then
+    omz_installer=$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)
+    ZSH="$HOME/.oh-my-zsh" sh -c "$omz_installer" -- --unattended --keep-zshrc
+fi
 
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
-git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-git clone https://github.com/joshskidmore/zsh-fzf-history-search ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-fzf-history-search
+plugin_root="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins"
+clone_if_missing https://github.com/zsh-users/zsh-syntax-highlighting.git "$plugin_root/zsh-syntax-highlighting"
+clone_if_missing https://github.com/zsh-users/zsh-autosuggestions "$plugin_root/zsh-autosuggestions"
+clone_if_missing https://github.com/joshskidmore/zsh-fzf-history-search "$plugin_root/zsh-fzf-history-search"
 
 # Machine-specific settings and secrets go here, outside the repo.
 touch ~/.custom_zshrc
