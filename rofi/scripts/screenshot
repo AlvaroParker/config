@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# rofi script mode: which screenshot to take (SUPER + SHIFT + S). Region comes
+# first, so SUPER + SHIFT + S then Enter is the region screenshot it always was.
+# The capture itself is hypr/scripts/screenshot.
+set -uo pipefail
+
+shot="$HOME/.config/hypr/scripts/screenshot"
+
+row() { # label, hint, icon, kind
+    printf '%s  <span alpha="55%%">%s</span>\0icon\x1f%s\x1finfo\x1f%s\n' "$1" "$2" "$3" "$4"
+}
+
+# Run after rofi has faded out, so it never appears in the picture.
+later() {
+    setsid -f sh -c "sleep 0.3; $1" >/dev/null 2>&1
+}
+
+case "${ROFI_INFO:-}" in
+    "")
+        printf '\0no-custom\x1ftrue\n'
+        printf '\0markup-rows\x1ftrue\n'
+        row "Region" "drag over an area" transform-crop region
+        row "Window" "click a window" window window
+        row "This display" "the one you are on" display-symbolic display
+        row "All displays" "every screen at once" view-fullscreen all
+        ;;
+    region | window | display | all) later "$shot $ROFI_INFO" ;;
+esac

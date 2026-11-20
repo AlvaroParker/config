@@ -1,0 +1,89 @@
+#!/usr/bin/env bash
+# Take a screenshot, save it in ~/Pictures/Screenshots and copy it to the
+# clipboard. SUPER + SHIFT + S asks which kind (rofi/scripts/screenshot);
+# other keys call a kind directly.
+#
+#   screenshot region    drag over an area
+#   screenshot window    click a window
+#   screenshot display   the display under the pointer
+#   screenshot all       every display
+#
+# While you pick an area or a window, the screen is frozen, so menus and
+# tooltips hold still. Esc cancels quietly.
+set -uo pipefail
+
+dir="$HOME/Pictures/Screenshots"
+file="$dir/Screenshot-$(date +%Y-%m-%d_%H:%M:%S).png"
+
+notify() { # message, icon, app, timeout
+    notify-send -a "$3" -i "$2" -t "$4" "$1"
+}
+
+fail() {
+    notify "$1" dialog-error grim 2000
+    exit 1
+}
+
+freeze_pid=""
+cleanup() {
+    [[ -n "$freeze_pid" ]] && kill "$freeze_pid" 2>/dev/null
+}
+trap cleanup EXIT
+
+freeze() {
+    if command -v hyprpicker >/dev/null; then
+        hyprpicker -r -z >/dev/null 2>&1 &
+        freeze_pid=$!
+        sleep 0.2
+    fi
+    hyprctl keyword layerrule "noanim,selection" >/dev/null 2>&1 || true
+}
+
+# The windows on the workspaces you can see, as boxes slurp can choose from.
+window_boxes() {
+    local workspaces
+    workspaces=$(hyprctl monitors -j | jq -c '[.[].activeWorkspace.id, .[].specialWorkspace.id] | map(select(. != 0))')
+    hyprctl clients -j | jq -r --argjson shown "$workspaces" '
+        .[] | select(.mapped and (.hidden | not) and (.workspace.id as $id | $shown | index($id)))
+        | "\(.at[0]),\(.at[1]) \(.size[0])x\(.size[1]) \(.class)"'
+}
+
+capture() { # grim arguments...
+    mkdir -p "$dir" || fail "Could not create $dir"
+    grim "$@" - | tee "$file" | wl-copy --type image/png || fail "Could not take the screenshot"
+}
+
+case "${1:-region}" in
+    region)
+        freeze
+        geometry=$(slurp) || exit 0
+        capture -g "$geometry"
+        message="Screenshot of the region taken"
+        ;;
+    window)
+        freeze
+        choice=$(window_boxes | slurp -r -f '%x,%y %wx%h %l') || exit 0
+        geometry=${choice% *}
+        class=${choice##* }
+        capture -g "$geometry"
+        message="Screenshot of ${class:-the window} taken"
+        ;;
+    display)
+        monitor=$(hyprctl monitors -j | jq -r '.[] | select(.focused).name')
+        [[ -n "$monitor" ]] || fail "Could not find the display"
+        capture -o "$monitor"
+        message="Screenshot of $monitor taken"
+        ;;
+    all)
+        capture
+        message="Screenshot of every display taken"
+        ;;
+    *)
+        printf 'usage: screenshot [region|window|display|all]\n' >&2
+        exit 2
+        ;;
+esac
+
+cleanup
+freeze_pid=""
+notify "$message" "$file" wl-copy 1000

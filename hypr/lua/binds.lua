@@ -1,7 +1,6 @@
 -- Key bindings. Every binding carries a description, so SUPER + / can list
 -- them all in the launcher.
 local default_apps = require("lua.default_apps")
-local screenshots = require("lua.screenshots")
 local groups = require("lua.groups")
 
 local SUPER = "SUPER + "
@@ -168,8 +167,10 @@ bind("XF86AudioNext", "Next track", exec("playerctl next"), { locked = true })
 bind("Caps_Lock", "Show Caps Lock state", exec("sleep 0.1 && swayosd-client --caps-lock"))
 
 -- Screenshots -------------------------------------------------------------
-bind(SUPER .. "SHIFT + S", "Screenshot of a region", screenshots.region)
-bind(SUPER .. "SHIFT + D", "Screenshot of this monitor", screenshots.current_monitor)
-bind("Print", "Screenshot of this monitor", screenshots.current_monitor)
-bind("XF86SelectiveScreenshot", "Screenshot of a region", screenshots.region)
+-- All go through scripts/screenshot, which saves to ~/Pictures/Screenshots
+-- and copies to the clipboard.
+bind(SUPER .. "SHIFT + S", "Screenshot: region, window, this display or all", exec(launcher .. " screenshot"))
+bind(SUPER .. "SHIFT + D", "Screenshot of this display", exec(scripts .. "screenshot display"))
+bind("Print", "Screenshot of this display", exec(scripts .. "screenshot display"))
+bind("XF86SelectiveScreenshot", "Screenshot of a region", exec(scripts .. "screenshot region"))
 bind(SUPER .. "SHIFT + T", "Copy text or a QR code from a region", exec(scripts .. "screen-text"))

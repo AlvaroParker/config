@@ -90,6 +90,7 @@ out of date. If the screen ever fails to start, the text login takes over.
 | `SUPER + ALT + A` | Accent colour. Repaints the desktop, the terminal and the wallpaper's moon |
 | `SUPER + /` | Search every key binding |
 | `SUPER + SHIFT + R` | Resize mode (shown in the bar). `H J K L` resize, `Esc` or `Enter` leave |
+| `SUPER + SHIFT + S` | Screenshot: pick a region, a window, this display or all displays. Saved in `~/Pictures/Screenshots` and copied. `SUPER + SHIFT + D` or `Print` takes this display straight away |
 | `SUPER + SHIFT + N` | Night light on or off. It also follows a schedule in `hypr/hyprsunset.conf` |
 | `SUPER + 1` … `0` | Workspace 1 to 10 of the current group. Add `SHIFT` to move the window there |
 | `SUPER + CTRL + 1` … `9` | Switch both screens to that workspace group: a clean set of ten workspaces, while the others wait. Add `SHIFT` to send the window to that group |
