@@ -3,3 +3,5 @@
 
 rate-mirrors-bin
 visual-studio-code-bin
+# Repackages Anthropic's official .deb of Claude desktop
+claude-desktop

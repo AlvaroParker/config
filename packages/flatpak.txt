@@ -1,0 +1,5 @@
+# Flatpak apps from Flathub, installed system-wide. install reads this file,
+# and `nocturne doctor` reports any that are missing. One app ID per line.
+
+com.github.wwmm.easyeffects
+org.videolan.VLC

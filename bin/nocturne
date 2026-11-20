@@ -347,8 +347,13 @@ doctor() {
     # pacman -T prints the packages that are not installed, counting ones
     # that another package provides.
     if command -v pacman >/dev/null; then
-        local absent
+        local absent app
         mapfile -t absent < <(pacman -T $(read_list packages/pacman.txt) $(read_list packages/aur.txt) 2>/dev/null)
+        if command -v flatpak >/dev/null; then
+            while read -r app; do
+                flatpak info "$app" &>/dev/null || absent+=("$app")
+            done < <(read_list packages/flatpak.txt)
+        fi
         if ((${#absent[@]} == 0)); then
             ok "packages: everything in packages/ is installed"
         else

@@ -88,6 +88,21 @@ else
     echo "AUR dependencies already installed."
 fi
 
+# Install Flatpak apps
+mapfile -t flatpak_apps < <(read_list packages/flatpak.txt)
+flatpak_to_install=()
+for app in "${flatpak_apps[@]}"; do
+    if ! flatpak info "$app" &>/dev/null; then
+        flatpak_to_install+=("$app")
+    fi
+done
+if (( ${#flatpak_to_install[@]} > 0 )); then
+    sudo flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+    sudo flatpak install --system --noninteractive flathub "${flatpak_to_install[@]}"
+else
+    echo "Flatpak apps already installed."
+fi
+
 # AstroNvim starts clean: its plugins and state are rebuilt from the config.
 rm -rf ~/.local/share/nvim ~/.local/state/nvim ~/.cache/nvim
 
@@ -197,6 +212,31 @@ fc-cache
 # Install pacman config
 sudo cp "$current_dir/pacman.conf" /etc/pacman.conf
 
+# ChatGPT desktop, from OpenAI's own pacman repository. The copy above drops
+# the repository's Include line, so add it back. The signing key is kept in
+# packages/ and pinned by fingerprint. The repository file below matches what
+# chatgpt-bin's install hook writes, so the hook keeps it and the key current.
+openai_key=3BFA0E4AE8B8CC16A2D9BA684A3B4A566C4660E4
+openai_repo=/etc/pacman.d/openai-chatgpt.conf
+sudo pacman-key --add "$current_dir/packages/openai-chatgpt.asc"
+sudo pacman-key --lsign-key "$openai_key"
+if [[ ! -f "$openai_repo" ]]; then
+    sudo tee "$openai_repo" >/dev/null <<'EOF'
+### THIS FILE IS AUTOMATICALLY CONFIGURED ###
+# Remove it and its Include line to opt out of automatic package updates.
+[openai-chatgpt]
+SigLevel = Required DatabaseRequired TrustedOnly
+Server = https://persistent.oaistatic.com/codex-app-prod/linux/arch/$arch
+EOF
+fi
+if ! grep -qxF "Include = $openai_repo" /etc/pacman.conf; then
+    printf '\nInclude = %s\n' "$openai_repo" | sudo tee -a /etc/pacman.conf >/dev/null
+fi
+if ! pacman -Qq chatgpt-bin &>/dev/null; then
+    # A new repository needs a sync, and Arch does not support partial upgrades.
+    sudo pacman -Syu --needed --noconfirm chatgpt-bin
+fi
+
 # Boot and Secure Boot files are not installed automatically; see system/README.md.
 
 # Ranger dev icons
@@ -227,6 +267,11 @@ mkdir -p ~/.icons
 
 # Install zed
 curl -fsSL https://zed.dev/install.sh | ZED_CHANNEL=preview sh
+
+# Starship, from its own installer into /usr/local/bin. Running it again
+# updates it.
+starship_installer=$(curl -fsSL https://starship.rs/install.sh)
+sh -c "$starship_installer" -- --yes
 
 if [[ ! -f "$HOME/.oh-my-zsh/oh-my-zsh.sh" ]]; then
     omz_installer=$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)
