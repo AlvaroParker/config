@@ -16,7 +16,7 @@ edit here changes the running desktop at once.
 - Write commit messages as Conventional Commits, with a scope:
   `type(scope): summary`, such as `feat(btop): theme btop from the Nocturne
   palette` or `fix(install): pick graphics drivers by GPU`. Types in use:
-  `feat`, `fix`, `chore`, `refactor`, `style`. The body says why, in plain
+  `feat`, `fix`, `docs`, `chore`, `refactor`, `style`. The body says why, in plain
   sentences. No attribution lines.
 - Write docs and comments the way DESIGN.md is written: short, plain
   sentences that say what something does and why.
