@@ -84,12 +84,14 @@ eval "$(starship init zsh)"
 eval "$(zoxide init zsh)"
 eval "$(direnv hook zsh)"
 
+# Tools that are not in packages/ are set up only where they are installed,
+# so a fresh machine starts a shell without errors.
 autoload -U +X bashcompinit && bashcompinit
-complete -o nospace -C /usr/bin/terraform terraform
-eval "$(forge zsh plugin)"
+if (( $+commands[terraform] )); then complete -o nospace -C "$commands[terraform]" terraform; fi
+if (( $+commands[forge] )); then eval "$(forge zsh plugin)"; fi
 # CF CLI completions
 [[ -f "$HOME/.config/cf/completions/_cf.zsh" ]] && source "$HOME/.config/cf/completions/_cf.zsh"
 
 # opencode
 export PATH=$HOME/.opencode/bin:$PATH
-eval "$(rbenv init - zsh)"
+if (( $+commands[rbenv] )); then eval "$(rbenv init - zsh)"; fi

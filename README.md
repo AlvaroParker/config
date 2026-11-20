@@ -101,7 +101,8 @@ palette change, and `nocturne doctor` checks links, fonts and colour files.
 Run `nocturne` on its own for the full list.
 
 The `install` script reads what to link from `links.txt` and what to install
-from `packages/`.
+from `packages/`. Graphics drivers come from `gpu-intel.txt` or
+`gpu-amd.txt`, picked by the GPUs the machine has.
 
 The `genswap` script will generate a new swapfile located at `/swapfile` and will output the needed kernel parameters to add for hibernation. **Do not run if you already have swap configured.**
 

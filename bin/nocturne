@@ -302,6 +302,18 @@ read_list() {
     sed -E 's/[[:space:]]*#.*$//; /^[[:space:]]*$/d' "$root/$1"
 }
 
+# The graphics package lists for the GPUs in this machine, as install picks them.
+gpu_lists() {
+    local vendor
+    for vendor in /sys/class/drm/card*/device/vendor; do
+        [[ -r "$vendor" ]] || continue
+        case "$(<"$vendor")" in
+            0x8086) echo packages/gpu-intel.txt ;;
+            0x1002) echo packages/gpu-amd.txt ;;
+        esac
+    done | sort -u
+}
+
 check_link() { # path in the repo, link
     [[ -L "$2" && "$(readlink -f "$2")" == "$(readlink -f "$root/$1")" ]]
 }
@@ -368,7 +380,11 @@ doctor() {
     # that another package provides.
     if command -v pacman >/dev/null; then
         local absent app
-        mapfile -t absent < <(pacman -T $(read_list packages/pacman.txt) $(read_list packages/aur.txt) 2>/dev/null)
+        local list gpu_packages=()
+        for list in $(gpu_lists); do
+            mapfile -t -O "${#gpu_packages[@]}" gpu_packages < <(read_list "$list")
+        done
+        mapfile -t absent < <(pacman -T $(read_list packages/pacman.txt) "${gpu_packages[@]}" $(read_list packages/aur.txt) 2>/dev/null)
         if command -v flatpak >/dev/null; then
             while read -r app; do
                 flatpak info "$app" &>/dev/null || absent+=("$app")

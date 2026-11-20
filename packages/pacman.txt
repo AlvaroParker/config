@@ -1,5 +1,6 @@
 # Packages from the official repositories. install reads this file, and
-# `nocturne doctor` reports any that are missing. One per line.
+# `nocturne doctor` reports any that are missing. One per line. Graphics
+# drivers are in gpu-intel.txt and gpu-amd.txt, picked by the hardware.
 wget
 ranger
 tmux
@@ -62,7 +63,6 @@ gdb
 jq
 man-pages
 hypridle
-vulkan-radeon
 eza
 rsync
 firefox
@@ -71,6 +71,7 @@ less
 git-delta
 discord
 zoxide
+direnv
 pavucontrol
 go
 nodejs

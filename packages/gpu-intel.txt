@@ -1,0 +1,7 @@
+# Graphics packages for Intel GPUs (PCI vendor 0x8086), from the official
+# repositories. install adds this list on machines with an Intel GPU, and
+# `nocturne doctor` checks it there. One per line.
+
+vulkan-intel
+# Hardware video decoding (VA-API) for Broadwell and newer
+intel-media-driver
