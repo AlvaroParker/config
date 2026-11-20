@@ -90,6 +90,11 @@ python-numpy
 python-pillow
 quickshell
 chafa
+# Copy text or a QR code from the screen (SUPER + SHIFT + T, hypr/scripts/screen-text)
+tesseract
+tesseract-data-eng
+tesseract-data-spa
+zbar
 # Login screen: greetd starts greeter/ inside labwc, with tuigreet as the
 # fallback. Put in place with `nocturne greeter install`.
 greetd

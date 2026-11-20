@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+# Copy the text in part of the screen. Drag over it and the words go to the
+# clipboard; a QR code in the region is read instead. Everything runs locally.
+#
+#   screen-text                    select a region with the mouse (SUPER + SHIFT + T)
+#   screen-text GEOMETRY           read a region given as slurp prints it: "X,Y WxH"
+#   screen-text --print [GEOMETRY] print the text instead of copying it
+#
+# Reads English and Spanish; set SCREEN_TEXT_LANGS (tesseract's -l) to change.
+set -uo pipefail
+
+langs="${SCREEN_TEXT_LANGS:-eng+spa}"
+print=no
+if [[ "${1:-}" == --print ]]; then
+    print=yes
+    shift
+fi
+geometry="${1:-}"
+
+notify() { # summary, body, [urgency]
+    notify-send -a "Screen text" -i edit-copy -u "${3:-normal}" -t 2000 "$1" "$2"
+}
+
+fail() {
+    if [[ $print == yes ]]; then echo "screen-text: $1" >&2; else notify "Could not read the screen" "$1" critical; fi
+    exit 1
+}
+
+for tool in grim slurp tesseract wl-copy; do
+    command -v "$tool" >/dev/null || fail "$tool is not installed (see packages/pacman.txt)"
+done
+
+work=$(mktemp -d)
+freeze_pid=""
+cleanup() {
+    [[ -n "$freeze_pid" ]] && kill "$freeze_pid" 2>/dev/null
+    rm -rf -- "$work"
+}
+trap cleanup EXIT
+
+if [[ -z "$geometry" ]]; then
+    # Freeze the screen while selecting, as region screenshots do.
+    if command -v hyprpicker >/dev/null; then
+        hyprpicker -r -z >/dev/null 2>&1 &
+        freeze_pid=$!
+        sleep 0.2
+    fi
+    hyprctl keyword layerrule "noanim,selection" >/dev/null 2>&1 || true
+    geometry=$(slurp) || exit 0 # Esc cancels quietly
+    [[ -n "$geometry" ]] || exit 0
+fi
+
+# Twice the size: tesseract reads small screen text much better with more
+# pixels, and the external monitor runs at about 1x.
+grim -g "$geometry" -s 2 "$work/region.png" || fail "could not capture the region"
+
+kind=text
+result=""
+if command -v zbarimg >/dev/null; then
+    result=$(zbarimg --raw --quiet "$work/region.png" 2>/dev/null) && kind=qr
+fi
+if [[ $kind == text ]]; then
+    # Drop tesseract's page break, trailing spaces and blank lines at either
+    # end, and squeeze runs of blank lines down to one.
+    result=$(tesseract "$work/region.png" - -l "$langs" --psm 3 2>/dev/null |
+        tr -d '\f' | sed -E 's/[[:space:]]+$//' | cat -s |
+        sed -e '/./,$!d' | sed -e ':a' -e '/^\n*$/{$d;N;ba' -e '}')
+fi
+
+if [[ $print == yes ]]; then
+    [[ -n "$result" ]] && printf '%s\n' "$result"
+    exit 0
+fi
+
+if [[ -z "$result" ]]; then
+    notify "No text found" "Try a larger region, or one with less around the text."
+    exit 0
+fi
+
+printf '%s' "$result" | wl-copy
+preview=$(printf '%s' "$result" | tr '\n' ' ' | sed -E 's/ +/ /g')
+((${#preview} > 80)) && preview="${preview:0:80}…"
+if [[ $kind == qr ]]; then
+    notify "QR code copied" "$preview"
+else
+    notify "Text copied" "$preview"
+fi

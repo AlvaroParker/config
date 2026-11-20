@@ -86,7 +86,6 @@ bind(SUPER .. "SHIFT + return", "Terminal in tmux", exec(terminal .. " -e ~/.loc
 bind(SUPER .. "ALT + return", "Terminal in herdr", exec(terminal .. " -e ~/.local/bin/herdr"))
 bind(SUPER .. "E", "Files", exec("nautilus"))
 bind(SUPER .. "I", "Browser", exec(default_apps.browser))
-bind(SUPER .. "T", "Teams", exec("/opt/teams-for-linux/teams-for-linux --ozone-platform=x11"))
 
 bind(SUPER .. "D", "Launcher", exec(launcher))
 bind(SUPER .. "V", "Clipboard history", exec(launcher .. " clipboard"))
@@ -138,3 +137,4 @@ bind(SUPER .. "SHIFT + S", "Screenshot of a region", screenshots.region)
 bind(SUPER .. "SHIFT + D", "Screenshot of this monitor", screenshots.current_monitor)
 bind("Print", "Screenshot of this monitor", screenshots.current_monitor)
 bind("XF86SelectiveScreenshot", "Screenshot of a region", screenshots.region)
+bind(SUPER .. "SHIFT + T", "Copy text or a QR code from a region", exec(scripts .. "screen-text"))

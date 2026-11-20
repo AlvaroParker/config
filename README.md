@@ -104,6 +104,11 @@ The `install` script reads what to link from `links.txt` and what to install
 from `packages/`. Graphics drivers come from `gpu-intel.txt` or
 `gpu-amd.txt`, picked by the GPUs the machine has.
 
+`SUPER + SHIFT + T` copies the text in a region of the screen, in English or
+Spanish, or the contents of a QR code if the region holds one
+(`hypr/scripts/screen-text`, using tesseract and zbar). It all runs locally.
+`SUPER + /` lists every key binding.
+
 The `genswap` script will generate a new swapfile located at `/swapfile` and will output the needed kernel parameters to add for hibernation. **Do not run if you already have swap configured.**
 
 ## Programs used
