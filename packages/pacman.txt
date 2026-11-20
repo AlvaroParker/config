@@ -106,6 +106,22 @@ tesseract
 tesseract-data-eng
 tesseract-data-spa
 zbar
+# Other sessions, picked on the login screen. GNOME stays usable, and GDM stays
+# installed (disabled) as a way back to GNOME's own login screen.
+gnome-shell
+gnome-session
+gnome-control-center
+extension-manager
+gdm
+# i3 on Xorg, for testing X11 work. Its config lives outside this repo, in
+# ~/.config/i3; dunst is its notification daemon (swaync is Hyprland's).
+i3-wm
+i3blocks
+i3status
+i3lock
+dmenu
+dunst
+xorg-xinit
 # Login screen: greetd starts greeter/ inside labwc, with tuigreet as the
 # fallback. Put in place with `nocturne greeter install`.
 greetd

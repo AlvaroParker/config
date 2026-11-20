@@ -119,8 +119,17 @@ The copies do not follow the repo by themselves. After changing the accent or
 the wallpaper, run `nocturne greeter install` again; `nocturne reload` and
 `nocturne doctor` say when they are out of date.
 
+**Sessions.** Every login starts Hyprland unless you pick another session in
+the bottom-left corner first (click it, or Tab to it and press Enter). GNOME
+appears when it is installed, and i3 when it and `xorg-xinit` are; a session
+other than Hyprland shows in gold, and the next boot starts at Hyprland
+again. `greeter/session.sh` starts each one: GNOME on Wayland, and i3 through
+`startx` on the login's console. GDM can stay installed, disabled, as a way
+back to GNOME's own login screen.
+
 If the screen cannot start, the script falls back to tuigreet, the text
-login, so you can still get in. `Ctrl + Alt + F2` opens a plain console as a
+login, so you can still get in. It starts Hyprland too; F3 there lists the
+other sessions. `Ctrl + Alt + F2` opens a plain console as a
 last resort. To go back for good:
 
 ```sh

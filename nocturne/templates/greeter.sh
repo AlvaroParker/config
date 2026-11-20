@@ -68,8 +68,11 @@ if [ -f "$screen/session.sh" ]; then
     session="sh $screen/session.sh"
 fi
 
+# F3 lists the other sessions; X11 ones start through startx.
 exec tuigreet \
     --cmd "$session" \
+    --sessions /usr/share/wayland-sessions \
+    --xsessions /usr/share/xsessions \
     --remember \
     --asterisks \
     --time --time-format '%a %-d %b  %H:%M' \

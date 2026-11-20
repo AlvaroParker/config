@@ -1,0 +1,8 @@
+# Linked into ~/.local/share/dbus-1/services/, which D-Bus reads before the
+# system folders. swaync and dunst both offer to be the notification service;
+# this makes D-Bus start swaync when a notification arrives and nothing is
+# running yet. i3 starts dunst itself, so it is unaffected.
+[D-BUS Service]
+Name=org.freedesktop.Notifications
+Exec=/usr/bin/swaync
+SystemdService=swaync.service

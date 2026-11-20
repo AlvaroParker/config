@@ -10,7 +10,8 @@ matching the layout in shell.qml:
 
   * the middle, where the clock, the field and its messages are. Messages can
     be red, the dimmest colour used, so red sets the limit here;
-  * the bottom edge, where the battery and the power buttons are, in `text`.
+  * the bottom edge, where the battery, the session and the power buttons
+    are, in `text`, `muted` and gold; the dimmest of them sets the limit.
 
 A dark wallpaper is not dimmed at all.
 
@@ -44,13 +45,20 @@ def load_build():
 
 
 def text_luminances(build):
-    """Luminance of the two colours that set the limits: red and `text`."""
+    """Luminance of the dimmest colour written in each area: red in the
+    middle; at the bottom edge the dimmest of `text` (battery, power buttons),
+    `muted` (the word before the session) and gold (a session other than
+    Hyprland)."""
     palette = tomllib.loads((ROOT / "nocturne" / "palette.toml").read_text())
-    lightness, chroma = palette["neutral"]["text"]
-    return (
-        build.luminance(build.oklch_to_rgb(*palette["semantic"]["red"])),
-        build.luminance(build.oklch_to_rgb(lightness, chroma, palette["neutral"]["hue"])),
-    )
+    hue = palette["neutral"]["hue"]
+
+    def neutral(name):
+        return build.luminance(build.oklch_to_rgb(*palette["neutral"][name], hue))
+
+    def semantic(name):
+        return build.luminance(build.oklch_to_rgb(*palette["semantic"][name]))
+
+    return semantic("red"), min(neutral("text"), neutral("muted"), semantic("gold"))
 
 
 def brightest(luminance, left, top, right, bottom):

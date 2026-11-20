@@ -17,6 +17,7 @@ hypr                                  ~/.config/hypr
 waybar                                ~/.config/waybar
 rofi                                  ~/.config/rofi
 swaync                                ~/.config/swaync
+dbus/org.freedesktop.Notifications.service ~/.local/share/dbus-1/services/org.freedesktop.Notifications.service
 swayosd                               ~/.config/swayosd
 quickshell                            ~/.config/quickshell
 fastfetch                             ~/.config/fastfetch

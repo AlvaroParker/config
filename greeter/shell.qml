@@ -1,6 +1,7 @@
 // Nocturne login screen: the lock screen's sibling (see DESIGN.md).
 // The wallpaper, blurred; the date and a large clock; your name, a line to
-// type on, and one line below it for anything that needs saying.
+// type on, and one line below it for anything that needs saying. The session
+// to start sits in the bottom-left corner when there is more than one.
 //
 // greetd starts it inside labwc, a small compositor that is there for this
 // one window and for the touchpad: see nocturne/templates/greeter.sh and
@@ -17,9 +18,50 @@ import Quickshell.Services.UPower
 ShellRoot {
     id: shell
 
-    // What starts after a successful login: session.sh, next to this file.
+    // What starts after a successful login: session.sh, next to this file,
+    // with the session picked in the bottom-left corner. Hyprland comes first
+    // and is where every boot starts; the others appear when installed.
+    // `env` reaches logind, which records the session's type the way GDM
+    // would. Hyprland gets none, as it always has.
+    readonly property var sessions: {
+        const found = [{ id: "hyprland", name: "Hyprland", env: [] }];
+        if (gnomeSession.text() !== "")
+            found.push({ id: "gnome", name: "GNOME", env: ["XDG_SESSION_TYPE=wayland", "XDG_CURRENT_DESKTOP=GNOME", "XDG_SESSION_DESKTOP=gnome"] });
+        if (i3Session.text() !== "" && startx.text() !== "")
+            found.push({ id: "i3", name: "i3", env: ["XDG_SESSION_TYPE=x11", "XDG_CURRENT_DESKTOP=i3", "XDG_SESSION_DESKTOP=i3"] });
+        return found;
+    }
+    property int sessionIndex: 0
+    readonly property var session: sessions[sessionIndex] ?? sessions[0]
+
     // greetd joins these words into one shell line, so they are kept plain.
-    readonly property list<string> sessionCommand: ["sh", Quickshell.shellPath("session.sh")]
+    function launch() {
+        const command = ["sh", Quickshell.shellPath("session.sh"), session.id];
+        if (session.env.length > 0)
+            Greetd.launch(command, session.env);
+        else
+            Greetd.launch(command);
+    }
+
+    // Installed sessions, found by the files their packages install.
+    FileView {
+        id: gnomeSession
+        path: "/usr/share/wayland-sessions/gnome.desktop"
+        blockLoading: true
+        printErrors: false
+    }
+    FileView {
+        id: i3Session
+        path: "/usr/share/xsessions/i3.desktop"
+        blockLoading: true
+        printErrors: false
+    }
+    FileView {
+        id: startx
+        path: "/usr/bin/startx"
+        blockLoading: true
+        printErrors: false
+    }
 
     // People who can log in: regular accounts with a real shell.
     readonly property var users: {
@@ -146,7 +188,7 @@ ShellRoot {
         }
 
         function onReadyToLaunch() {
-            Greetd.launch(shell.sessionCommand);
+            shell.launch();
         }
     }
 
@@ -316,6 +358,29 @@ ShellRoot {
                 color: Nocturne.text
                 font.family: "Lilex Nerd Font"
                 font.pixelSize: 13 * view.u
+            }
+
+            // The session, in the opposite corner to the power buttons. Only
+            // there when there is a choice. Each press moves to the next one;
+            // anything but Hyprland is gold, a mode you could forget you chose.
+            PowerButton {
+                anchors.left: parent.left
+                anchors.bottom: parent.bottom
+                anchors.leftMargin: 24 * view.u
+                anchors.bottomMargin: 24 * view.u
+                visible: shell.sessions.length > 1
+                u: view.u
+                hairline: view.hairline
+                fast: view.fast
+                curve: view.settleCurve
+                hint: "Session"
+                label: shell.session.name
+                textColor: shell.sessionIndex === 0 ? Nocturne.text : Nocturne.gold
+                description: "Session: " + shell.session.name + ". Press to change."
+                onActivated: {
+                    if (!shell.checking)
+                        shell.sessionIndex = (shell.sessionIndex + 1) % shell.sessions.length;
+                }
             }
 
             Row {
