@@ -125,6 +125,7 @@ use `leave` (0.4, 0, 1, 1) and take about three quarters of the time.
 | `nocturne/tmux.conf`, `nocturne/fzfrc`, `nocturne/delta.gitconfig`, `nocturne/qt6ct.conf` | generated |
 | `zathura/nocturne`, `firefox/chrome/nocturne.css`, `zed/themes/nocturne.json`, `nvim/lua/nocturne/palette.lua` | generated |
 | `zen/chrome/nocturne.css`, `zen/chrome/userContent.css`, `zen/user.js` | generated: Zen colours, built-in pages and appearance settings |
+| `obsidian/themes/Nocturne/theme.css` | generated: Obsidian's theme, dark mode only. Obsidian keeps themes inside each vault, so `install` gives every vault listed in `~/.config/obsidian/obsidian.json` a `themes/Nocturne` folder of links to these files and selects it; run `install` again after opening a new vault. The folder is real and only its files are links, because Obsidian does not notice changes through a linked folder; `nocturne reload` makes the `theme.css` link again, and Obsidian reloads the theme when it sees that. Links are blue and the open note is the brightest row; the accent marks the cursor, the current tab and things that are on |
 | `quickshell/Nocturne.qml` | generated: desktop panel colours (the rest of `quickshell/` is hand-written) |
 | `greeter/` | hand-written: the login screen. `greeter/background` makes its blurred wallpaper; `rc.xml` configures labwc, the compositor underneath it (tap to click, and no keys or menus of its own); `outputs.sh` gives each screen its desktop scale, and must be kept in step with `hypr/lua/monitors.lua`; the cursor theme and size come from `hypr/lua/env.lua` when it is installed; `session.sh` is what a login starts, with Hyprland's launcher output dropped so it never shows on the console; `Nocturne.qml` there is a link to the generated one in `quickshell/` |
 | `system/usr/local/bin/nocturne-greeter.sh` | generated: what greetd starts. It runs the login screen inside labwc and falls back to tuigreet, whose console colours it carries. `nocturne greeter install` puts both in place |
@@ -147,7 +148,7 @@ bat cache --build  # only after editing the bat theme
 ```
 
 `nocturne reload` reloads Hyprland, the bar, notifications, the volume
-display, Ghostty, tmux, Herdr and any running Neovim, and skips what is not
+display, Ghostty, tmux, Herdr, Obsidian and any running Neovim, and skips what is not
 running. Zed, VS Code, the launcher, the lock screen, the desktop panel and new
 shells pick changes up on their own. Zen needs a restart. The login screen
 runs from copies that only root can replace, so a new accent or wallpaper
@@ -157,7 +158,8 @@ window first.
 
 `nocturne doctor` checks the whole setup: that the colour files match the
 palette, the contrast table passes, every link in `links.txt` points into this
-repo, and the fonts and cursor are installed.
+repo, every Obsidian vault uses the theme, and the fonts and cursor are
+installed.
 
 ## Zen
 

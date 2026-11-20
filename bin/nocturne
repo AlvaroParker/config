@@ -26,6 +26,17 @@ running() {
     pgrep -x "$1" >/dev/null
 }
 
+# Obsidian keeps themes inside each vault. install gives every vault a
+# themes/Nocturne folder holding links to the files in obsidian/themes/Nocturne.
+# This prints the vaults Obsidian knows about.
+obsidian_vaults() {
+    local list="${XDG_CONFIG_HOME:-$HOME/.config}/obsidian/obsidian.json" vault
+    [[ -f "$list" ]] && command -v jq >/dev/null || return 0
+    while read -r vault; do
+        [[ -d "$vault/.obsidian" ]] && printf '%s\n' "$vault"
+    done < <(jq -r '.vaults[].path' "$list")
+}
+
 # ------------------------------------------------------------------- reload
 # Each app is told in the gentlest way it supports. Apps that are not running
 # are skipped; apps that cannot reload are named at the end.
@@ -76,6 +87,15 @@ reload() {
 
     pgrep -f 'zen_browser|/zen( |$)|zen-bin' >/dev/null && restart+=("Zen")
     running firefox && restart+=("Firefox")
+    # Obsidian does not notice when a linked file's target changes, but it
+    # reloads the theme when the link itself is made again.
+    local vault reloaded_obsidian=no
+    while read -r vault; do
+        [[ -L "$vault/.obsidian/themes/Nocturne/theme.css" ]] || continue
+        ln -sfn "$root/obsidian/themes/Nocturne/theme.css" "$vault/.obsidian/themes/Nocturne/theme.css" &&
+            reloaded_obsidian=yes
+    done < <(obsidian_vaults)
+    [[ $reloaded_obsidian == yes ]] && pgrep -f 'obsidian/app\.asar' >/dev/null && done+=("Obsidian")
 
     ((${#done[@]})) && printf 'reloaded: %s\n' "$(join ', ' "${done[@]}")"
     ((${#restart[@]})) && printf 'restart to see the change: %s\n' "$(join ', ' "${restart[@]}")"
@@ -358,6 +378,25 @@ doctor() {
             ok "packages: everything in packages/ is installed"
         else
             note "packages listed in packages/ but not installed: $(join ' ' "${absent[@]}")"
+        fi
+    fi
+
+    # Obsidian themes live inside each vault, so they are not in links.txt.
+    local vault vaults unthemed=()
+    mapfile -t vaults < <(obsidian_vaults)
+    if ((${#vaults[@]})); then
+        for vault in "${vaults[@]}"; do
+            if ! check_link obsidian/themes/Nocturne/theme.css "$vault/.obsidian/themes/Nocturne/theme.css" ||
+                ! check_link obsidian/themes/Nocturne/manifest.json "$vault/.obsidian/themes/Nocturne/manifest.json" ||
+                [[ "$(jq -r '.cssTheme // ""' "$vault/.obsidian/appearance.json" 2>/dev/null)" != Nocturne ]]; then
+                unthemed+=("$vault")
+            fi
+        done
+        if ((${#unthemed[@]})); then
+            fix "Obsidian: ${#unthemed[@]} vault(s) without the Nocturne theme. Run ./install:"
+            detail "${unthemed[@]/#$HOME/\~}"
+        else
+            ok "Obsidian: every vault uses the Nocturne theme"
         fi
     fi
 

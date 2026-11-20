@@ -200,6 +200,28 @@ if flatpak info app.zen_browser.zen >/dev/null 2>&1; then
     fi
 fi
 
+# Obsidian keeps themes inside each vault, so link the Nocturne theme into
+# every vault it knows about and select it in dark mode. The folder is real and
+# its files are links: Obsidian reloads the theme when a link inside the vault
+# is made again (`nocturne reload` does that), but not through a linked folder.
+# Vaults opened later need ./install again.
+obsidian_vaults="${XDG_CONFIG_HOME:-$HOME/.config}/obsidian/obsidian.json"
+if [[ -f "$obsidian_vaults" ]]; then
+    while read -r vault; do
+        [[ -d "$vault/.obsidian" ]] || continue
+        theme_dir="$vault/.obsidian/themes/Nocturne"
+        [[ -L "$theme_dir" ]] && rm "$theme_dir"
+        mkdir -p "$theme_dir"
+        for f in manifest.json theme.css; do
+            ln -sfn "${current_dir}/obsidian/themes/Nocturne/$f" "$theme_dir/$f"
+        done
+        appearance="$vault/.obsidian/appearance.json"
+        [[ -s "$appearance" ]] || echo '{}' >"$appearance"
+        jq '.cssTheme = "Nocturne" | .theme = "obsidian"' "$appearance" >"$appearance.tmp" &&
+            mv "$appearance.tmp" "$appearance"
+    done < <(jq -r '.vaults[].path' "$obsidian_vaults")
+fi
+
 # bat's Nocturne theme, also used by delta and ranger's previews
 bat cache --build >/dev/null
 
