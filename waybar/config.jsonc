@@ -58,7 +58,7 @@
       "nm-connection-editor": "Network",
       "[Oo]bsidian": "Obsidian",
       "[Dd]iscord|vesktop": "Discord",
-      "[Cc]ode|code-oss|code-url-handler": "VS Code",
+      "[Cc]ode|code-oss|code-url-handler|com\\.microsoft\\.VSCode": "VS Code",
       "teams-for-linux": "Teams",
       "[Ss]potify": "Spotify",
       "thunderbird|org\\.mozilla\\.Thunderbird": "Thunderbird",

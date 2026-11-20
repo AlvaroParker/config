@@ -6,7 +6,7 @@
     "commit": "",
     "pr": ""
   },
-  "model": "opus",
+  "model": "fable",
   "hooks": {
     "SessionStart": [
       {
@@ -30,6 +30,7 @@
     "gopls-lsp@claude-plugins-official": true,
     "rust-analyzer-lsp@claude-plugins-official": true
   },
+  "feedbackDrafts": "off",
   "modelSettings": {
     "claude-opus-5-5": {
       "effortLevel": "high"
@@ -40,6 +41,5 @@
   },
   "tui": "fullscreen",
   "agentPushNotifEnabled": true,
-  "voiceEnabled": false,
-  "feedbackDrafts": "off"
+  "voiceEnabled": false
 }

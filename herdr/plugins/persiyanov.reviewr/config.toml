@@ -1,4 +1,6 @@
-# theme defaults to catppuccin, matching herdr.
+# reviewr only offers named themes, so Nocturne cannot be generated for it.
+# Rosé Pine is the closest: a cold dark base with a rose accent.
+theme = "rose-pine"
 default_scope = "last-turn"
 diff_view = "unified"
 toggle_placement = "overlay"

@@ -32,7 +32,6 @@ hl.workspace_rule({
 })
 
 local workspace_apps = {
-    ["1"] = "ghostty -e ~/.local/bin/auto_tmux",
     ["10"] = default_apps.browser,
 }
 

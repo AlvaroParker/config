@@ -78,7 +78,10 @@ PanelWindow {
         }
 
         // Always present, so the music block never jumps when weather arrives.
+        // The width matters: a Column skips items that are zero wide, and an
+        // empty Text is.
         Text {
+            width: parent.width
             height: 30
             text: Weather.summary
             color: Nocturne.muted
