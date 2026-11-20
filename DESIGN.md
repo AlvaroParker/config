@@ -89,7 +89,7 @@ fonts are the same two faces (`.ZedSans` and `.ZedMono`). Packages:
 | --- | --- | --- |
 | Fast | 120 ms | fades, hovers, borders, layers |
 | Standard | 200 ms | windows opening and moving |
-| Slow | 280 ms | workspace changes |
+| Slow | 280 ms | workspace changes: sideways within a group, up or down between groups, as if the groups were floors |
 
 One curve, `settle` (0.16, 1, 0.3, 1), for anything arriving. Things leaving
 use `leave` (0.4, 0, 1, 1) and take about three quarters of the time.

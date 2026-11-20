@@ -14,6 +14,7 @@
 -- as `workspace_groups`.
 
 local monitor_names = require("lua.monitor_names")
+local animations = require("lua.animations")
 
 local M = {}
 
@@ -57,7 +58,20 @@ function M.move_to_slot(slot)
     hl.dispatch(hl.dsp.window.move({ workspace = M.id(M.current_group(), slot) }))
 end
 
+-- Counts group switches, so only the latest one puts the sideways slide back.
+local switches = 0
+
 function M.switch_group(group)
+    -- A group change slides vertically; sideways again once it has played.
+    switches = switches + 1
+    local this_switch = switches
+    animations.workspace_slide("slidevert")
+    hl.timer(function()
+        if this_switch == switches then
+            animations.workspace_slide("slide")
+        end
+    end, { timeout = animations.workspace_slide_ms + 120, type = "oneshot" })
+
     local focused = hl.get_active_monitor()
     for _, monitor in ipairs(hl.get_monitors()) do
         local target = M.id(group, current_slot(monitor.active_workspace))

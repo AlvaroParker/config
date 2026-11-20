@@ -94,6 +94,7 @@ out of date. If the screen ever fails to start, the text login takes over.
 | `SUPER + 1` … `0` | Workspace 1 to 10 of the current group. Add `SHIFT` to move the window there |
 | `SUPER + CTRL + 1` … `9` | Switch both screens to that workspace group: a clean set of ten workspaces, while the others wait. Add `SHIFT` to send the window to that group |
 | `SUPER + CTRL + scroll` | The next or previous workspace group |
+| Three fingers up / down | The next or previous workspace group (three fingers sideways move between workspaces) |
 
 ## Utilities
 

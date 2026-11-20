@@ -40,5 +40,18 @@ hl.animation({ leaf = "border", enabled = true, speed = 1.2, bezier = "settle" }
 hl.animation({ leaf = "layersIn", enabled = true, speed = 1.2, bezier = "settle", style = "fade" })
 hl.animation({ leaf = "layersOut", enabled = true, speed = 0.9, bezier = "leave", style = "fade" })
 
-hl.animation({ leaf = "workspaces", enabled = true, speed = 2.8, bezier = "settle", style = "slide" })
+-- Workspaces slide sideways; changing workspace group slides them up or down
+-- instead, as if the groups were floors (lua/groups.lua switches the style
+-- for the length of one slide).
+local M = {}
+
+M.workspace_slide_ms = 280
+
+function M.workspace_slide(style)
+    hl.animation({ leaf = "workspaces", enabled = true, speed = M.workspace_slide_ms / 100, bezier = "settle", style = style })
+end
+
+M.workspace_slide("slide")
 hl.animation({ leaf = "specialWorkspace", enabled = true, speed = 2.8, bezier = "settle", style = "slidevert" })
+
+return M
