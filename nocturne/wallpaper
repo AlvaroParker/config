@@ -6,8 +6,9 @@
     nocturne/wallpaper --size 3072x1920 --out /tmp/test.png
 
 The scene is a night sky over receding hills, with a low moon in the accent
-colour. Every colour comes from nocturne/palette.toml, so changing the accent
-and re-running this repaints the moon. Needs numpy and Pillow.
+colour seen through a lone rock arch shaped like the Arch Linux logo. Every
+colour comes from nocturne/palette.toml, so changing the accent and re-running
+this repaints the moon. Needs numpy and Pillow.
 """
 
 import argparse
@@ -35,6 +36,15 @@ RANGES = [
     (0.845, 0.080, 0.75, (0.142, 0.027, 0), 0.0, 0.03),
     (0.945, 0.100, 0.45, (0.115, 0.022, 0), 0.0, 0.0),
 ]
+
+# The rock arch, in height units. Its outline is the Arch logo's: a sharp apex,
+# flanks that flare out towards a wide base, a fold cut into the left face, and
+# an arch underneath whose legs splay out at the feet.
+PEAK_HEIGHT = 0.27     # apex to where the base would be
+PEAK_HALF = 0.145      # half the width at the base
+PEAK_FLARE = 0.82      # below 1 the flanks curve outwards, like the logo
+ARCH_WIDTH = 0.40      # the cutout, as a fraction of the base's half width
+ARCH_HEIGHT = 0.42     # and of the peak's height
 
 
 def load_build():
@@ -79,6 +89,43 @@ def ridge(x, rng, base, amplitude, frequency, octaves=6):
     return base - amplitude * height
 
 
+def peak_outline(Y, xs, rng, peak_x, apex_y):
+    """Each pixel's distance below the arch's outer outline.
+
+    Distance is measured across the slope, so the steep sides near the apex
+    are antialiased as well as the gentle ones.
+    """
+    d = np.abs(xs - peak_x) / PEAK_HALF
+    line = apex_y + PEAK_HEIGHT * d**PEAK_FLARE
+    # A little weathering on the flanks, none at the apex, so it reads as rock.
+    texture = ridge(xs, rng, 0.0, 0.014, 11.0, octaves=5)
+    line = line - (texture - texture.mean()) * np.clip(d * 1.2, 0, 1)
+    slope = np.gradient(line, xs)
+    return (Y - line[None, :]) / np.sqrt(1 + slope * slope)[None, :]
+
+
+def fold(X, Y, peak_x, apex_y):
+    """The logo's fold: a shadowed gully that cuts into the left face from its
+    edge and tapers to a point near the middle. 1 in the gully, 0 elsewhere."""
+    u = (X - peak_x) / PEAK_HALF          # -1 at the left foot, 0 on the axis
+    t = (Y - apex_y) / PEAK_HEIGHT        # 0 at the apex, 1 at the base
+    s = np.clip(-u, 0, None)              # 0 at the tip, growing to the left
+    centre = 0.47 + 0.24 * s**1.5         # rises towards the tip
+    half = 0.085 * np.clip(s / 0.85, 0, 1) ** 1.6  # tapers to nothing at the tip
+    inside = np.clip(1 - np.abs(t - centre) / np.maximum(half, 1e-4), 0, 1)
+    return np.clip(inside * 2.2, 0, 1) * (u < 0)
+
+
+def arch_cutout(X, Y, peak_x, base_y, pixel):
+    """Signed distance to the arch under the logo, positive in the rock."""
+    v = np.clip((base_y - Y) / (PEAK_HEIGHT * ARCH_HEIGHT), 0, None)
+    flare = 1 + 0.75 * np.clip(1 - v, 0, 1) ** 3  # legs splay out at the feet
+    u = np.abs(X - peak_x) / (PEAK_HALF * ARCH_WIDTH * flare)
+    g = u**1.7 + v**2.2 - 1.0  # negative inside the cutout
+    gy, gx = np.gradient(g, pixel)
+    return g / np.maximum(np.sqrt(gx * gx + gy * gy), 1e-6)
+
+
 def paint(width, height, seed):
     config = tomllib.loads((HERE / "palette.toml").read_text())
     hue = config["neutral"]["hue"]
@@ -110,6 +157,18 @@ def paint(width, height, seed):
     moon_x, moon_r = aspect * 0.70, 0.019
     column = min(int(moon_x / pixel), width - 1)
     moon_y = float(lines[0][0, column]) - moon_r * 0.35
+
+    # The rock arch stands one range nearer, the moon framed under its arch.
+    peak_x = moon_x
+    base_y = moon_y - moon_r - 0.020 + PEAK_HEIGHT * ARCH_HEIGHT
+    apex_y = base_y - PEAK_HEIGHT
+    peak_d = peak_outline(Y, xs, rng, peak_x, apex_y)
+    cut_d = arch_cutout(X, Y, peak_x, base_y, pixel)
+    peak_cover = np.clip(peak_d / pixel + 0.5, 0, 1) * np.clip(cut_d / pixel + 0.5, 0, 1)
+    # Part the next range so the arch's flared feet show.
+    span = np.exp(-(((xs - peak_x) / (PEAK_HALF * 1.1)) ** 4))[None, :]
+    lines[1] = lines[1] * (1 - span) + np.maximum(lines[1], base_y + 0.004) * span
+
     glow_color = linear(accent_l, accent_c, accent_h)
     dx, dy = (X - moon_x) / 1.6, Y - moon_y  # a wider-than-tall haze, like light on mist
     distance = np.sqrt(dx * dx + dy * dy)
@@ -139,7 +198,22 @@ def paint(width, height, seed):
     # by the moon along its crest. Mist pools in the valley behind each one.
     mist_color = linear(0.34, 0.040, hue + 4)
     near_moon = np.exp(-(((X - moon_x) / 0.22) ** 2))
-    for line, (_, _, _, (l, c, h), rim_strength, glow_kept) in zip(lines, RANGES):
+    moon_near = np.exp(-np.sqrt((X - moon_x) ** 2 + (Y - moon_y) ** 2) / 0.07)
+    for index, (line, (_, _, _, (l, c, h), rim_strength, glow_kept)) in enumerate(zip(lines, RANGES)):
+        if index == 1:
+            # The arch, between the far range and the next: backlit by the
+            # moon, with its inner edge and moon-side crest catching the light.
+            fill = linear(0.212, 0.042, hue + 5)
+            shade = 1.0 - 0.18 * np.clip((Y - apex_y) / PEAK_HEIGHT, 0, 1)
+            shade *= 1.0 - 0.5 * fold(X, Y, peak_x, apex_y)
+            layer = fill * shade[..., None] + (0.22 * glow)[..., None] * glow_color
+            crest = np.exp(-np.clip(peak_d, 0, None) / 0.0016) * near_moon
+            crest *= np.clip((X - peak_x) / 0.03 + 0.5, 0.15, 1)  # the moon's side
+            rim = 0.12 * crest + 0.55 * np.exp(-np.clip(cut_d, 0, None) / 0.0020) * moon_near
+            layer += rim[..., None] * glow_color
+            cover = peak_cover[..., None]
+            image = image * (1 - cover) + layer * cover
+
         below = Y - line
         cover = np.clip(below / pixel + 0.5, 0, 1)[..., None]
 
