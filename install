@@ -1,6 +1,6 @@
 #!/bin/bash
 # Install the packages and link this repository's configuration into place.
-# Warning: replaces existing configuration for every app listed below.
+# Warning: replaces existing configuration for every app listed in links.txt.
 set -e -o pipefail
 
 current_dir=$(dirname -- "$(realpath -- "${BASH_SOURCE[0]}")")
@@ -12,20 +12,10 @@ clone_if_missing() {
     fi
 }
 
-create_symlinks() {
-    local source_directory="$1"
-    local target_directory="$2"
-    local full_source_directory="${current_dir}/$source_directory"
-
-    # Ensure the target directory exists
-    mkdir -p "$target_directory"
-
-    # Loop through each file in the source directory
-    for file in "$full_source_directory"/*; do
-        if [ -f "$file" ]; then
-            ln -sf "$file" "$target_directory"
-        fi
-    done
+# read_list FILE: the entries of a list file in this repo, without comments
+# or blank lines.
+read_list() {
+    sed -E 's/[[:space:]]*#.*$//; /^[[:space:]]*$/d' "$current_dir/$1"
 }
 
 # link SOURCE TARGET: replace TARGET with a symlink to SOURCE in this repo.
@@ -39,7 +29,24 @@ link() {
     ln -s "${current_dir}/$1" "$2"
 }
 
-packages=("wget" "ranger" "tmux" "curl" "unzip" "rustup" "base-devel" "git" "hyprland" "xdg-desktop-portal-hyprland" "nautilus" "flatpak" "grim" "wl-clipboard" "slurp" "swaync" "blueman" "btop" "zsh" "starship" "neovim" "zathura" "lsd" "fastfetch" "bat" "ttf-ibm-plex" "ttf-lilex-nerd" "ttf-jetbrains-mono-nerd" "qemu-system-x86" "qemu-system-x86-firmware" "libvirt" "virt-manager" "qemu-hw-display-virtio-gpu-gl" "qemu-hw-display-virtio-gpu" "qemu-hw-display-virtio-gpu-pci" "qemu-hw-display-virtio-gpu-pci-gl" "dnsmasq" "qemu-img" "docker" "docker-compose" "hyprpaper" "hyprlock" "ripgrep" "qt5-wayland" "qt6-wayland" "lib32-glibc" "lib32-gcc-libs" "easyeffects" "network-manager-applet" "feh" "xorg-server" "lxappearance" "zathura-pdf-poppler" "gnome-tweaks" "gnome-themes-extra" "plymouth" "obsidian" "hyprpolkitagent" "qemu-full" "gdb" "vlc" "jq" "man-pages" "hypridle" "vulkan-radeon" "eza" "rsync" "firefox" "rofi" "less" "git-delta" "discord" "zoxide" "pavucontrol" "go" "nodejs" "hyprsunset" "ghostty" "tlp" "qt6ct" "swayosd" "hyprpicker" "brightnessctl" "cliphist" "fzf" "playerctl" "libnotify" "python-numpy" "python-pillow" "quickshell" "chafa")
+# Create every link listed in links.txt.
+link_all() {
+    local source target file
+    while read -r source target; do
+        target="${target/#\~/$HOME}"
+        if [[ "$source" == */\* ]]; then
+            for file in "$current_dir/${source%/\*}"/*; do
+                if [[ -f "$file" ]]; then
+                    link "${file#"$current_dir"/}" "${target%/}/$(basename "$file")"
+                fi
+            done
+        else
+            link "$source" "$target"
+        fi
+    done < <(read_list links.txt)
+}
+
+mapfile -t packages < <(read_list packages/pacman.txt)
 # Filter out already installed packages
 to_install=()
 for pkg in "${packages[@]}"; do
@@ -52,10 +59,6 @@ if (( ${#to_install[@]} > 0 )); then
 else
     echo "Dependencies already installed."
 fi
-
-mkdir -p "$HOME/.cargo"
-rm -rf "$HOME/.cargo/config.toml"
-ln -s "${current_dir}/cargo/config.toml" "$HOME/.cargo/config.toml"
 
 # Install paru
 if ! command -v paru >/dev/null; then
@@ -71,8 +74,7 @@ else
 fi
 
 # Install AUR packages
-# waybar-git includes Hyprland Lua dispatch support needed by Hyprland >= 0.54 workspace clicks.
-aur_packages=("waybar-git" "rate-mirrors-bin" "visual-studio-code-bin")
+mapfile -t aur_packages < <(read_list packages/aur.txt)
 aur_to_install=()
 
 for pkg in "${aur_packages[@]}"; do
@@ -86,38 +88,21 @@ else
     echo "AUR dependencies already installed."
 fi
 
-# Nocturne: the palette and its generated colour files. Several apps import
-# from ~/.config/nocturne, so this link comes first.
-link nocturne ~/.config/nocturne
+# AstroNvim starts clean: its plugins and state are rebuilt from the config.
+rm -rf ~/.local/share/nvim ~/.local/state/nvim ~/.cache/nvim
 
-# Install AstroNvim
-rm -rf ~/.config/nvim ~/.local/share/nvim ~/.local/state/nvim ~/.cache/nvim
-ln -s "${current_dir}/nvim" ~/.config/nvim
+# Link the configuration into place. links.txt lists every link.
+link_all
 
-# tmux, with the plugin manager
-link tmux.conf ~/.tmux.conf
+# tmux's plugin manager
 clone_if_missing https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
-# Terminal
-link ghostty ~/.config/ghostty
-
-# Install herdr config, keeping runtime state outside the repository
-mkdir -p "$HOME/.config/herdr"
-ln -sfnT "${current_dir}/herdr/config.toml" "$HOME/.config/herdr/config.toml"
+# Herdr's plugin configs, keeping runtime state outside the repository
 for plugin_dir in "${current_dir}"/herdr/plugins/*/; do
     plugin_id="$(basename "$plugin_dir")"
     mkdir -p "$HOME/.config/herdr/plugins/config/${plugin_id}"
     ln -sfnT "${plugin_dir}config.toml" "$HOME/.config/herdr/plugins/config/${plugin_id}/config.toml"
 done
-
-# Desktop: compositor, bar, launcher, notifications, volume display
-link hypr ~/.config/hypr
-link waybar ~/.config/waybar
-link rofi ~/.config/rofi
-link swaync ~/.config/swaync
-link swayosd ~/.config/swayosd
-link quickshell ~/.config/quickshell
-link fastfetch ~/.config/fastfetch
 
 # The desktop panel's weather needs a location. It is personal, so it is kept
 # outside the repo; quickshell/location.example.json shows the format.
@@ -144,11 +129,33 @@ if [ ! -f "$location_file" ] && [ -t 0 ]; then
         fi
     fi
 fi
-link zathura ~/.config/zathura
+
+# The cursor named in hypr/lua/env.lua. It is not in the official repos, so it
+# comes from the project's own GitHub release: one pinned version, checked
+# against a checksum recorded here before anything is unpacked. To move to a
+# newer release, change the version and the checksum together.
+cursor_theme=Bibata-Modern-Classic
+cursor_version=v2.0.7
+cursor_sha256=7d3495864e5bbef02f5e77de760b2905903b63c71495a78ef6306d19a3b556d8
+install_cursor() {
+    local download result
+    download=$(mktemp -d) || return 1
+    curl -fsSL -o "$download/cursor.tar.xz" \
+        "https://github.com/ful1e5/Bibata_Cursor/releases/download/$cursor_version/$cursor_theme.tar.xz" &&
+        echo "$cursor_sha256  $download/cursor.tar.xz" | sha256sum --check --quiet - &&
+        mkdir -p ~/.local/share/icons &&
+        tar -xf "$download/cursor.tar.xz" -C ~/.local/share/icons --no-same-owner
+    result=$?
+    rm -rf -- "$download"
+    return $result
+}
+if [[ ! -d ~/.local/share/icons/$cursor_theme/cursors && ! -d /usr/share/icons/$cursor_theme/cursors ]]; then
+    install_cursor || echo "Could not install the $cursor_theme cursor. Hyprland will use the default one." >&2
+fi
 
 # GTK and Qt apps
-link gtk/gtk-3.0.css ~/.config/gtk-3.0/gtk.css
-link gtk/gtk-4.0.css ~/.config/gtk-4.0/gtk.css
+gsettings set org.gnome.desktop.interface cursor-theme "$cursor_theme"
+gsettings set org.gnome.desktop.interface cursor-size 20
 gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
 gsettings set org.gnome.desktop.interface font-name 'IBM Plex Sans 11'
 gsettings set org.gnome.desktop.interface monospace-font-name 'Lilex Nerd Font 10'
@@ -179,44 +186,13 @@ if flatpak info app.zen_browser.zen >/dev/null 2>&1; then
 fi
 
 # bat's Nocturne theme, also used by delta and ranger's previews
-link bat ~/.config/bat
 bat cache --build >/dev/null
 
-# Git: shared settings only. Name, email and keys stay in ~/.gitconfig.
-link git/config ~/.config/git/config
-link git/ignore ~/.config/git/ignore
-
-# GitHub CLI and its dashboard. Logins (gh/hosts.yml) stay out of the repo.
-link gh/config.yml ~/.config/gh/config.yml
-link gh-dash/config.yml ~/.config/gh-dash/config.yml
-
-# Agent instructions and settings. Credentials and history stay in place.
-# Herdr writes its own hook scripts: run `herdr integration install claude`
-# and `herdr integration install codex` on each machine.
-link claude/CLAUDE.md ~/.claude/CLAUDE.md
-link claude/settings.json ~/.claude/settings.json
-link claude/statusline.sh ~/.claude/statusline.sh
-link codex/AGENTS.md ~/.codex/AGENTS.md
-
-# Chromium-based browsers on Wayland
-link chromium-flags.conf ~/.config/chromium-flags.conf
-link chromium-flags.conf ~/.config/helium-browser-flags.conf
+# Agents: Herdr writes its own hook scripts. Run `herdr integration install
+# claude` and `herdr integration install codex` on each machine.
 
 # Reload font cache
 fc-cache
-
-# Install code config
-link Code/User/keybindings.json ~/.config/Code/User/keybindings.json
-link Code/User/settings.json ~/.config/Code/User/settings.json
-
-# Install zed config
-mkdir -p ~/.config/zed
-link zed/settings.json ~/.config/zed/settings.json
-link zed/keymap.json ~/.config/zed/keymap.json
-link zed/themes ~/.config/zed/themes
-
-# Install bin
-create_symlinks "bin" "$HOME/.local/bin/"
 
 # Install pacman config
 sudo cp "$current_dir/pacman.conf" /etc/pacman.conf
@@ -225,31 +201,6 @@ sudo cp "$current_dir/pacman.conf" /etc/pacman.conf
 
 # Ranger dev icons
 clone_if_missing https://github.com/alexanderjeurissen/ranger_devicons ~/.config/ranger/plugins/ranger_devicons
-rm -rf ~/.config/ranger/rc.conf
-rm -rf ~/.config/ranger/scope.sh
-rm -rf ~/.config/ranger/rifle.conf
-ln -s "${current_dir}/ranger/rc.conf" ~/.config/ranger/rc.conf
-ln -s "${current_dir}/ranger/scope.sh" ~/.config/ranger/scope.sh
-ln -s "${current_dir}/ranger/rifle.conf" ~/.config/ranger/rifle.conf
-# Image previews in Ghostty, chafa drawings inside tmux or herdr
-link ranger/plugins/ghostty_images.py ~/.config/ranger/plugins/ghostty_images.py
-
-# Electron apps on Wayland
-rm -f ~/.config/code-flags.conf
-ln -s "${current_dir}/electron-flags.conf" ~/.config/code-flags.conf
-rm -f ~/.config/webcord-flags.conf
-ln -s "${current_dir}/electron-flags.conf" ~/.config/webcord-flags.conf
-mkdir -p ~/.config/obsidian
-ln -sfnT "${current_dir}/electron-flags.conf" ~/.config/obsidian/user-flags.conf
-
-# Wayland desktop entries. Power actions live in the launcher (SUPER + SHIFT + E).
-mkdir -p ~/.local/share/applications
-ln -sf "${current_dir}/applications/discord-wayland.desktop" ~/.local/share/applications/discord-wayland.desktop
-ln -sf "${current_dir}/applications/obsidian-wayland.desktop" ~/.local/share/applications/obsidian-wayland.desktop
-ln -sf "${current_dir}/applications/chatgpt-wayland.desktop" ~/.local/share/applications/chatgpt-wayland.desktop
-
-# Starship config
-ln -sf "${current_dir}/starship.toml" ~/.config/starship.toml
 
 # Enable bluetooth
 sudo systemctl enable bluetooth.service --now
@@ -277,7 +228,6 @@ mkdir -p ~/.icons
 # Install zed
 curl -fsSL https://zed.dev/install.sh | ZED_CHANNEL=preview sh
 
-ln -sf "${current_dir}/zshrc" ~/.zshrc
 if [[ ! -f "$HOME/.oh-my-zsh/oh-my-zsh.sh" ]]; then
     omz_installer=$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)
     ZSH="$HOME/.oh-my-zsh" sh -c "$omz_installer" -- --unattended --keep-zshrc

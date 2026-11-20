@@ -47,6 +47,11 @@ Finally, run the dot files installation script. It will install all the needed d
 ./install
 ```
 
+The cursor theme (Bibata Modern Classic) is not in the official repos. `install`
+downloads one pinned release from the project's GitHub page and checks it
+against a checksum kept in the script before unpacking it into
+`~/.local/share/icons`.
+
 Personal details stay out of the repo: git identity in `~/.gitconfig`,
 machine-specific shell settings in `~/.custom_zshrc`, the chosen wallpaper
 in `~/.local/state/nocturne`, and the weather location in
@@ -66,6 +71,9 @@ in `~/.local/state/nocturne`, and the weather location in
 | `SUPER + SHIFT + N` | Night light on or off. It also follows a schedule in `hypr/hyprsunset.conf` |
 
 ## Utilities
+
+The `install` script reads what to link from `links.txt` and what to install
+from `packages/`.
 
 The `genswap` script will generate a new swapfile located at `/swapfile` and will output the needed kernel parameters to add for hibernation. **Do not run if you already have swap configured.**
 

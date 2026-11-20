@@ -1,0 +1,80 @@
+# Where this repository is linked into the home folder.
+# install creates these links, replacing whatever is there, and
+# `nocturne doctor` checks them. Each line is:
+#
+#   path in this repo    link to create
+#
+# A source ending in /* links every file in that folder into the target folder.
+# Links that need more than this (Herdr's plugins, Zen's profile) are made by
+# install itself.
+
+# Nocturne: the palette and its generated colour files. Several apps import
+# from ~/.config/nocturne.
+nocturne                              ~/.config/nocturne
+
+# Desktop: compositor, bar, launcher, notifications, volume display
+hypr                                  ~/.config/hypr
+waybar                                ~/.config/waybar
+rofi                                  ~/.config/rofi
+swaync                                ~/.config/swaync
+swayosd                               ~/.config/swayosd
+quickshell                            ~/.config/quickshell
+fastfetch                             ~/.config/fastfetch
+zathura                               ~/.config/zathura
+
+# GTK apps
+gtk/gtk-3.0.css                       ~/.config/gtk-3.0/gtk.css
+gtk/gtk-4.0.css                       ~/.config/gtk-4.0/gtk.css
+
+# Terminal and shell
+ghostty                               ~/.config/ghostty
+tmux.conf                             ~/.tmux.conf
+herdr/config.toml                     ~/.config/herdr/config.toml
+zshrc                                 ~/.zshrc
+starship.toml                         ~/.config/starship.toml
+bin/*                                 ~/.local/bin/
+
+# bat's Nocturne theme, also used by delta and ranger's previews
+bat                                   ~/.config/bat
+
+# ranger. The image plugin previews in Ghostty, with chafa drawings inside
+# tmux or herdr.
+ranger/rc.conf                        ~/.config/ranger/rc.conf
+ranger/scope.sh                       ~/.config/ranger/scope.sh
+ranger/rifle.conf                     ~/.config/ranger/rifle.conf
+ranger/plugins/ghostty_images.py      ~/.config/ranger/plugins/ghostty_images.py
+
+# Editors
+nvim                                  ~/.config/nvim
+zed/settings.json                     ~/.config/zed/settings.json
+zed/keymap.json                       ~/.config/zed/keymap.json
+zed/themes                            ~/.config/zed/themes
+Code/User/keybindings.json            ~/.config/Code/User/keybindings.json
+Code/User/settings.json               ~/.config/Code/User/settings.json
+
+# Git: shared settings only. Name, email and keys stay in ~/.gitconfig.
+git/config                            ~/.config/git/config
+git/ignore                            ~/.config/git/ignore
+cargo/config.toml                     ~/.cargo/config.toml
+
+# GitHub CLI and its dashboard. Logins (gh/hosts.yml) stay out of the repo.
+gh/config.yml                         ~/.config/gh/config.yml
+gh-dash/config.yml                    ~/.config/gh-dash/config.yml
+
+# Agent instructions and settings. Credentials and history stay in place.
+claude/CLAUDE.md                      ~/.claude/CLAUDE.md
+claude/settings.json                  ~/.claude/settings.json
+claude/statusline.sh                  ~/.claude/statusline.sh
+codex/AGENTS.md                       ~/.codex/AGENTS.md
+
+# Chromium-based browsers and Electron apps on Wayland
+chromium-flags.conf                   ~/.config/chromium-flags.conf
+chromium-flags.conf                   ~/.config/helium-browser-flags.conf
+electron-flags.conf                   ~/.config/code-flags.conf
+electron-flags.conf                   ~/.config/webcord-flags.conf
+electron-flags.conf                   ~/.config/obsidian/user-flags.conf
+
+# Wayland desktop entries. Power actions live in the launcher (SUPER + SHIFT + E).
+applications/discord-wayland.desktop  ~/.local/share/applications/discord-wayland.desktop
+applications/obsidian-wayland.desktop ~/.local/share/applications/obsidian-wayland.desktop
+applications/chatgpt-wayland.desktop  ~/.local/share/applications/chatgpt-wayland.desktop

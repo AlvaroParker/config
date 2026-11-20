@@ -1,0 +1,7 @@
+# Packages from the AUR, installed with paru. install reads this file, and
+# `nocturne doctor` reports any that are missing. One per line.
+
+# waybar-git includes Hyprland Lua dispatch support needed by Hyprland >= 0.54 workspace clicks.
+waybar-git
+rate-mirrors-bin
+visual-studio-code-bin
