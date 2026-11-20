@@ -54,8 +54,11 @@ prints a contrast table.
 The build also derives `*-bright` variants for the terminal, and red and green
 diff backgrounds. Every text colour passes 4.5:1 on `ink-0`, `ink-1` and `ink-2`.
 
-**Changing the accent.** Set `accent = "ember"` or `"ice"` in `palette.toml`,
-run `nocturne/build`, then reload (see below).
+**Changing the accent.** Press `SUPER + ALT + A` and pick one, or run
+`nocturne accent ember`. Either way the choice is written to `palette.toml`,
+every colour file is rebuilt, the running apps reload and the wallpaper's moon
+is repainted. `nocturne accent` lists the choices; add your own under
+`[accents]`.
 
 ## Type
 
@@ -111,6 +114,7 @@ use `leave` (0.4, 0, 1, 1) and take about three quarters of the time.
 | --- | --- |
 | `nocturne/palette.toml` | source of every colour |
 | `nocturne/build` | generator and contrast check |
+| `bin/nocturne` | the `nocturne` command: switch accent, build, reload the running apps, and `nocturne doctor` to check the setup |
 | `nocturne/wallpaper` | paints `hypr/wallpapers/nocturne.jpg` from the palette (needs numpy and Pillow) |
 | `nocturne/templates/` | templates for app-specific colour files |
 | `nocturne/palette.css` | generated: GTK colours for Waybar, swaync, swayosd, GTK apps |
@@ -121,7 +125,7 @@ use `leave` (0.4, 0, 1, 1) and take about three quarters of the time.
 | `zathura/nocturne`, `firefox/chrome/nocturne.css`, `zed/themes/nocturne.json`, `nvim/lua/nocturne/palette.lua` | generated |
 | `zen/chrome/nocturne.css`, `zen/chrome/userContent.css`, `zen/user.js` | generated: Zen colours, built-in pages and appearance settings |
 | `quickshell/Nocturne.qml` | generated: desktop panel colours (the rest of `quickshell/` is hand-written) |
-| blocks marked `nocturne` in `starship.toml` and `herdr/config.toml` | generated |
+| blocks marked `nocturne` in `starship.toml`, `herdr/config.toml` and `Code/User/settings.json` | generated. VS Code has no theme file to link, so its block writes Nocturne over the built-in Dark Modern theme |
 | `bat/themes/Nocturne.tmTheme` | hand-written: syntax colours for bat, delta and ranger's previews, the same as Neovim's |
 
 Tools that read the terminal's colours (btop with the `TTY` theme, eza,
@@ -133,18 +137,19 @@ ranger, which cannot show 24-bit colour.
 ## Reloading after a change
 
 ```sh
-nocturne/build
-hyprctl reload                       # borders and colours
-pkill -x waybar; setsid -f waybar    # bar
-swaync-client --reload-css           # notifications
-pkill -USR2 -x ghostty               # terminal
-tmux source-file ~/.tmux.conf        # tmux
-bat cache --build                    # after editing the bat theme
+nocturne build     # rewrite the colour files from palette.toml
+nocturne reload    # tell the running apps
+bat cache --build  # only after editing the bat theme
 ```
 
-Zed, the launcher, the lock screen, the desktop panel and new shells pick
-changes up on their own.
-Zen needs a restart.
+`nocturne reload` reloads Hyprland, the bar, notifications, the volume
+display, Ghostty, tmux, Herdr and any running Neovim, and skips what is not
+running. Zed, VS Code, the launcher, the lock screen, the desktop panel and new
+shells pick changes up on their own. Zen needs a restart.
+
+`nocturne doctor` checks the whole setup: that the colour files match the
+palette, the contrast table passes, every link in `links.txt` points into this
+repo, and the fonts and cursor are installed.
 
 ## Zen
 

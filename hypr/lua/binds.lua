@@ -92,6 +92,7 @@ bind(SUPER .. "D", "Launcher", exec(launcher))
 bind(SUPER .. "V", "Clipboard history", exec(launcher .. " clipboard"))
 bind(SUPER .. "SHIFT + E", "Power: lock, sleep, log out, shut down", exec(launcher .. " power"))
 bind(SUPER .. "ALT + W", "Wallpapers", exec(launcher .. " wallpapers"))
+bind(SUPER .. "ALT + A", "Accent colour", exec(launcher .. " accent"))
 bind(SUPER .. "slash", "Key bindings", exec(launcher .. " bindings"))
 
 bind(SUPER .. "N", "Notifications and controls", exec("swaync-client --toggle-panel"))

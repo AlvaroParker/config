@@ -3,6 +3,10 @@
 
     nocturne/build            regenerate all colour files
     nocturne/build --check    only print the contrast table
+    nocturne/build --stale    list generated files that no longer match the
+                              palette, without writing; fails if there are any
+    nocturne/build --accents  list the accents: name, colour, nearest GNOME
+                              accent, and "current" on the one in use
 
 Reads nocturne/palette.toml, converts each OKLCH value to sRGB and writes:
 
@@ -10,9 +14,11 @@ Reads nocturne/palette.toml, converts each OKLCH value to sRGB and writes:
   * the templates in nocturne/templates/, where {{token}} becomes #rrggbb,
     {{token:hex}} becomes rrggbb, {{token:rgb}} becomes "r, g, b" and
     {{token:qt}} becomes #ffrrggbb,
-  * marked blocks inside starship.toml and herdr/config.toml.
+  * marked blocks inside starship.toml, herdr/config.toml and VS Code's
+    settings.json.
 
-Only the Python standard library is used.
+Only the Python standard library is used. The `nocturne` command (bin/nocturne)
+wraps this and reloads the running apps.
 """
 
 import math
@@ -42,9 +48,11 @@ TEMPLATES = {
 
 # Template name -> (file, start marker, end marker). Only the lines between
 # the markers are replaced, so the rest of the file stays hand-written.
+# Markers may be indented.
 BLOCKS = {
     "starship-palette.toml": ("starship.toml", "# >>> nocturne palette", "# <<< nocturne palette"),
     "herdr-theme.toml": ("herdr/config.toml", "# >>> nocturne theme", "# <<< nocturne theme"),
+    "vscode-settings.jsonc": ("Code/User/settings.json", "// >>> nocturne theme", "// <<< nocturne theme"),
 }
 
 
@@ -121,6 +129,29 @@ def load_tokens():
         oklch[f"{name}-bg-strong"] = (0.33, 0.075, h)
 
     return accent_name, {name: oklch_to_rgb(*value) for name, value in oklch.items()}
+
+
+# GNOME only has named accents. These are their hues, to pick the nearest.
+GNOME_ACCENTS = {
+    "pink": 0, "red": 28, "orange": 50, "yellow": 90,
+    "green": 145, "teal": 200, "blue": 258, "purple": 310,
+}
+
+
+def gnome_accent(chroma, hue):
+    """The GNOME accent closest to an OKLCH colour; slate for near-greys."""
+    if chroma < 0.05:
+        return "slate"
+    return min(GNOME_ACCENTS, key=lambda name: abs((hue - GNOME_ACCENTS[name] + 180) % 360 - 180))
+
+
+def list_accents():
+    """One line per accent, tab-separated: name, #rrggbb, the nearest GNOME
+    accent, and "current" on the one in use."""
+    config = tomllib.loads((HERE / "palette.toml").read_text())
+    for name, (lightness, chroma, hue) in config["accents"].items():
+        mark = "\tcurrent" if name == config["accent"] else ""
+        print(f"{name}\t#{hex_of(oklch_to_rgb(lightness, chroma, hue))}\t{gnome_accent(chroma, hue)}{mark}")
 
 
 def hex_of(rgb):
@@ -204,19 +235,10 @@ DUMPS = {
 
 
 # ---------------------------------------------------------------- output
-def write(relative, content, written):
-    path = ROOT / relative
-    if path.exists() and path.read_text() == content:
-        return
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(content)
-    written.append(relative)
-
-
 def replace_block(relative, start, end, body):
     path = ROOT / relative
     text = path.read_text()
-    pattern = re.compile(rf"(^{re.escape(start)}[^\n]*\n).*?(^{re.escape(end)})", re.S | re.M)
+    pattern = re.compile(rf"(^[ \t]*{re.escape(start)}[^\n]*\n).*?(^[ \t]*{re.escape(end)})", re.S | re.M)
     if not pattern.search(text):
         sys.exit(f"{relative}: markers '{start}' and '{end}' not found")
     return pattern.sub(lambda m: m.group(1) + body + m.group(2), text, count=1)
@@ -239,22 +261,46 @@ def report(accent_name, tokens):
     return not failures
 
 
-def main():
-    accent_name, tokens = load_tokens()
-    passed = report(accent_name, tokens)
-    if "--check" in sys.argv[1:]:
-        sys.exit(0 if passed else 1)
-
-    written = []
+def render(tokens):
+    """Every generated file: its path in the repo and what it should contain."""
+    outputs = {}
     for relative, dump in DUMPS.items():
-        write(relative, dump(tokens), written)
+        outputs[relative] = dump(tokens)
     for template, relative in TEMPLATES.items():
-        write(relative, fill((HERE / "templates" / template).read_text(), tokens), written)
+        outputs[relative] = fill((HERE / "templates" / template).read_text(), tokens)
     for template, (relative, start, end) in BLOCKS.items():
         body = fill((HERE / "templates" / template).read_text(), tokens)
-        write(relative, replace_block(relative, start, end, body), written)
+        outputs[relative] = replace_block(relative, start, end, body)
+    return outputs
 
-    print("\n" + ("updated:\n  " + "\n  ".join(written) if written else "everything is up to date"))
+
+def main():
+    args = sys.argv[1:]
+    if "--accents" in args:
+        list_accents()
+        return
+
+    accent_name, tokens = load_tokens()
+    outputs = render(tokens)
+    stale = [
+        relative
+        for relative, content in outputs.items()
+        if not (ROOT / relative).exists() or (ROOT / relative).read_text() != content
+    ]
+    if "--stale" in args:
+        print("\n".join(stale), end="\n" if stale else "")
+        sys.exit(1 if stale else 0)
+
+    passed = report(accent_name, tokens)
+    if "--check" in args:
+        sys.exit(0 if passed else 1)
+
+    for relative in stale:
+        path = ROOT / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(outputs[relative])
+
+    print("\n" + ("updated:\n  " + "\n  ".join(stale) if stale else "everything is up to date"))
 
 
 if __name__ == "__main__":

@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# rofi script mode: choose the accent colour. `nocturne accent NAME` does the
+# work: it rewrites the colour files, reloads the running apps and repaints
+# the wallpaper's moon.
+set -uo pipefail
+
+root="$(dirname "$(dirname "$(dirname "$(readlink -f "$0")")")")"
+
+if [[ -n "${ROFI_INFO:-}" ]]; then
+    setsid -f "$root/bin/nocturne" accent "$ROFI_INFO" >/dev/null 2>&1
+    exit 0
+fi
+
+printf '\0no-custom\x1ftrue\n'
+printf '\0markup-rows\x1ftrue\n'
+printf '\0message\x1fThe one warm light: focus, the cursor, the moon\n'
+
+# Each row's icon is a swatch of the accent: a small SVG, drawn once per colour.
+swatches="${XDG_CACHE_HOME:-$HOME/.cache}/nocturne"
+mkdir -p "$swatches"
+
+while IFS=$'\t' read -r name hex gnome mark; do
+    swatch="$swatches/accent-${hex#\#}.svg"
+    if [[ ! -f "$swatch" ]]; then
+        printf '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><circle cx="10" cy="10" r="6" fill="%s"/></svg>\n' \
+            "$hex" >"$swatch"
+    fi
+    label="${name^}"
+    if [[ "$mark" == current ]]; then
+        label="$label  <span alpha='55%'>current</span>"
+    fi
+    printf '%s\0icon\x1f%s\x1finfo\x1f%s\n' "$label" "$swatch" "$name"
+done < <("$root/nocturne/build" --accents)

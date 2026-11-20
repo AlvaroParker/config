@@ -1,0 +1,257 @@
+#!/usr/bin/env bash
+# nocturne: one command for the design system (see DESIGN.md).
+#
+#   nocturne                 show the current accent and this list
+#   nocturne accent          list the accents
+#   nocturne accent NAME     switch accent everywhere: colour files, wallpaper
+#                            and the running apps
+#   nocturne build           regenerate every colour file from nocturne/palette.toml
+#   nocturne reload          make the running apps pick the colour files up
+#   nocturne check           print the contrast table
+#   nocturne doctor          check links, fonts, colour files and packages
+#
+# After editing palette.toml by hand: nocturne build && nocturne reload.
+set -uo pipefail
+
+root="$(dirname "$(dirname "$(readlink -f "$0")")")"
+palette="$root/nocturne/palette.toml"
+
+usage() {
+    sed -n '2,/^set -uo/{ /^set -uo/d; s/^# \{0,1\}//; p }' "$0"
+}
+
+running() {
+    pgrep -x "$1" >/dev/null
+}
+
+# ------------------------------------------------------------------- reload
+# Each app is told in the gentlest way it supports. Apps that are not running
+# are skipped; apps that cannot reload are named at the end.
+reload() {
+    local done=() restart=()
+
+    if [[ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]] && hyprctl reload >/dev/null 2>&1; then
+        done+=("Hyprland")
+    fi
+    # SIGUSR2 reloads the bar in place, so it keeps the environment it was
+    # started with, not this shell's.
+    if pkill -USR2 -x waybar; then
+        done+=("bar")
+    fi
+    if running swaync && swaync-client --reload-css >/dev/null 2>&1; then
+        done+=("notifications")
+    fi
+    # The volume display reads its colours once, so it is restarted, by
+    # Hyprland for the same reason as above.
+    if running swayosd-server && [[ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]]; then
+        pkill -x swayosd-server
+        hyprctl dispatch 'hl.dsp.exec_cmd("swayosd-server")' >/dev/null 2>&1 && done+=("volume display")
+    fi
+    if pkill -USR2 -x ghostty; then
+        done+=("terminal")
+    fi
+    if tmux list-sessions >/dev/null 2>&1 && tmux source-file ~/.config/nocturne/tmux.conf 2>/dev/null; then
+        done+=("tmux")
+    fi
+    if running herdr && herdr server reload-config >/dev/null 2>&1; then
+        done+=("Herdr")
+    fi
+    # Every running Neovim that uses the colour scheme reads the palette again.
+    local socket reloaded_nvim=no
+    local again='luaeval("(function() if vim.g.colors_name == \"nocturne\" then package.loaded[\"nocturne.palette\"] = nil; vim.cmd.colorscheme(\"nocturne\") end return 0 end)()")'
+    for socket in "${XDG_RUNTIME_DIR:-/run/user/$UID}"/nvim.*.0; do
+        [[ -S "$socket" ]] || continue
+        nvim --server "$socket" --remote-expr "$again" >/dev/null 2>&1 && reloaded_nvim=yes
+    done
+    [[ $reloaded_nvim == yes ]] && done+=("Neovim")
+
+    # GNOME's named accent, for apps that ask the desktop for it.
+    local gnome
+    gnome="$("$root/nocturne/build" --accents | awk -F'\t' '$4 == "current" { print $3 }')"
+    if [[ -n "$gnome" ]] && command -v gsettings >/dev/null; then
+        gsettings set org.gnome.desktop.interface accent-color "$gnome" 2>/dev/null
+    fi
+
+    pgrep -f 'zen_browser|/zen( |$)|zen-bin' >/dev/null && restart+=("Zen")
+    running firefox && restart+=("Firefox")
+
+    ((${#done[@]})) && printf 'reloaded: %s\n' "$(join ', ' "${done[@]}")"
+    ((${#restart[@]})) && printf 'restart to see the change: %s\n' "$(join ', ' "${restart[@]}")"
+    echo "Zed, VS Code, the launcher, the lock screen, the desktop panel and new shells follow on their own."
+}
+
+join() { # separator, items...
+    local separator=$1 out=$2
+    shift 2
+    local item
+    for item in "$@"; do out+="$separator$item"; done
+    printf '%s' "$out"
+}
+
+# ------------------------------------------------------------------- accent
+current_accent() {
+    "$root/nocturne/build" --accents | awk -F'\t' '$4 == "current" { print $1 }'
+}
+
+list_accents() {
+    local name hex gnome mark
+    while IFS=$'\t' read -r name hex gnome mark; do
+        # A swatch in the accent's own colour when writing to a terminal.
+        if [[ -t 1 ]]; then
+            printf '\e[38;2;%d;%d;%dm●\e[0m ' "0x${hex:1:2}" "0x${hex:3:2}" "0x${hex:5:2}"
+        fi
+        printf '%-8s %s%s\n' "$name" "$hex" "${mark:+  $mark}"
+    done < <("$root/nocturne/build" --accents)
+}
+
+set_accent() {
+    local name=$1
+    if ! "$root/nocturne/build" --accents | cut -f1 | grep -Fxq -- "$name"; then
+        printf 'nocturne: no accent named "%s". Choose from:\n' "$name" >&2
+        list_accents >&2
+        return 2
+    fi
+    if [[ "$(current_accent)" == "$name" ]]; then
+        echo "The accent is already $name."
+        return 0
+    fi
+
+    # palette.toml stays the one place the choice is recorded.
+    sed -i -E "s/^accent = \"[^\"]*\"/accent = \"$name\"/" "$palette"
+    "$root/nocturne/build" >/dev/null || return 1
+    echo "accent: $name"
+    reload
+
+    # The moon is the accent too. Painting takes a few seconds, so it comes
+    # last; the wallpaper is only swapped if the painted one is on screen.
+    local painted="$root/hypr/wallpapers/nocturne.jpg"
+    echo "repainting the wallpaper..."
+    if "$root/nocturne/wallpaper" >/dev/null; then
+        if [[ "$("$root/hypr/scripts/wallpaper" current 2>/dev/null)" == "$(readlink -f "$painted")" ]]; then
+            "$root/hypr/scripts/wallpaper" set "$painted"
+        fi
+    else
+        echo "nocturne: could not repaint the wallpaper (it needs python-numpy and python-pillow)" >&2
+    fi
+}
+
+# ------------------------------------------------------------------- doctor
+problems=0
+ok() { printf '  ok    %s\n' "$1"; }
+note() { printf '  note  %s\n' "$1"; }
+fix() {
+    printf '  fix   %s\n' "$1"
+    problems=$((problems + 1))
+}
+detail() { printf '          %s\n' "$@"; }
+
+# The entries of a list file in the repo, without comments or blank lines.
+read_list() {
+    sed -E 's/[[:space:]]*#.*$//; /^[[:space:]]*$/d' "$root/$1"
+}
+
+check_link() { # path in the repo, link
+    [[ -L "$2" && "$(readlink -f "$2")" == "$(readlink -f "$root/$1")" ]]
+}
+
+doctor() {
+    local stale
+    if stale="$("$root/nocturne/build" --stale)"; then
+        ok "colour files match the palette"
+    else
+        fix "colour files are out of date. Run: nocturne build"
+        mapfile -t stale <<<"$stale"
+        detail "${stale[@]}"
+    fi
+
+    if "$root/nocturne/build" --check >/dev/null; then
+        ok "contrast: every text colour reaches 4.5:1"
+    else
+        fix "contrast: some text colours are below 4.5:1. See: nocturne check"
+    fi
+
+    local source target file count=0 wrong=()
+    while read -r source target; do
+        target="${target/#\~/$HOME}"
+        if [[ "$source" == */\* ]]; then
+            for file in "$root/${source%/\*}"/*; do
+                [[ -f "$file" ]] || continue
+                count=$((count + 1))
+                check_link "${file#"$root"/}" "${target%/}/$(basename "$file")" ||
+                    wrong+=("${target%/}/$(basename "$file")")
+            done
+        else
+            count=$((count + 1))
+            check_link "$source" "$target" || wrong+=("$target")
+        fi
+    done < <(read_list links.txt)
+    if ((${#wrong[@]} == 0)); then
+        ok "links: all $count point into this repo"
+    else
+        fix "links: ${#wrong[@]} of $count missing or pointing elsewhere. Run ./install, or link them by hand:"
+        detail "${wrong[@]/#$HOME/\~}"
+    fi
+
+    local family missing=()
+    for family in "IBM Plex Sans" "Lilex Nerd Font"; do
+        [[ -n "$(fc-list "$family" family 2>/dev/null)" ]] || missing+=("$family")
+    done
+    if ((${#missing[@]} == 0)); then
+        ok "fonts: IBM Plex Sans and Lilex Nerd Font"
+    else
+        fix "fonts not installed: $(join ', ' "${missing[@]}") (packages ttf-ibm-plex, ttf-lilex-nerd)"
+    fi
+
+    local cursor=Bibata-Modern-Classic dir found=no
+    for dir in ~/.icons ~/.local/share/icons /usr/share/icons; do
+        [[ -d "$dir/$cursor" ]] && found=yes
+    done
+    if [[ $found == yes ]]; then
+        ok "cursor: $cursor"
+    else
+        fix "cursor theme $cursor is not installed (hypr/lua/env.lua asks for it). ./install downloads it"
+    fi
+
+    # pacman -T prints the packages that are not installed, counting ones
+    # that another package provides.
+    if command -v pacman >/dev/null; then
+        local absent
+        mapfile -t absent < <(pacman -T $(read_list packages/pacman.txt) $(read_list packages/aur.txt) 2>/dev/null)
+        if ((${#absent[@]} == 0)); then
+            ok "packages: everything in packages/ is installed"
+        else
+            note "packages listed in packages/ but not installed: $(join ' ' "${absent[@]}")"
+        fi
+    fi
+
+    if [[ ! -f "${XDG_CONFIG_HOME:-$HOME/.config}/nocturne-location.json" ]]; then
+        note "weather: no location set, so the desktop shows none (see quickshell/location.example.json)"
+    fi
+
+    if ((problems)); then
+        printf '\n%d to fix.\n' "$problems"
+        return 1
+    fi
+    printf '\nNothing to fix.\n'
+}
+
+# ------------------------------------------------------------------- main
+case "${1:-}" in
+    "")
+        printf 'accent: %s\n\n' "$(current_accent)"
+        usage
+        ;;
+    accent)
+        if [[ -n "${2:-}" ]]; then set_accent "$2"; else list_accents; fi
+        ;;
+    build) "$root/nocturne/build" ;;
+    reload) reload ;;
+    check) "$root/nocturne/build" --check ;;
+    doctor) doctor ;;
+    -h | --help | help) usage ;;
+    *)
+        printf 'nocturne: unknown command "%s"\n\n' "$1" >&2
+        usage >&2
+        exit 2
+        ;;
+esac

@@ -66,11 +66,17 @@ in `~/.local/state/nocturne`, and the weather location in
 | `SUPER + SHIFT + E` | Power: lock, sleep, log out, restart, shut down, power profile |
 | `SUPER + N` | Notifications and controls (Wi-Fi, Bluetooth, night light, do not disturb, keep awake, performance) |
 | `SUPER + ALT + W` | Wallpapers |
+| `SUPER + ALT + A` | Accent colour. Repaints the desktop, the terminal and the wallpaper's moon |
 | `SUPER + /` | Search every key binding |
 | `SUPER + SHIFT + R` | Resize mode (shown in the bar). `H J K L` resize, `Esc` or `Enter` leave |
 | `SUPER + SHIFT + N` | Night light on or off. It also follows a schedule in `hypr/hyprsunset.conf` |
 
 ## Utilities
+
+The `nocturne` command looks after the design system. `nocturne accent ember`
+switches the accent everywhere, `nocturne reload` makes running apps pick up a
+palette change, and `nocturne doctor` checks links, fonts and colour files.
+Run `nocturne` on its own for the full list.
 
 The `install` script reads what to link from `links.txt` and what to install
 from `packages/`.

@@ -8,6 +8,7 @@
 #   launcher wifi        Wi-Fi networks
 #   launcher power       lock, sleep, log out, restart, shut down, power profile
 #   launcher wallpapers  wallpaper grid
+#   launcher accent      accent colours
 #   launcher bindings    searchable list of Hyprland key bindings
 set -euo pipefail
 
@@ -30,9 +31,10 @@ case "$section" in
     wifi) exec rofi -show Wi-Fi -modes "$main" ;;
     power) exec rofi -show Power -modes "$main" ;;
     wallpapers) exec rofi -show Wallpapers -modes "Wallpapers:$scripts/wallpapers" -theme "$here/wallpapers.rasi" ;;
+    accent) exec rofi -show Accent -modes "Accent:$scripts/accent" -theme "$here/single.rasi" ;;
     bindings | keys) exec rofi -show Keys -modes "Keys:$scripts/bindings" -theme "$here/single.rasi" ;;
     *)
-        printf 'usage: launcher [apps|window|clipboard|wifi|power|wallpapers|bindings]\n' >&2
+        printf 'usage: launcher [apps|window|clipboard|wifi|power|wallpapers|accent|bindings]\n' >&2
         exit 2
         ;;
 esac
