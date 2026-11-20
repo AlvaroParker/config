@@ -26,11 +26,10 @@ The [NixOS version](https://github.com/AlvaroParker/NixOS-config) is also availa
 
 **The `install` script will overwrite your existing dotfiles.** It has only been tested on a fresh Arch Linux installation with GNOME. Use at your own risk.
 
-It is recommended to first configure your fastest mirrors. You can use `rate-mirrors` AUR package:
+It is recommended to first configure your fastest mirrors. You can use `rate-mirrors`, from the official repositories:
 
 ```bash
-git clone https://aur.archlinux.org/rate-mirrors-bin.git
-cd rate-mirrors-bin && makepkg -si
+sudo pacman -S rate-mirrors
 ```
 
 Then, on `bash` execute the following command:

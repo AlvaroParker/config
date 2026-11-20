@@ -303,8 +303,8 @@ sudo usermod -aG video $USER
 flatpak override --filesystem=~/.themes:ro --filesystem=~/.icons:ro --user
 mkdir -p ~/.icons
 
-# Install zed
-curl -fsSL https://zed.dev/install.sh | ZED_CHANNEL=preview sh
+# Zed nightly, from Zed's own installer into ~/.local/zed-nightly.app
+curl -fsSL https://zed.dev/install.sh | ZED_CHANNEL=nightly sh
 
 # Starship, from its own installer into /usr/local/bin. Running it again
 # updates it.

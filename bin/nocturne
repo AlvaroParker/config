@@ -9,6 +9,7 @@
 #   nocturne reload          make the running apps pick the colour files up
 #   nocturne check           print the contrast table
 #   nocturne doctor          check links, fonts, colour files and packages
+#   nocturne unlisted        packages installed on purpose that packages/ does not list
 #   nocturne greeter preview open the login screen in a window
 #   nocturne greeter install install or update the login screen (needs sudo)
 #
@@ -314,6 +315,43 @@ gpu_lists() {
     done | sort -u
 }
 
+# Every pacman and AUR package this machine should have: the main lists plus
+# the graphics list for its GPUs.
+listed_packages() {
+    local list
+    read_list packages/pacman.txt
+    for list in $(gpu_lists); do read_list "$list"; done
+    read_list packages/aur.txt
+}
+
+# Packages install puts in place itself rather than from a list.
+installed_by_script=(chatgpt-bin paru paru-bin)
+
+# Packages and Flatpak apps installed on purpose that no list in packages/
+# covers, one per line: "pacman NAME", "aur NAME" or "flatpak APP".
+unlisted_packages() {
+    command -v pacman >/dev/null || return 0
+    local known
+    known=$(listed_packages; printf '%s\n' "${installed_by_script[@]}")
+    comm -23 <(pacman -Qqen | sort) <(sort -u <<<"$known") | sed 's/^/pacman  /'
+    comm -23 <(pacman -Qqem | sort) <(sort -u <<<"$known") | sed 's/^/aur     /'
+    if command -v flatpak >/dev/null; then
+        comm -23 <(flatpak list --app --columns=application | sort) <(read_list packages/flatpak.txt | sort) |
+            sed 's/^/flatpak /'
+    fi
+}
+
+unlisted() {
+    local rows
+    rows=$(unlisted_packages)
+    if [[ -z "$rows" ]]; then
+        echo "Everything installed on purpose is in packages/."
+        return
+    fi
+    echo "Installed on purpose, but in no list in packages/ (pacman.txt, aur.txt, flatpak.txt):"
+    printf '%s\n' "$rows" | sed 's/^/  /'
+}
+
 check_link() { # path in the repo, link
     [[ -L "$2" && "$(readlink -f "$2")" == "$(readlink -f "$root/$1")" ]]
 }
@@ -380,11 +418,7 @@ doctor() {
     # that another package provides.
     if command -v pacman >/dev/null; then
         local absent app
-        local list gpu_packages=()
-        for list in $(gpu_lists); do
-            mapfile -t -O "${#gpu_packages[@]}" gpu_packages < <(read_list "$list")
-        done
-        mapfile -t absent < <(pacman -T $(read_list packages/pacman.txt) "${gpu_packages[@]}" $(read_list packages/aur.txt) 2>/dev/null)
+        mapfile -t absent < <(pacman -T $(listed_packages) 2>/dev/null)
         if command -v flatpak >/dev/null; then
             while read -r app; do
                 flatpak info "$app" &>/dev/null || absent+=("$app")
@@ -394,6 +428,11 @@ doctor() {
             ok "packages: everything in packages/ is installed"
         else
             note "packages listed in packages/ but not installed: $(join ' ' "${absent[@]}")"
+        fi
+        local unlisted_count
+        unlisted_count=$(unlisted_packages | wc -l)
+        if ((unlisted_count)); then
+            note "$unlisted_count installed on purpose but in no list. See: nocturne unlisted"
         fi
     fi
 
@@ -456,6 +495,7 @@ case "${1:-}" in
     reload) reload ;;
     check) "$root/nocturne/build" --check ;;
     doctor) doctor ;;
+    unlisted) unlisted ;;
     -h | --help | help) usage ;;
     *)
         printf 'nocturne: unknown command "%s"\n\n' "$1" >&2

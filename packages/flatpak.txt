@@ -3,3 +3,5 @@
 
 com.github.wwmm.easyeffects
 org.videolan.VLC
+# The browser; zen/ themes it, and install links that into its profile
+app.zen_browser.zen

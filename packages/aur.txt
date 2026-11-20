@@ -1,7 +1,8 @@
 # Packages from the AUR, installed with paru. install reads this file, and
 # `nocturne doctor` reports any that are missing. One per line.
 
-rate-mirrors-bin
 visual-studio-code-bin
+# GitHub dashboard; its config is gh-dash/config.yml
+gh-dash-bin
 # Repackages Anthropic's official .deb of Claude desktop
 claude-desktop

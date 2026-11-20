@@ -2,6 +2,7 @@
 # `nocturne doctor` reports any that are missing. One per line. Graphics
 # drivers are in gpu-intel.txt and gpu-amd.txt, picked by the hardware.
 wget
+rate-mirrors
 ranger
 tmux
 curl
@@ -72,6 +73,16 @@ git-delta
 discord
 zoxide
 direnv
+# Sound: PipeWire with its PulseAudio and ALSA layers, which the volume
+# keys, pavucontrol and EasyEffects talk to
+pipewire
+pipewire-pulse
+pipewire-alsa
+wireplumber
+# GitHub CLI; its config is gh/config.yml
+github-cli
+# nmcli, for the launcher's Wi-Fi menu and the control centre
+networkmanager
 pavucontrol
 go
 nodejs
