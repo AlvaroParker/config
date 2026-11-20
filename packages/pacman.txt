@@ -16,6 +16,7 @@ grim
 wl-clipboard
 slurp
 swaync
+waybar
 blueman
 btop
 zsh
