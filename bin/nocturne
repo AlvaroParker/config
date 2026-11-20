@@ -47,11 +47,6 @@ reload() {
     if [[ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]] && hyprctl reload >/dev/null 2>&1; then
         done+=("Hyprland")
     fi
-    # SIGUSR2 reloads the bar in place, so it keeps the environment it was
-    # started with, not this shell's.
-    if pkill -USR2 -x waybar; then
-        done+=("bar")
-    fi
     if running swaync && swaync-client --reload-css >/dev/null 2>&1; then
         done+=("notifications")
     fi
@@ -101,7 +96,7 @@ reload() {
 
     ((${#done[@]})) && printf 'reloaded: %s\n' "$(join ', ' "${done[@]}")"
     ((${#restart[@]})) && printf 'restart to see the change: %s\n' "$(join ', ' "${restart[@]}")"
-    echo "Zed, VS Code, the launcher, the lock screen, the desktop panel and new shells follow on their own."
+    echo "Zed, VS Code, the launcher, the lock screen, the bar, the desktop panel and new shells follow on their own."
     greeter_note
 }
 

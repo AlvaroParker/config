@@ -14,7 +14,6 @@ nocturne                              ~/.config/nocturne
 
 # Desktop: compositor, bar, launcher, notifications, volume display
 hypr                                  ~/.config/hypr
-waybar                                ~/.config/waybar
 rofi                                  ~/.config/rofi
 swaync                                ~/.config/swaync
 dbus/org.freedesktop.Notifications.service ~/.local/share/dbus-1/services/org.freedesktop.Notifications.service

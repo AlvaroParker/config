@@ -2,6 +2,7 @@
 -- them all in the launcher.
 local default_apps = require("lua.default_apps")
 local screenshots = require("lua.screenshots")
+local groups = require("lua.groups")
 
 local SUPER = "SUPER + "
 local terminal = "ghostty"
@@ -56,19 +57,45 @@ hl.define_submap("RESIZE", function()
     bind("return", "Leave resize mode", hl.dsp.submap("reset"))
 end)
 
--- Workspaces --------------------------------------------------------------
-for workspace = 1, 10 do
-    local key = tostring(workspace % 10)
-    bind(SUPER .. key, "Go to workspace " .. workspace, hl.dsp.focus({ workspace = workspace }))
-    bind(SUPER .. "SHIFT + " .. key, "Move window to workspace " .. workspace,
-        hl.dsp.window.move({ workspace = workspace }))
+-- Workspaces, in groups of ten (lua/groups.lua) ---------------------------
+for slot = 1, groups.size do
+    local key = tostring(slot % 10)
+    bind(SUPER .. key, "Go to workspace " .. slot .. " of this group", function()
+        groups.focus_slot(slot)
+    end)
+    bind(SUPER .. "SHIFT + " .. key, "Move window to workspace " .. slot .. " of this group", function()
+        groups.move_to_slot(slot)
+    end)
 end
 
-bind(SUPER .. "Tab", "Next workspace on this monitor", hl.dsp.focus({ workspace = "m+1" }), { repeating = true })
-bind(SUPER .. "SHIFT + Tab", "Previous workspace on this monitor", hl.dsp.focus({ workspace = "m-1" }),
-    { repeating = true })
-bind(SUPER .. "mouse_down", "Next workspace", hl.dsp.focus({ workspace = "e+1" }))
-bind(SUPER .. "mouse_up", "Previous workspace", hl.dsp.focus({ workspace = "e-1" }))
+for group = 1, groups.count do
+    bind(SUPER .. "CTRL + " .. group, "Switch to workspace group " .. group, function()
+        groups.switch_group(group)
+    end)
+    bind(SUPER .. "CTRL + SHIFT + " .. group, "Send window to workspace group " .. group, function()
+        groups.move_to_group(group)
+    end)
+end
+
+bind(SUPER .. "CTRL + mouse_down", "Next workspace group", function()
+    groups.step_group(1)
+end)
+bind(SUPER .. "CTRL + mouse_up", "Previous workspace group", function()
+    groups.step_group(-1)
+end)
+
+bind(SUPER .. "Tab", "Next workspace in this group on this monitor", function()
+    groups.step(1, true)
+end, { repeating = true })
+bind(SUPER .. "SHIFT + Tab", "Previous workspace in this group on this monitor", function()
+    groups.step(-1, true)
+end, { repeating = true })
+bind(SUPER .. "mouse_down", "Next workspace in this group", function()
+    groups.step(1)
+end)
+bind(SUPER .. "mouse_up", "Previous workspace in this group", function()
+    groups.step(-1)
+end)
 
 bind(SUPER .. "C", "Show or hide the pocket scratchpad", hl.dsp.workspace.toggle_special("pocket"))
 bind(SUPER .. "SHIFT + C", "Move window to the pocket scratchpad", hl.dsp.window.move({ workspace = "special:pocket" }))
@@ -95,7 +122,7 @@ bind(SUPER .. "ALT + A", "Accent colour", exec(launcher .. " accent"))
 bind(SUPER .. "slash", "Key bindings", exec(launcher .. " bindings"))
 
 bind(SUPER .. "N", "Notifications and controls", exec("swaync-client --toggle-panel"))
-bind(SUPER .. "SHIFT + B", "Show or hide the bar", exec("killall -SIGUSR1 waybar"))
+bind(SUPER .. "SHIFT + B", "Show or hide the bar", exec("qs ipc call bar toggle"))
 
 -- Session -----------------------------------------------------------------
 bind(SUPER .. "SHIFT + W", "Lock screen", exec("loginctl lock-session"))

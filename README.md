@@ -1,6 +1,6 @@
 # Arch Linux and Hyprland dotfiles
 
-![Nocturne desktop with a floating Waybar, a large clock, and weather over a moonlit landscape](./screenshots/1-desktop.jpg)
+![Nocturne desktop with a floating bar, a large clock, and weather over a moonlit landscape](./screenshots/1-desktop.jpg)
 
 These dotfiles follow **Nocturne**, a design system built around a cold, dark
 palette with a single warm accent. See [DESIGN.md](./DESIGN.md) for the design
@@ -91,6 +91,9 @@ out of date. If the screen ever fails to start, the text login takes over.
 | `SUPER + /` | Search every key binding |
 | `SUPER + SHIFT + R` | Resize mode (shown in the bar). `H J K L` resize, `Esc` or `Enter` leave |
 | `SUPER + SHIFT + N` | Night light on or off. It also follows a schedule in `hypr/hyprsunset.conf` |
+| `SUPER + 1` … `0` | Workspace 1 to 10 of the current group. Add `SHIFT` to move the window there |
+| `SUPER + CTRL + 1` … `9` | Switch both screens to that workspace group: a clean set of ten workspaces, while the others wait. Add `SHIFT` to send the window to that group |
+| `SUPER + CTRL + scroll` | The next or previous workspace group |
 
 ## Utilities
 
@@ -115,8 +118,7 @@ The `genswap` script will generate a new swapfile located at `/swapfile` and wil
 - [`Ghostty`](https://ghostty.org) - Terminal
 - [`Zed`](https://zed.dev) - Editor
 - [`Zen`](https://zen-browser.app/) - Browser
-- [`Waybar`](https://github.com/Alexays/Waybar) - Bar
-- [`Quickshell`](https://quickshell.org) - Desktop clock, weather and now playing, and the login screen (inside [`labwc`](https://labwc.github.io), started by `greetd`)
+- [`Quickshell`](https://quickshell.org) - The bar, the desktop clock, weather and now playing, and the login screen (inside [`labwc`](https://labwc.github.io), started by `greetd`)
 - [`Rofi`](https://github.com/davatorium/rofi) - Launcher
 - [`SwayNotificationCenter`](https://github.com/ErikReider/SwayNotificationCenter) - Notifications and control centre
 - [`Fastfetch`](https://github.com/fastfetch-cli/fastfetch)

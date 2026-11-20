@@ -3,13 +3,12 @@ local portals = require("lua.portals")
 local scripts = "~/.config/hypr/scripts/"
 
 local startup_commands = {
-    -- As its systemd unit, not a bare `swaync`: Waybar's swaync-client makes
+    -- As its systemd unit, not a bare `swaync`: the bar's swaync-client makes
     -- D-Bus start swaync.service as well, and the two used to race, leaving
     -- the unit failing at every login.
     "systemctl --user start swaync",
     "hyprsunset", -- schedule in hypr/hyprsunset.conf
-    "waybar",
-    "qs", -- desktop panel: clock, weather, now playing (quickshell/)
+    "qs", -- the bar and the desktop panel (quickshell/)
     "blueman-applet",
     "swayosd-server",
     -- No nm-applet: the bar shows the network, and the launcher's Wi-Fi section

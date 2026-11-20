@@ -91,6 +91,16 @@ expression, for example `hyprctl dispatch 'hl.dsp.focus({ workspace = 5 })'`.
 Hyprland reloads its config on save; check `hyprctl configerrors` afterwards.
 Every key binding needs a description, because `SUPER + /` lists them.
 
+Workspaces come in groups of ten (`hypr/lua/groups.lua`): group 2 is 11-20,
+and so on. Anything that moves between workspaces should go through that
+module so it stays inside the current group. It is global as
+`workspace_groups`, so a script can call it with
+`hyprctl dispatch 'function() workspace_groups.step(1) end'`.
+
+The bar and the desktop panel are one Quickshell config (`quickshell/`),
+which reloads itself on save; `qs log` shows its errors. Scripts reach the
+bar with `qs ipc call bar refresh` or `qs ipc call bar toggle`.
+
 ## Testing on the live desktop
 
 When the user lets you drive the desktop:
