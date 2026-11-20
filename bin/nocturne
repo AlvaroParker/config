@@ -9,6 +9,8 @@
 #   nocturne reload          make the running apps pick the colour files up
 #   nocturne check           print the contrast table
 #   nocturne doctor          check links, fonts, colour files and packages
+#   nocturne greeter preview open the login screen in a window
+#   nocturne greeter install install or update the login screen (needs sudo)
 #
 # After editing palette.toml by hand: nocturne build && nocturne reload.
 set -uo pipefail
@@ -78,6 +80,7 @@ reload() {
     ((${#done[@]})) && printf 'reloaded: %s\n' "$(join ', ' "${done[@]}")"
     ((${#restart[@]})) && printf 'restart to see the change: %s\n' "$(join ', ' "${restart[@]}")"
     echo "Zed, VS Code, the launcher, the lock screen, the desktop panel and new shells follow on their own."
+    greeter_note
 }
 
 join() { # separator, items...
@@ -86,6 +89,135 @@ join() { # separator, items...
     local item
     for item in "$@"; do out+="$separator$item"; done
     printf '%s' "$out"
+}
+
+# ------------------------------------------------------------------ greeter
+# The login screen runs as its own user, which cannot read a home folder. So
+# it runs from root-owned copies, and only `nocturne greeter install` (with
+# your password) updates them:
+#   /usr/local/bin/nocturne-greeter.sh   what greetd starts
+#   /etc/greetd/nocturne/                the screen itself: QML, colours and
+#                                        the blurred wallpaper
+greeter_repo="$root/system/usr/local/bin/nocturne-greeter.sh"
+greeter_live=/usr/local/bin/nocturne-greeter.sh
+greeter_dir=/etc/greetd/nocturne
+greeter_stage="${XDG_CACHE_HOME:-$HOME/.cache}/nocturne/greeter"
+
+# Put the screen's files together in the cache, ready to preview or install.
+# The background is made from the current wallpaper, and only made again when
+# the wallpaper or the palette changes.
+stage_greeter() {
+    local wallpaper stamp
+    mkdir -p "$greeter_stage" || return 1
+    cp "$root"/greeter/*.qml "$root"/greeter/*.sh "$root/greeter/rc.xml" "$greeter_stage/" || return 1
+    wallpaper="$("$root/hypr/scripts/wallpaper" current)" || return 1
+    stamp="$wallpaper $(stat -c '%Y %s' "$wallpaper") $(stat -c '%Y' "$palette" "$root/greeter/background" | tr '\n' ' ')"
+    if [[ ! -f "$greeter_stage/background.png" || "$(cat "$greeter_stage.source" 2>/dev/null)" != "$stamp" ]]; then
+        "$root/greeter/background" "$wallpaper" "$greeter_stage/background.png" >/dev/null || return 1
+        printf '%s\n' "$stamp" >"$greeter_stage.source"
+    fi
+    stage_cursor
+}
+
+# The desktop's cursor, for the login screen too. The theme and size are the
+# ones Hyprland is given in hypr/lua/env.lua. labwc reads them from a file
+# named `environment` in its config folder. A theme kept in your home folder
+# is copied along, because the login screen cannot read it there.
+stage_cursor() {
+    local theme size dir home_theme="" lines=()
+    theme="$(sed -n 's/.*"XCURSOR_THEME", *"\([^"]*\)".*/\1/p' "$root/hypr/lua/env.lua" | head -1)"
+    size="$(sed -n 's/.*"XCURSOR_SIZE", *"\([^"]*\)".*/\1/p' "$root/hypr/lua/env.lua" | head -1)"
+
+    for dir in ~/.icons ~/.local/share/icons; do
+        [[ -n "$theme" && -d "$dir/$theme/cursors" ]] && home_theme="$dir/$theme"
+    done
+
+    mkdir -p "$greeter_stage/icons" || return 1
+    # Only the theme in use is kept in the stage.
+    find "$greeter_stage/icons" -mindepth 1 -maxdepth 1 ! -name "$theme" -exec rm -rf {} +
+    if [[ -n "$home_theme" ]]; then
+        rsync -rl --delete "$home_theme/" "$greeter_stage/icons/$theme/" || return 1
+        lines+=("XCURSOR_PATH=$greeter_dir/icons:/usr/share/icons")
+    fi
+    if [[ -n "$home_theme" || ( -n "$theme" && -d "/usr/share/icons/$theme/cursors" ) ]]; then
+        lines+=("XCURSOR_THEME=$theme")
+        [[ -n "$size" ]] && lines+=("XCURSOR_SIZE=$size")
+    fi
+
+    if ((${#lines[@]})); then
+        printf '%s\n' "# Written by \`nocturne greeter install\`: the desktop's cursor, from hypr/lua/env.lua." \
+            "${lines[@]}" >"$greeter_stage/environment"
+    else
+        rm -f "$greeter_stage/environment"
+    fi
+}
+
+# absent: greetd does not use it. stale: the copies differ from this repo
+# and the current wallpaper. current: nothing to do.
+greeter_state() {
+    if [[ ! -f "$greeter_live" ]] || ! grep -q nocturne-greeter.sh /etc/greetd/config.toml 2>/dev/null; then
+        echo absent
+    elif cmp -s "$greeter_repo" "$greeter_live" && stage_greeter 2>/dev/null &&
+        [[ -d "$greeter_dir" && -z "$(rsync -rlc --delete --dry-run --itemize-changes "$greeter_stage/" "$greeter_dir/" 2>&1)" ]]; then
+        echo current
+    else
+        echo stale
+    fi
+}
+
+greeter_note() {
+    if [[ "$(greeter_state)" == stale ]]; then
+        echo "the login screen still has the old colours or wallpaper. Update it with: nocturne greeter install"
+    fi
+}
+
+preview_greeter() {
+    stage_greeter || {
+        echo "nocturne: could not prepare the login screen (it needs python-numpy and python-pillow)" >&2
+        return 1
+    }
+    echo "Opening the login screen in a window. It cannot log you in, and its power buttons do nothing."
+    # Without greetd's socket the screen knows it is a preview.
+    env -u GREETD_SOCK qs -p "$greeter_stage" >/dev/null 2>&1
+}
+
+install_greeter() {
+    local missing=() command
+    for command in greetd labwc wlr-randr qs tuigreet rsync; do
+        command -v "$command" >/dev/null || missing+=("$command")
+    done
+    if ((${#missing[@]})); then
+        printf 'nocturne: the login screen needs these first: %s\n' "$(join ', ' "${missing[@]}")" >&2
+        echo "  sudo pacman -S --needed greetd greetd-tuigreet labwc wlr-randr quickshell rsync" >&2
+        return 1
+    fi
+    stage_greeter || {
+        echo "nocturne: could not prepare the login screen (it needs python-numpy and python-pillow)" >&2
+        return 1
+    }
+
+    echo "Installing the login screen. sudo may ask for your password."
+    # Mirror the stage: files that are no longer part of it are removed, and
+    # everything ends up owned by root.
+    sudo install -d -m755 "$greeter_dir" &&
+        sudo rsync -rlc --delete --chmod=D755,F644 "$greeter_stage/" "$greeter_dir/" &&
+        sudo install -m755 "$greeter_repo" "$greeter_live" || return 1
+
+    if ! grep -q nocturne-greeter.sh /etc/greetd/config.toml 2>/dev/null; then
+        local backup=/etc/greetd/config.toml.before-nocturne
+        if [[ -f /etc/greetd/config.toml && ! -e "$backup" ]]; then
+            sudo cp /etc/greetd/config.toml "$backup" || return 1
+        fi
+        sudo install -Dm644 "$root/system/etc/greetd/config.toml" /etc/greetd/config.toml || return 1
+        echo "greetd is now set to start the Nocturne login screen. Its previous config is kept as $backup."
+        # greetd reads its config once, when it starts, and it is the parent
+        # of your session: restarting it now would end the session.
+        echo "Done. greetd only reads its config when it starts, so you will see the new"
+        echo "screen after restarting the computer. Logging out is not enough this first time."
+    else
+        echo "Done. You will see it the next time you log in."
+    fi
+    echo "If it ever fails to start, the text login takes over by itself."
 }
 
 # ------------------------------------------------------------------- accent
@@ -224,6 +356,12 @@ doctor() {
         fi
     fi
 
+    case "$(greeter_state)" in
+        absent) note "login screen: not installed. To use it: nocturne greeter install" ;;
+        stale) note "login screen: the installed copy has older colours or wallpaper. Update it with: nocturne greeter install" ;;
+        current) ok "login screen: the installed copy matches" ;;
+    esac
+
     if [[ ! -f "${XDG_CONFIG_HOME:-$HOME/.config}/nocturne-location.json" ]]; then
         note "weather: no location set, so the desktop shows none (see quickshell/location.example.json)"
     fi
@@ -243,6 +381,16 @@ case "${1:-}" in
         ;;
     accent)
         if [[ -n "${2:-}" ]]; then set_accent "$2"; else list_accents; fi
+        ;;
+    greeter)
+        case "${2:-}" in
+            preview) preview_greeter ;;
+            install) install_greeter ;;
+            *)
+                echo "usage: nocturne greeter {preview|install}" >&2
+                exit 2
+                ;;
+        esac
         ;;
     build) "$root/nocturne/build" ;;
     reload) reload ;;

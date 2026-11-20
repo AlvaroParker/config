@@ -57,6 +57,28 @@ machine-specific shell settings in `~/.custom_zshrc`, the chosen wallpaper
 in `~/.local/state/nocturne`, and the weather location in
 `~/.config/nocturne-location.json` (`install` asks for your city).
 
+### Login screen
+
+`install` does not set up the login screen, because that means replacing the
+login manager you already have. It only installs what the screen needs
+(`greetd`, `labwc`, `wlr-randr` and `greetd-tuigreet`). To switch to it:
+
+```sh
+nocturne greeter preview         # optional: look at it in a window first
+nocturne greeter install         # copies it into /etc and points greetd at it
+sudo systemctl disable gdm       # or whichever login manager is enabled now
+sudo systemctl enable greetd
+```
+
+Then restart the computer. Logging out is not enough the first time, because
+greetd reads its config only when it starts.
+
+The login screen runs from copies in `/etc`, so it does not follow the repo by
+itself. After changing the accent or the wallpaper, run
+`nocturne greeter install` again; `nocturne doctor` says when the copies are
+out of date. If the screen ever fails to start, the text login takes over.
+[system/README.md](./system/README.md) has the details and how to go back.
+
 ## Everyday keys
 
 | Key | Action |
@@ -89,7 +111,7 @@ The `genswap` script will generate a new swapfile located at `/swapfile` and wil
 - [`Zed`](https://zed.dev) - Editor
 - [`Zen`](https://zen-browser.app/) - Browser
 - [`Waybar`](https://github.com/Alexays/Waybar) - Bar
-- [`Quickshell`](https://quickshell.org) - Desktop clock, weather and now playing
+- [`Quickshell`](https://quickshell.org) - Desktop clock, weather and now playing, and the login screen (inside [`labwc`](https://labwc.github.io), started by `greetd`)
 - [`Rofi`](https://github.com/davatorium/rofi) - Launcher
 - [`SwayNotificationCenter`](https://github.com/ErikReider/SwayNotificationCenter) - Notifications and control centre
 - [`Fastfetch`](https://github.com/fastfetch-cli/fastfetch)

@@ -91,3 +91,9 @@ python-numpy
 python-pillow
 quickshell
 chafa
+# Login screen: greetd starts greeter/ inside labwc, with tuigreet as the
+# fallback. Put in place with `nocturne greeter install`.
+greetd
+greetd-tuigreet
+labwc
+wlr-randr

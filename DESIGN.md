@@ -105,6 +105,7 @@ use `leave` (0.4, 0, 1, 1) and take about three quarters of the time.
 | Control centre | Switches outlined in `line` when off and in the accent when on. Sliders in `text` on `ink-3`. |
 | Wallpaper | `hypr/wallpapers/nocturne.jpg`, painted by `nocturne/wallpaper` from the palette: a night sky that starts at `ink-0` under the bar, receding hills, and a low moon in the accent colour, right of centre so the lock-screen clock never covers it. Run it after changing the accent; `--seed` gives a different skyline. |
 | Desktop | Shown on empty workspaces only, below every window. Text only, left-aligned in the empty sky so the moon stays the one warm light: the date in small capitals, a large light clock, one line of weather, and the current track while something plays or is paused (click it to play or pause). No cards, boxes or glow. |
+| Login screen | The lock screen's sibling, drawn by Quickshell (`greeter/`). Your wallpaper, blurred and dimmed only as far as contrast needs: the brightest part behind the text must leave 4.5:1 for every colour written on it, red included. Date in small capitals, a large light clock, your name, then a hairline to type on that takes the accent while it has the focus, with a dot per character. No box and no placeholder. Two lines are kept free under it for what needs saying: why a login failed in red, Caps Lock in gold. Dots turn gold while the password is checked. Battery at the bottom, and Sleep, Restart and Shut down as quiet text in the corner, reachable with Tab. Each screen gets the scale it has on the desktop, so everything, the cursor included, is the size it is on the lock screen. If it cannot start, tuigreet takes over on the console, with its sixteen colours set from the palette. |
 | Lock screen | Your current wallpaper, heavily blurred; open windows never show. Darker wallpapers are dimmed less (0.6 for the brightest, up to 1.0), measured when the wallpaper is chosen. Date in small capitals above a clock about 100 px tall, password dots in the accent below it. A soft dark shadow keeps the text readable on any wallpaper. |
 | Terminal | `ink-1` glass at 85% with Hyprland's blur behind, text solid, Lilex 10.5 pt, a steady block cursor in the accent (a bar while typing in zsh). |
 
@@ -125,6 +126,8 @@ use `leave` (0.4, 0, 1, 1) and take about three quarters of the time.
 | `zathura/nocturne`, `firefox/chrome/nocturne.css`, `zed/themes/nocturne.json`, `nvim/lua/nocturne/palette.lua` | generated |
 | `zen/chrome/nocturne.css`, `zen/chrome/userContent.css`, `zen/user.js` | generated: Zen colours, built-in pages and appearance settings |
 | `quickshell/Nocturne.qml` | generated: desktop panel colours (the rest of `quickshell/` is hand-written) |
+| `greeter/` | hand-written: the login screen. `greeter/background` makes its blurred wallpaper; `rc.xml` configures labwc, the compositor underneath it (tap to click, and no keys or menus of its own); `outputs.sh` gives each screen its desktop scale, and must be kept in step with `hypr/lua/monitors.lua`; the cursor theme and size come from `hypr/lua/env.lua` when it is installed; `session.sh` is what a login starts, with Hyprland's launcher output dropped so it never shows on the console; `Nocturne.qml` there is a link to the generated one in `quickshell/` |
+| `system/usr/local/bin/nocturne-greeter.sh` | generated: what greetd starts. It runs the login screen inside labwc and falls back to tuigreet, whose console colours it carries. `nocturne greeter install` puts both in place |
 | blocks marked `nocturne` in `starship.toml`, `herdr/config.toml` and `Code/User/settings.json` | generated. VS Code has no theme file to link, so its block writes Nocturne over the built-in Dark Modern theme |
 | `bat/themes/Nocturne.tmTheme` | hand-written: syntax colours for bat, delta and ranger's previews, the same as Neovim's |
 
@@ -145,7 +148,11 @@ bat cache --build  # only after editing the bat theme
 `nocturne reload` reloads Hyprland, the bar, notifications, the volume
 display, Ghostty, tmux, Herdr and any running Neovim, and skips what is not
 running. Zed, VS Code, the launcher, the lock screen, the desktop panel and new
-shells pick changes up on their own. Zen needs a restart.
+shells pick changes up on their own. Zen needs a restart. The login screen
+runs from copies that only root can replace, so a new accent or wallpaper
+reaches it when you run `nocturne greeter install`; `nocturne reload` says
+when those copies are out of date. `nocturne greeter preview` shows it in a
+window first.
 
 `nocturne doctor` checks the whole setup: that the colour files match the
 palette, the contrast table passes, every link in `links.txt` points into this

@@ -44,6 +44,7 @@ TEMPLATES = {
     "zen-content.css": "zen/chrome/userContent.css",
     "zen-user.js": "zen/user.js",
     "quickshell.qml": "quickshell/Nocturne.qml",
+    "greeter.sh": "system/usr/local/bin/nocturne-greeter.sh",
 }
 
 # Template name -> (file, start marker, end marker). Only the lines between

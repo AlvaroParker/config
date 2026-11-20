@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<!--
+  labwc hosts the Nocturne login screen: it is the compositor underneath
+  shell.qml, started by nocturne/templates/greeter.sh with this folder as its
+  config. It is here for one window and for the touchpad; everything a desktop
+  would add is turned off.
+-->
+<labwc_config>
+
+  <core>
+    <gap>0</gap>
+  </core>
+
+  <!-- The touchpad behaves as it does on the desktop (hypr/lua/options.lua). -->
+  <libinput>
+    <device category="touchpad">
+      <tap>yes</tap>
+      <naturalScroll>yes</naturalScroll>
+    </device>
+  </libinput>
+
+  <!--
+    One binding that does nothing. With none at all, labwc loads its default
+    keys, and those include Super+Return for a terminal and Alt+F4 to close
+    the window. A login screen must offer neither.
+    Ctrl+Alt+F2 still reaches a console; labwc handles that itself.
+  -->
+  <keyboard>
+    <keybind key="W-F24">
+      <action name="None" />
+    </keybind>
+  </keyboard>
+
+  <!--
+    The same for the mouse: this one binding replaces the defaults, which
+    would let you drag the window away with Alt or open labwc's own menu.
+  -->
+  <mouse>
+    <context name="Client">
+      <mousebind button="Left" action="Press">
+        <action name="Focus" />
+        <action name="Raise" />
+      </mousebind>
+    </context>
+  </mouse>
+
+  <!-- The login screen fills the screen, without a title bar. -->
+  <windowRules>
+    <windowRule identifier="*" serverDecoration="no" skipTaskbar="yes" skipWindowSwitcher="yes">
+      <action name="ToggleFullscreen" />
+    </windowRule>
+  </windowRules>
+
+</labwc_config>

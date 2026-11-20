@@ -1,0 +1,102 @@
+#!/usr/bin/env python3
+"""Make the login screen's background from a wallpaper.
+
+    greeter/background WALLPAPER OUT.png
+
+The wallpaper is blurred until it is a soft field of its own colours, then
+dimmed just enough that everything written over it stays readable: 4.5:1
+against the brightest part of the picture behind it. Two areas are checked,
+matching the layout in shell.qml:
+
+  * the middle, where the clock, the field and its messages are. Messages can
+    be red, the dimmest colour used, so red sets the limit here;
+  * the bottom edge, where the battery and the power buttons are, in `text`.
+
+A dark wallpaper is not dimmed at all.
+
+The result is small (960 px wide), because a blur has no detail to keep, and
+is dithered so the gradients do not band when it is scaled up. The same
+wallpaper always gives the same file. Needs numpy and Pillow.
+"""
+
+import importlib.machinery
+import importlib.util
+import sys
+import tomllib
+from pathlib import Path
+
+import numpy as np
+from PIL import Image, ImageFilter
+
+ROOT = Path(__file__).resolve().parent.parent
+WIDTH = 960
+BLUR = 28  # px at 960 wide: about a tenth of the picture's height
+CONTRAST = 4.5
+
+
+def load_build():
+    """Import nocturne/build (a script without .py) for its colour maths."""
+    loader = importlib.machinery.SourceFileLoader("nocturne_build", str(ROOT / "nocturne" / "build"))
+    spec = importlib.util.spec_from_loader("nocturne_build", loader)
+    module = importlib.util.module_from_spec(spec)
+    loader.exec_module(module)
+    return module
+
+
+def text_luminances(build):
+    """Luminance of the two colours that set the limits: red and `text`."""
+    palette = tomllib.loads((ROOT / "nocturne" / "palette.toml").read_text())
+    lightness, chroma = palette["neutral"]["text"]
+    return (
+        build.luminance(build.oklch_to_rgb(*palette["semantic"]["red"])),
+        build.luminance(build.oklch_to_rgb(lightness, chroma, palette["neutral"]["hue"])),
+    )
+
+
+def brightest(luminance, left, top, right, bottom):
+    """The brightest part of an area given in fractions of the picture."""
+    height, width = luminance.shape
+    area = luminance[round(top * height):round(bottom * height), round(left * width):round(right * width)]
+    return float(np.percentile(area, 99.5))
+
+
+def darkest_allowed(text):
+    """(text + 0.05) / (background + 0.05) >= CONTRAST, solved for the background."""
+    return (text + 0.05) / CONTRAST - 0.05
+
+
+def main():
+    if len(sys.argv) != 3:
+        sys.exit(__doc__.strip().splitlines()[2].strip())
+    source, out = Path(sys.argv[1]), Path(sys.argv[2])
+
+    image = Image.open(source).convert("RGB")
+    height = round(image.height * WIDTH / image.width)
+    image = image.resize((WIDTH, height), Image.LANCZOS).filter(ImageFilter.GaussianBlur(BLUR))
+
+    srgb = np.asarray(image, dtype=np.float32) / 255.0
+    linear = np.where(srgb <= 0.04045, srgb / 12.92, ((srgb + 0.055) / 1.055) ** 2.4)
+    luminance = linear @ np.array([0.2126, 0.7152, 0.0722], dtype=np.float32)
+
+    red, text = text_luminances(load_build())
+    middle = brightest(luminance, 0.36, 0.22, 0.64, 0.66)
+    bottom = brightest(luminance, 0.0, 0.92, 1.0, 1.0)
+    dim = min(
+        1.0,
+        darkest_allowed(red) / max(middle, 1e-6),
+        darkest_allowed(text) / max(bottom, 1e-6),
+    )
+    linear = linear * dim
+
+    encoded = np.where(linear <= 0.0031308, linear * 12.92, 1.055 * linear ** (1 / 2.4) - 0.055) * 255.0
+    # Triangular dither, one step wide, from a fixed seed.
+    rng = np.random.default_rng(7)
+    encoded += rng.random(encoded.shape, dtype=np.float32) - rng.random(encoded.shape, dtype=np.float32)
+
+    out.parent.mkdir(parents=True, exist_ok=True)
+    Image.fromarray(np.clip(np.round(encoded), 0, 255).astype(np.uint8)).save(out)
+    print(f"wrote {out} ({WIDTH}x{height}, dimmed to {dim:.2f})")
+
+
+if __name__ == "__main__":
+    main()
