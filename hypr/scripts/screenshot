@@ -40,17 +40,63 @@ freeze() {
 }
 
 # The windows on the workspaces you can see, as boxes slurp can choose from.
+# A box takes in the window's border, as it looks on screen, and its label
+# carries the outer corner radius and the class: "11:com.mitchellh.ghostty".
+# Fullscreen windows have neither border nor rounding.
 window_boxes() {
-    local workspaces
-    workspaces=$(hyprctl monitors -j | jq -c '[.[].activeWorkspace.id, .[].specialWorkspace.id] | map(select(. != 0))')
-    hyprctl clients -j | jq -r --argjson shown "$workspaces" '
-        .[] | select(.mapped and (.hidden | not) and (.workspace.id as $id | $shown | index($id)))
-        | "\(.at[0]),\(.at[1]) \(.size[0])x\(.size[1]) \(.class)"'
+    local workspaces rounding border
+    # Matched by name: scratchpads have no number, and a closed one has none.
+    workspaces=$(hyprctl monitors -j | jq -c '[.[].activeWorkspace.name, .[].specialWorkspace.name] | map(select(. != null and . != ""))')
+    rounding=$(hyprctl getoption decoration:rounding -j | jq '.int // 0')
+    border=$(hyprctl getoption general:border_size -j | jq '.int // 0')
+    hyprctl clients -j | jq -r --argjson shown "$workspaces" --argjson r "$rounding" --argjson b "$border" '
+        .[] | select(.mapped and (.hidden | not) and (.workspace.name as $name | ($shown | index($name)) != null))
+        | (if .fullscreen != 0 then 0 else $b end) as $e
+        | (if .fullscreen != 0 or $r == 0 then 0 else $r + $b end) as $radius
+        | "\(.at[0] - $e),\(.at[1] - $e) \(.size[0] + 2 * $e)x\(.size[1] + 2 * $e) \($radius):\(.class)"'
 }
 
 capture() { # grim arguments...
     mkdir -p "$dir" || fail "Could not create $dir"
-    grim "$@" - | tee "$file" | wl-copy --type image/png || fail "Could not take the screenshot"
+    grim "$@" "$file" || fail "Could not take the screenshot"
+}
+
+copy() {
+    wl-copy --type image/png <"$file"
+}
+
+# Make the corners outside a rounded window transparent, anti-aliased, so the
+# picture has the window's own shape. Only the corners are masked, so even a
+# window at 2x scale costs a few kilobytes of mask.
+round_corners() { # radius and width, in layout pixels
+    python3 -I - "$file" "$1" "$2" <<'EOF' || fail "Could not round the window's corners"
+import math
+import sys
+
+from PIL import Image, ImageDraw
+
+path, radius, width = sys.argv[1], float(sys.argv[2]), float(sys.argv[3])
+image = Image.open(path).convert("RGBA")
+r = radius * image.width / width  # in image pixels
+n = math.ceil(r)
+if n > 0:
+    ss = 4  # supersampling for a smooth edge
+    tile = Image.new("L", (n * ss, n * ss), 0)
+    draw = ImageDraw.Draw(tile)
+    draw.ellipse((0, 0, 2 * r * ss, 2 * r * ss), fill=255)
+    draw.rectangle((r * ss, 0, n * ss, n * ss), fill=255)
+    draw.rectangle((0, r * ss, n * ss, n * ss), fill=255)
+    tile = tile.resize((n, n), Image.BOX)  # an average: no ringing at the edge
+
+    mask = Image.new("L", image.size, 255)
+    w, h = image.size
+    mask.paste(tile, (0, 0))
+    mask.paste(tile.transpose(Image.FLIP_LEFT_RIGHT), (w - n, 0))
+    mask.paste(tile.transpose(Image.FLIP_TOP_BOTTOM), (0, h - n))
+    mask.paste(tile.transpose(Image.ROTATE_180), (w - n, h - n))
+    image.putalpha(mask)
+image.save(path)
+EOF
 }
 
 case "${1:-region}" in
@@ -62,10 +108,12 @@ case "${1:-region}" in
         ;;
     window)
         freeze
-        choice=$(window_boxes | slurp -r -f '%x,%y %wx%h %l') || exit 0
-        geometry=${choice% *}
-        class=${choice##* }
-        capture -g "$geometry"
+        choice=$(window_boxes | slurp -r -f '%x,%y %w %h %l') || exit 0
+        read -r x_y w h label <<<"$choice"
+        radius=${label%%:*}
+        class=${label#*:}
+        capture -g "$x_y ${w}x$h"
+        round_corners "$radius" "$w"
         message="Screenshot of ${class:-the window} taken"
         ;;
     display)
@@ -86,4 +134,5 @@ esac
 
 cleanup
 freeze_pid=""
+copy || fail "Could not copy the screenshot"
 notify "$message" "$file" wl-copy 1000
