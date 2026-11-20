@@ -132,7 +132,8 @@ use `leave` (0.4, 0, 1, 1) and take about three quarters of the time.
 | `bat/themes/Nocturne.tmTheme` | hand-written: syntax colours for bat, delta and ranger's previews, the same as Neovim's |
 
 Tools that read the terminal's colours (btop with the `TTY` theme, eza,
-fastfetch, zsh highlighting) need no files of their own. The bat theme is the
+fastfetch, zsh highlighting, Claude Code's status line) need no files of their
+own. The bat theme is the
 same idea: it names the terminal's colour slots instead of hex values, so it
 follows the palette without being generated. That also keeps it readable by
 ranger, which cannot show 24-bit colour.

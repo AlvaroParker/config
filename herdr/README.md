@@ -27,7 +27,7 @@ herdr plugin install senna-lang/herdr-agent-usage  # sidebar context and rate li
 ```
 
 Agent Usage only sees Claude's 5h/7d limits through Claude Code's status line.
-`~/.claude/statusline.sh` (not in this repository) pipes its input to the
+`claude/statusline.sh` (linked to `~/.claude/statusline.sh`) pipes its input to the
 plugin's `bin/run-statusline.sh` when `HERDR_ENV=1`.
 
 Agent integrations are installed per machine with
