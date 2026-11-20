@@ -6,7 +6,7 @@
     "commit": "",
     "pr": ""
   },
-  "model": "fable",
+  "model": "opus",
   "hooks": {
     "SessionStart": [
       {
