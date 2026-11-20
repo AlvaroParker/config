@@ -46,6 +46,7 @@ TEMPLATES = {
     "quickshell.qml": "quickshell/Nocturne.qml",
     "greeter.sh": "system/usr/local/bin/nocturne-greeter.sh",
     "obsidian.css": "obsidian/themes/Nocturne/theme.css",
+    "btop.theme": "btop/themes/nocturne.theme",
 }
 
 # Template name -> (file, start marker, end marker). Only the lines between

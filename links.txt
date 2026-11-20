@@ -21,6 +21,8 @@ dbus/org.freedesktop.Notifications.service ~/.local/share/dbus-1/services/org.fr
 swayosd                               ~/.config/swayosd
 quickshell                            ~/.config/quickshell
 fastfetch                             ~/.config/fastfetch
+# btop rewrites btop.conf, so only its theme is linked; install selects it.
+btop/themes/nocturne.theme            ~/.config/btop/themes/nocturne.theme
 zathura                               ~/.config/zathura
 
 # GTK apps

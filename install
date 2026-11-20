@@ -197,6 +197,15 @@ if [ ! -f ~/.config/qt6ct/qt6ct.conf ]; then
         "$HOME/.config/nocturne/qt6ct.conf" >~/.config/qt6ct/qt6ct.conf
 fi
 
+# btop rewrites its own config, so only its theme is linked (links.txt). Select
+# it here, keeping the rest of the config.
+if [[ -f ~/.config/btop/btop.conf ]]; then
+    sed -i 's/^color_theme = .*/color_theme = "nocturne"/' ~/.config/btop/btop.conf
+else
+    mkdir -p ~/.config/btop
+    printf 'color_theme = "nocturne"\ntheme_background = false\n' >~/.config/btop/btop.conf
+fi
+
 # Zen (Flatpak). The sandbox cannot see this repo, so allow read-only access
 # to the zen folder only, then link its files into the default profile.
 # Run Zen once first so the profile exists.

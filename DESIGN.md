@@ -126,15 +126,15 @@ use `leave` (0.4, 0, 1, 1) and take about three quarters of the time.
 | `zathura/nocturne`, `firefox/chrome/nocturne.css`, `zed/themes/nocturne.json`, `nvim/lua/nocturne/palette.lua` | generated |
 | `zen/chrome/nocturne.css`, `zen/chrome/userContent.css`, `zen/user.js` | generated: Zen colours, built-in pages and appearance settings |
 | `obsidian/themes/Nocturne/theme.css` | generated: Obsidian's theme, dark mode only. Obsidian keeps themes inside each vault, so `install` gives every vault listed in `~/.config/obsidian/obsidian.json` a `themes/Nocturne` folder of links to these files and selects it; run `install` again after opening a new vault. The folder is real and only its files are links, because Obsidian does not notice changes through a linked folder; `nocturne reload` makes the `theme.css` link again, and Obsidian reloads the theme when it sees that. Links are blue and the open note is the brightest row; the accent marks the cursor, the current tab and things that are on |
+| `btop/themes/nocturne.theme` | generated: btop's theme. Box outlines are one hairline. In a monitor, colour tells you two things: load (CPU, used memory and disk, and each process's CPU, memory and threads) runs green to gold to red as it climbs, and every other kind of reading keeps a colour of its own so the eye can tell them apart: available memory foam, cached blue, free iris, download blue, upload iris. Temperatures stay foam until they near the limit, so a normal 50 °C is never a warning. Key letters are blue, as things you can act on, and the selected process is a selection in `accent-dim`. btop rewrites its own `btop.conf`, so only the theme is linked and `install` selects it there. A running btop needs a restart to show a change |
 | `quickshell/Nocturne.qml` | generated: desktop panel colours (the rest of `quickshell/` is hand-written) |
 | `greeter/` | hand-written: the login screen. `greeter/background` makes its blurred wallpaper; `rc.xml` configures labwc, the compositor underneath it (tap to click, and no keys or menus of its own); `outputs.sh` gives each screen its desktop scale, and must be kept in step with `hypr/lua/monitors.lua`; the cursor theme and size come from `hypr/lua/env.lua` when it is installed; `session.sh` is what a login starts, with Hyprland's launcher output dropped so it never shows on the console; `Nocturne.qml` there is a link to the generated one in `quickshell/` |
 | `system/usr/local/bin/nocturne-greeter.sh` | generated: what greetd starts. It runs the login screen inside labwc and falls back to tuigreet, whose console colours it carries. `nocturne greeter install` puts both in place |
 | blocks marked `nocturne` in `starship.toml`, `herdr/config.toml` and `Code/User/settings.json` | generated. VS Code has no theme file to link, so its block writes Nocturne over the built-in Dark Modern theme |
 | `bat/themes/Nocturne.tmTheme` | hand-written: syntax colours for bat, delta and ranger's previews, the same as Neovim's |
 
-Tools that read the terminal's colours (btop with the `TTY` theme, eza,
-fastfetch, zsh highlighting, Claude Code's status line) need no files of their
-own. The bat theme is the
+Tools that read the terminal's colours (eza, fastfetch, zsh highlighting,
+Claude Code's status line) need no files of their own. The bat theme is the
 same idea: it names the terminal's colour slots instead of hex values, so it
 follows the palette without being generated. That also keeps it readable by
 ranger, which cannot show 24-bit colour.
@@ -150,7 +150,7 @@ bat cache --build  # only after editing the bat theme
 `nocturne reload` reloads Hyprland, the bar, notifications, the volume
 display, Ghostty, tmux, Herdr, Obsidian and any running Neovim, and skips what is not
 running. Zed, VS Code, the launcher, the lock screen, the desktop panel and new
-shells pick changes up on their own. Zen needs a restart. The login screen
+shells pick changes up on their own. Zen and btop need a restart. The login screen
 runs from copies that only root can replace, so a new accent or wallpaper
 reaches it when you run `nocturne greeter install`; `nocturne reload` says
 when those copies are out of date. `nocturne greeter preview` shows it in a

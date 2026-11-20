@@ -88,6 +88,7 @@ reload() {
 
     pgrep -f 'zen_browser|/zen( |$)|zen-bin' >/dev/null && restart+=("Zen")
     running firefox && restart+=("Firefox")
+    running btop && restart+=("btop")
     # Obsidian does not notice when a linked file's target changes, but it
     # reloads the theme when the link itself is made again.
     local vault reloaded_obsidian=no
