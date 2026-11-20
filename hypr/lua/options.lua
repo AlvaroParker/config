@@ -13,7 +13,10 @@ hl.config({
         disable_hyprland_logo = true,
         disable_splash_rendering = true,
         background_color = palette.rgb("ink-0"),
-        focus_on_activate = false,
+        -- An app asking to be shown (a clicked notification, a link opening
+        -- in the browser) gets the focus, even in another workspace group;
+        -- lua/groups.lua then brings the other monitor along.
+        focus_on_activate = true,
         on_focus_under_fullscreen = true,
         allow_session_lock_restore = true,
         enable_anr_dialog = false,

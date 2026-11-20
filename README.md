@@ -93,7 +93,7 @@ out of date. If the screen ever fails to start, the text login takes over.
 | `SUPER + SHIFT + S` | Screenshot: pick a region, a window, this display or all displays. Saved in `~/Pictures/Screenshots` and copied. `SUPER + SHIFT + D` or `Print` takes this display straight away |
 | `SUPER + SHIFT + N` | Night light on or off. It also follows a schedule in `hypr/hyprsunset.conf` |
 | `SUPER + 1` … `0` | Workspace 1 to 10 of the current group. Add `SHIFT` to move the window there |
-| `SUPER + CTRL + 1` … `9` | Switch both screens to that workspace group: a clean set of ten workspaces, while the others wait. Add `SHIFT` to send the window to that group |
+| `SUPER + CTRL + 1` … `9` | Switch both screens to that workspace group: a clean set of ten workspaces, while the others wait. Add `SHIFT` to send the window to that group. Anything else that takes you to another group, such as clicking a notification, brings both screens along too |
 | `SUPER + CTRL + scroll` | The next or previous workspace group |
 | Three fingers up / down | The next or previous workspace group (three fingers sideways move between workspaces) |
 

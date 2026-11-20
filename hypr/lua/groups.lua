@@ -60,9 +60,12 @@ end
 
 -- Counts group switches, so only the latest one puts the sideways slide back.
 local switches = 0
+-- True while this module moves monitors, so following focus (below) does
+-- not answer its own moves.
+local moving = false
 
-function M.switch_group(group)
-    -- A group change slides vertically; sideways again once it has played.
+-- A group change slides vertically; sideways again once it has played.
+local function slide_vertically()
     switches = switches + 1
     local this_switch = switches
     animations.workspace_slide("slidevert")
@@ -71,18 +74,52 @@ function M.switch_group(group)
             animations.workspace_slide("slide")
         end
     end, { timeout = animations.workspace_slide_ms + 120, type = "oneshot" })
+end
 
+-- Put every monitor not already in `group` on its own slot there, then give
+-- the focus back to the monitor that had it.
+local function bring_monitors(group)
     local focused = hl.get_active_monitor()
+    moving = true
     for _, monitor in ipairs(hl.get_monitors()) do
-        local target = M.id(group, current_slot(monitor.active_workspace))
-        hl.dispatch(hl.dsp.focus({ monitor = monitor.name }))
-        hl.dispatch(hl.dsp.focus({ workspace = target }))
+        local workspace = numbered(monitor.active_workspace)
+        if not workspace or M.group_of(workspace.id) ~= group then
+            hl.dispatch(hl.dsp.focus({ monitor = monitor.name }))
+            hl.dispatch(hl.dsp.focus({ workspace = M.id(group, current_slot(workspace)) }))
+        end
     end
-    -- End on the monitor you started on.
     if focused then
         hl.dispatch(hl.dsp.focus({ monitor = focused.name }))
     end
+    moving = false
 end
+
+function M.switch_group(group)
+    slide_vertically()
+    bring_monitors(group)
+end
+
+-- Focus can reach another group without these keys: a notification you
+-- click, the launcher's window list, SUPER + U. The other monitors then follow
+-- to their own place in that group, so the screens never show two groups.
+hl.on("workspace.active", function()
+    if moving then
+        return
+    end
+    local workspace = numbered(hl.get_active_workspace())
+    if not workspace then
+        return
+    end
+    local group = M.group_of(workspace.id)
+    for _, monitor in ipairs(hl.get_monitors()) do
+        local other = numbered(monitor.active_workspace)
+        if other and M.group_of(other.id) ~= group then
+            slide_vertically()
+            bring_monitors(group)
+            return
+        end
+    end
+end)
 
 -- The next or previous group. It stops at the first and the last rather than
 -- wrapping, so a quick scroll cannot jump from group 1 to group 9.
