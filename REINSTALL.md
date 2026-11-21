@@ -95,7 +95,7 @@ its documentation, not from a test.
 | 4, packages | Add `btrfs-progs` to `pacstrap`. dracut needs its `btrfs` tool to put btrfs support in the boot image |
 | 4, `fstab` | The `/` entry is `btrfs`, and its options include `compress=zstd:3` |
 | 6, swap file | `btrfs filesystem mkswapfile --size 68g --uuid clear /swapfile` in place of `mkswap`. A swap file on btrfs must not be compressed or copied on write, and this command makes it that way |
-| 6, offset | `btrfs inspect-internal map-swapfile -r /swapfile` prints `<SWAP_OFFSET>`. **Do not use `filefrag` or `genswap`:** on btrfs they print a number the kernel cannot use, and hibernation then fails to resume. `<SWAP_UUID>` is found the same way as before |
+| 6, offset | `btrfs inspect-internal map-swapfile -r /swapfile` prints `<SWAP_OFFSET>`. **Do not use `filefrag`:** on btrfs it prints a number the kernel cannot use, and hibernation then fails to resume. `genswap` knows the difference, but it is for an installed system, not this step. `<SWAP_UUID>` is found the same way as before |
 | 7, `cmdline.conf` | Besides the three placeholders, change `rootfstype=ext4 rootflags=rw,relatime` to `rootfstype=btrfs rootflags=rw,relatime,compress=zstd` |
 
 Three things to know afterwards:
@@ -107,9 +107,9 @@ Three things to know afterwards:
   from then on, and those files are not compressed.
 - **What it saved.** `compsize /`, from the `compsize` package, shows the
   size on disk against the real size.
-- **The repo.** `system/etc/dracut.conf.d/cmdline.conf`, the placeholder
-  table in system/README.md and the `genswap` script still describe ext4.
-  Change them once the machine runs btrfs, so the repo matches it again.
+- **The repo.** `system/etc/dracut.conf.d/cmdline.conf` still has ext4's
+  `rootfstype` and `rootflags`. Change it once the machine runs btrfs, so
+  the repo matches it again.
 
 **Unverified:** that dracut, building in the chroot with `hostonly="yes"`,
 adds its btrfs module by itself. If the new system cannot find its root at
@@ -385,9 +385,9 @@ the file lives; on the running system it matches
 `findmnt -no UUID -T /swapfile`. The offset is the first physical block in
 `filefrag`'s table.
 
-The `genswap` script does the same on an installed system: it makes the
-file, turns it on, adds the `fstab` line and prints the two swap values. It
-is for making a swap file later. Do not run it after this step, or `fstab`
+The `genswap` script does the same on an installed system, on ext4 or
+btrfs: it makes the file, turns it on, adds the `fstab` line and prints the
+two swap values. It is for making a swap file later. Do not run it after this step, or `fstab`
 gets a second swap line. If the swap file is ever made again, its offset
 changes: put the new value in `cmdline.conf` and rebuild the image.
 

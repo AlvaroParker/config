@@ -131,7 +131,7 @@ Spanish, or the contents of a QR code if the region holds one
 (`hypr/scripts/screen-text`, using tesseract and zbar). It all runs locally.
 `SUPER + /` lists every key binding.
 
-The `genswap` script will generate a new swapfile located at `/swapfile` and will output the needed kernel parameters to add for hibernation. **Do not run if you already have swap configured.** A reinstall makes the swap file by hand instead; see [REINSTALL.md](./REINSTALL.md), step 6.
+The `genswap` script will generate a new swapfile located at `/swapfile` and will output the needed kernel parameters to add for hibernation. It works on ext4 and btrfs, and stops if `/swapfile` already exists. A reinstall makes the swap file by hand instead; see [REINSTALL.md](./REINSTALL.md), step 6.
 
 ## Programs used
 

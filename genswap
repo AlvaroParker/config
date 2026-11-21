@@ -1,34 +1,54 @@
 #!/bin/bash
+# Make a swap file at /swapfile, turn it on, and print the two kernel
+# parameters hibernation needs. Works on ext4 and on btrfs, which make the
+# file and find its offset in different ways.
 set -e
 
+swapfile=/swapfile
 size=$1
 
-# If size == --help
-if [ "$size" == "--help" ]; then
+usage() {
     echo "Usage: genswap <size>"
     echo "size: the size of the swap file in GB"
+}
+
+if [ "$size" == "--help" ]; then
+    usage
     exit 0
 fi
-
-isuint_Regx() { [[ $1 =~ ^[0-9]+$ ]] ;}
-
-if isuint_Regx $size; then
-    echo "The argument is an integer."
-else
-    echo "Usage: genswap <size>"
-    echo "size: the size of the swap file in GB"
+if ! [[ $size =~ ^[0-9]+$ ]]; then
+    usage
     exit 1
 fi
 
-sudo mkswap -U clear --size "${size}G" --file /swapfile
-sudo swapon /swapfile
+# Making the file again would change its offset and add a second fstab line.
+if [ -e "$swapfile" ]; then
+    echo "$swapfile already exists. Turn it off and delete it first if you mean to replace it:" >&2
+    echo "  sudo swapoff $swapfile && sudo rm $swapfile   (and remove its line from /etc/fstab)" >&2
+    exit 1
+fi
 
-echo "/swapfile none swap defaults 0 0" | sudo tee -a /etc/fstab
+fstype=$(findmnt -no FSTYPE -T "$(dirname "$swapfile")")
 
-offset=$(sudo filefrag -v /swapfile | awk '$1=="0:" {print substr($4, 1, length($4)-2)}')
-dev_path=$(df -h /swapfile | awk 'NR>1 {print $1}')
-uuid=$(sudo blkid ${dev_path} | awk -F'"' '{print $2}')
+if [ "$fstype" == "btrfs" ]; then
+    # A swap file on btrfs must not be compressed or copied on write.
+    # mkswapfile makes it that way.
+    sudo btrfs filesystem mkswapfile --size "${size}g" --uuid clear "$swapfile"
+else
+    sudo mkswap -U clear --size "${size}G" --file "$swapfile"
+fi
+sudo swapon "$swapfile"
+
+echo "$swapfile none swap defaults 0 0" | sudo tee -a /etc/fstab
+
+if [ "$fstype" == "btrfs" ]; then
+    # filefrag's offsets are wrong on btrfs: they are not positions on the
+    # device, which is what the kernel resumes from.
+    offset=$(sudo btrfs inspect-internal map-swapfile -r "$swapfile")
+else
+    offset=$(sudo filefrag -v "$swapfile" | awk '$1=="0:" {print substr($4, 1, length($4)-2)}')
+fi
+uuid=$(findmnt -no UUID -T "$swapfile")
 
 echo "Done, now add this to /etc/dracut.conf.d/cmdline.conf"
 echo "resume=UUID=${uuid} resume_offset=${offset}"
-

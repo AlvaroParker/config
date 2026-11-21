@@ -40,7 +40,7 @@ repo keeps placeholders. Fill them in when installing:
 | --- | --- |
 | `<LUKS_UUID>` | `sudo blkid -s UUID -o value /dev/<encrypted partition>` |
 | `<SWAP_UUID>` | `findmnt -no UUID -T /swapfile` |
-| `<SWAP_OFFSET>` | `sudo filefrag -v /swapfile`, first physical offset; `genswap` prints both swap values |
+| `<SWAP_OFFSET>` | On ext4, `sudo filefrag -v /swapfile`, first physical offset. On btrfs, `sudo btrfs inspect-internal map-swapfile -r /swapfile`; `filefrag` is wrong there. `genswap` prints both swap values on either |
 
 ## Installing
 
