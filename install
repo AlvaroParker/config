@@ -184,7 +184,31 @@ if [[ ! -d ~/.local/share/icons/$cursor_theme/cursors && ! -d /usr/share/icons/$
     install_cursor || echo "Could not install the $cursor_theme cursor. Hyprland will use the default one." >&2
 fi
 
+# The icons named in rofi/config.rasi, and set for GTK and Qt apps below. They
+# are not in the official repos and the project publishes no releases, so they
+# come from its GitHub repository at one pinned commit, which git checks by its
+# hash. The project's own install script puts the blue set, light and dark, in
+# ~/.local/share/icons. To move to a newer version, change the commit.
+icon_theme=Reversal-blue-dark
+icon_commit=2c8122287e3bad5a6bf860ddd8c7e3b78cf4d451
+install_icons() {
+    local download result
+    download=$(mktemp -d) || return 1
+    git init -q "$download" &&
+        git -C "$download" fetch -q --depth 1 \
+            https://github.com/yeyushengfan258/Reversal-icon-theme "$icon_commit" &&
+        git -C "$download" -c advice.detachedHead=false checkout -q FETCH_HEAD &&
+        bash "$download/install.sh" -t blue >/dev/null
+    result=$?
+    rm -rf -- "$download"
+    return $result
+}
+if [[ ! -d ~/.local/share/icons/$icon_theme && ! -d /usr/share/icons/$icon_theme ]]; then
+    install_icons || echo "Could not install the $icon_theme icons. Apps will use the default ones." >&2
+fi
+
 # GTK and Qt apps
+gsettings set org.gnome.desktop.interface icon-theme "$icon_theme"
 gsettings set org.gnome.desktop.interface cursor-theme "$cursor_theme"
 gsettings set org.gnome.desktop.interface cursor-size 20
 gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
@@ -193,8 +217,8 @@ gsettings set org.gnome.desktop.interface monospace-font-name 'Lilex Nerd Font 1
 gsettings set org.gnome.desktop.interface accent-color 'pink'
 if [ ! -f ~/.config/qt6ct/qt6ct.conf ]; then
     mkdir -p ~/.config/qt6ct
-    printf '[Appearance]\ncolor_scheme_path=%s\ncustom_palette=true\nstyle=Fusion\n' \
-        "$HOME/.config/nocturne/qt6ct.conf" >~/.config/qt6ct/qt6ct.conf
+    printf '[Appearance]\ncolor_scheme_path=%s\ncustom_palette=true\nicon_theme=%s\nstyle=Fusion\n' \
+        "$HOME/.config/nocturne/qt6ct.conf" "$icon_theme" >~/.config/qt6ct/qt6ct.conf
 fi
 
 # Thunderbird: link the Nocturne chrome and appearance prefs into the profile
@@ -321,8 +345,27 @@ clone_if_missing https://github.com/alexanderjeurissen/ranger_devicons ~/.config
 # Enable bluetooth
 sudo systemctl enable bluetooth.service --now
 
-# Enable TLP power management
+# Enable TLP power management, and tlp-pd, which answers tlpctl: the power
+# profile in the launcher's power menu and the control centre's performance
+# switch. TLP's manual asks for systemd-rfkill to be masked, so the two do not
+# both restore the Wi-Fi and Bluetooth switches at boot.
 sudo systemctl enable tlp.service --now
+sudo systemctl enable tlp-pd.service --now
+sudo systemctl mask systemd-rfkill.service systemd-rfkill.socket
+
+# NetworkManager: the launcher's Wi-Fi menu and the control centre drive it
+# with nmcli. Two network services fight over the same card, so when another
+# one is running it is only enabled for the next boot.
+sudo systemctl enable NetworkManager.service
+if systemctl is-active --quiet iwd.service dhcpcd.service systemd-networkd.service; then
+    echo "Another network service is running, so NetworkManager was not started." >&2
+    echo "Disable that one (iwd, dhcpcd or systemd-networkd), then restart." >&2
+else
+    sudo systemctl start NetworkManager.service
+fi
+
+# Docker at boot
+sudo systemctl enable docker.service --now
 
 # Configure virtual machines
 sudo systemctl enable libvirtd.service --now
@@ -338,6 +381,11 @@ sudo usermod -aG kvm $USER
 sudo usermod -aG docker $USER
 sudo usermod -aG video $USER
 
+# zsh as the login shell; its config is zshrc, linked above
+if [[ "$(getent passwd "$USER" | cut -d: -f7)" != */zsh ]]; then
+    sudo chsh -s /usr/bin/zsh "$USER"
+fi
+
 flatpak override --filesystem=~/.themes:ro --filesystem=~/.icons:ro --user
 mkdir -p ~/.icons
 
@@ -348,6 +396,14 @@ curl -fsSL https://zed.dev/install.sh | ZED_CHANNEL=nightly sh
 # updates it.
 starship_installer=$(curl -fsSL https://starship.rs/install.sh)
 sh -c "$starship_installer" -- --yes
+
+# Herdr, from its own installer into ~/.local/bin, where SUPER + ALT + Return
+# looks for it. The installer checks the download against a checksum. Herdr
+# updates itself afterwards with `herdr update`.
+if [[ ! -x ~/.local/bin/herdr ]]; then
+    herdr_installer=$(curl -fsSL https://herdr.dev/install.sh)
+    sh -c "$herdr_installer"
+fi
 
 if [[ ! -f "$HOME/.oh-my-zsh/oh-my-zsh.sh" ]]; then
     omz_installer=$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)

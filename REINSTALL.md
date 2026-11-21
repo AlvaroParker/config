@@ -337,11 +337,12 @@ EDITOR=vim visudo                             # uncomment %wheel ALL=(ALL:ALL) A
 ```
 
 `install` adds the other groups it needs (`libvirt`, `kvm`, `docker`,
-`video` and so on). It does not change the login shell, which is why
-`useradd` sets it here.
+`video` and so on). It would also set the login shell, but `useradd` sets it
+here so the first login is already zsh.
 
-Services. `install` enables Bluetooth, TLP and libvirt itself; these it does
-not:
+Services. `install` enables Bluetooth, TLP, Docker and libvirt itself. The
+network is needed before `install` can run, so it is enabled here, with the
+others `install` leaves alone:
 
 ```sh
 systemctl enable NetworkManager systemd-resolved systemd-timesyncd fstrim.timer

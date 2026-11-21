@@ -53,7 +53,14 @@ Finally, run the dot files installation script. It will install all the needed d
 The cursor theme (Bibata Modern Classic) is not in the official repos. `install`
 downloads one pinned release from the project's GitHub page and checks it
 against a checksum kept in the script before unpacking it into
-`~/.local/share/icons`.
+`~/.local/share/icons`. The icon theme (Reversal, in blue) has no releases,
+so `install` fetches one pinned commit of its repository and runs the
+project's own install script, which puts the icons in the same folder.
+
+`install` also makes zsh the login shell, and enables NetworkManager, Docker
+and TLP with its profiles daemon. If another network service is running
+(iwd, dhcpcd or systemd-networkd), NetworkManager is enabled but not started;
+disable the other one and restart.
 
 Personal details stay out of the repo: git identity in `~/.gitconfig`,
 machine-specific shell settings in `~/.custom_zshrc`, the chosen wallpaper

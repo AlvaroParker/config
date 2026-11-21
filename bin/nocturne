@@ -429,6 +429,17 @@ doctor() {
         fix "cursor theme $cursor is not installed (hypr/lua/env.lua asks for it). ./install downloads it"
     fi
 
+    local icons=Reversal-blue-dark
+    found=no
+    for dir in ~/.icons ~/.local/share/icons /usr/share/icons; do
+        [[ -d "$dir/$icons" ]] && found=yes
+    done
+    if [[ $found == yes ]]; then
+        ok "icons: $icons"
+    else
+        fix "icon theme $icons is not installed (rofi/config.rasi asks for it). ./install downloads it"
+    fi
+
     # pacman -T prints the packages that are not installed, counting ones
     # that another package provides.
     if command -v pacman >/dev/null; then

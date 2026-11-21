@@ -87,6 +87,9 @@ nodejs
 hyprsunset
 ghostty
 tlp
+# tlpctl, for the power profile in the launcher's power menu and the control
+# centre's performance switch. install enables its service.
+tlp-pd
 qt6ct
 swayosd
 hyprpicker

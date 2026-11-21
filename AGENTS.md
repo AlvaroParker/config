@@ -61,8 +61,8 @@ must be in the list for where it really comes from:
   official repositories do not have it (`pacman -Sp NAME`).
 - `flatpak.txt`: Flathub, installed system-wide.
 - `install` itself fetches a few things from their own sources: Starship,
-  Zed nightly, oh-my-zsh and its plugins, tpm, ranger_devicons, the cursor
-  theme, and ChatGPT from OpenAI's pacman repository.
+  Zed nightly, Herdr, oh-my-zsh and its plugins, tpm, ranger_devicons, the
+  cursor theme, the icon theme, and ChatGPT from OpenAI's pacman repository.
 
 `nocturne unlisted` shows what is installed on purpose but in no list. Some of
 that is deliberately left out (personal apps, the base system). GNOME and i3
