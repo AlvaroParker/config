@@ -162,6 +162,45 @@ function M.step(direction, this_monitor_only)
     end
 end
 
+-- A three-finger swipe sideways: the next or previous workspace on this
+-- monitor, within the group. It stops at the ends rather than wrapping, like
+-- Hyprland's own swipe, and past the last one it opens the group's next empty
+-- workspace. Hyprland's swipe knows nothing of groups and walks into the next
+-- one, which is why this replaces it.
+function M.swipe(direction)
+    local active = numbered(hl.get_active_workspace())
+    if not active then
+        return
+    end
+    local group = M.group_of(active.id)
+    local monitor = active.monitor and active.monitor.name
+    local taken = {}
+    local target
+    for _, workspace in ipairs(hl.get_workspaces()) do
+        if numbered(workspace) then
+            taken[workspace.id] = true
+            local here = workspace.monitor and workspace.monitor.name == monitor
+            local ahead = (workspace.id - active.id) * direction > 0
+            if here and ahead and M.group_of(workspace.id) == group then
+                if not target or math.abs(workspace.id - active.id) < math.abs(target - active.id) then
+                    target = workspace.id
+                end
+            end
+        end
+    end
+    if not target and direction > 0 then
+        for slot = M.slot_of(active.id) + 1, M.size do
+            if not taken[M.id(group, slot)] then
+                target = M.id(group, slot)
+                break
+            end
+        end
+    end
+    if target then
+        hl.dispatch(hl.dsp.focus({ workspace = target }))
+    end
+end
+
 -- Every group keeps the laptop on its first workspace and the external
 -- monitor on its tenth, as group 1 does (workspaces.lua).
 for group = 2, M.count do

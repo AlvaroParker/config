@@ -104,9 +104,15 @@ bind(SUPER .. "SHIFT + O", "Move window to the other scratchpad", hl.dsp.window.
 bind(SUPER .. "code:21", "Show or hide the aux scratchpad", hl.dsp.workspace.toggle_special("aux"))
 bind(SUPER .. "SHIFT + code:21", "Move window to the aux scratchpad", hl.dsp.window.move({ workspace = "special:aux" }))
 
--- Touchpad: three fingers sideways move between workspaces, up and down
+-- Touchpad: three fingers sideways move between workspaces of this group
+-- (fingers left is the next one, as the content follows them), up and down
 -- between groups (up is the next group, sliding in from below).
-hl.gesture({ fingers = 3, direction = "horizontal", action = "workspace" })
+hl.gesture({ fingers = 3, direction = "left", action = function()
+    groups.swipe(1)
+end })
+hl.gesture({ fingers = 3, direction = "right", action = function()
+    groups.swipe(-1)
+end })
 hl.gesture({ fingers = 3, direction = "up", action = function()
     groups.step_group(1)
 end })
