@@ -4,18 +4,29 @@
     nocturne/wallpaper                      write hypr/wallpapers/nocturne.jpg
     nocturne/wallpaper --seed 11            a different range of hills
     nocturne/wallpaper --size 3072x1920 --out /tmp/test.png
+    nocturne/wallpaper --phase tonight      tonight's moon, into
+                                            ~/.local/state/nocturne/tonight.jpg
+    nocturne/wallpaper --phase 0.3          any phase: 0 new, 0.5 full
 
 The scene is a night sky over receding hills, with a low moon in the accent
 colour seen through a lone rock arch shaped like the Arch Linux logo. Every
 colour comes from nocturne/palette.toml, so changing the accent and re-running
 this repaints the moon. Needs numpy and Pillow.
+
+The file in the repo always has a full moon. Tonight's moon, in its real
+phase and turned for your hemisphere, is painted outside the repo each night
+(`nocturne moon`, from a systemd timer), and shown whenever the Nocturne
+wallpaper is the one chosen.
 """
 
 import argparse
 import importlib.machinery
 import importlib.util
+import json
 import math
+import os
 import tomllib
+from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
@@ -126,7 +137,30 @@ def arch_cutout(X, Y, peak_x, base_y, pixel):
     return g / np.maximum(np.sqrt(gx * gx + gy * gy), 1e-6)
 
 
-def paint(width, height, seed):
+# The moon's phase, worked out rather than looked up: a reference new moon
+# (6 January 2000, 18:14 UTC) and the mean length of a lunar month. The real
+# moon runs up to half a day ahead or behind, which a picture never shows.
+NEW_MOON = datetime(2000, 1, 6, 18, 14, tzinfo=timezone.utc)
+SYNODIC_DAYS = 29.530588853
+
+
+def moon_phase(when):
+    """Where the moon is in its month: 0 new, 0.25 first quarter, 0.5 full,
+    0.75 last quarter."""
+    days = (when - NEW_MOON).total_seconds() / 86400
+    return (days / SYNODIC_DAYS) % 1.0
+
+
+def southern_hemisphere():
+    """From the weather location (install asks for it); north if unknown."""
+    try:
+        location = json.loads((Path.home() / ".config/nocturne-location.json").read_text())
+        return float(location["latitude"]) < 0
+    except (OSError, ValueError, KeyError, TypeError):
+        return False
+
+
+def paint(width, height, seed, phase=0.5, south=False):
     config = tomllib.loads((HERE / "palette.toml").read_text())
     hue = config["neutral"]["hue"]
     accent_l, accent_c, accent_h = config["accents"][config["accent"]]
@@ -169,11 +203,18 @@ def paint(width, height, seed):
     span = np.exp(-(((xs - peak_x) / (PEAK_HALF * 1.1)) ** 4))[None, :]
     lines[1] = lines[1] * (1 - span) + np.maximum(lines[1], base_y + 0.004) * span
 
+    # How much of the moon is lit, 0 at new moon and 1 at full. The glow and the
+    # light on the arch follow it, but never below 15%: the one warm light
+    # stays, only dimmer on dark nights.
+    lit = (1 - np.cos(2 * np.pi * phase)) / 2
+    light = 0.15 + 0.85 * lit
+
     glow_color = linear(accent_l, accent_c, accent_h)
     dx, dy = (X - moon_x) / 1.6, Y - moon_y  # a wider-than-tall haze, like light on mist
     distance = np.sqrt(dx * dx + dy * dy)
     # Kept close to the moon, so the rest of the sky stays cold.
     glow = 0.34 * np.exp(-((distance / 0.032) ** 1.3)) + 0.09 * np.exp(-distance / 0.09) + 0.015 * np.exp(-distance / 0.3)
+    glow *= light
     image += glow[..., None] * glow_color
 
     # Stars, fewer and fainter towards the horizon and the moon.
@@ -191,7 +232,29 @@ def paint(width, height, seed):
     moon_d = np.sqrt((X - moon_x) ** 2 + (Y - moon_y) ** 2)
     moon_cover = np.clip((moon_r - moon_d) / pixel + 0.5, 0, 1)[..., None]
     limb = 1.0 - 0.18 * np.clip(moon_d / moon_r, 0, 1) ** 2
-    moon = linear(0.92, accent_c * 0.6, accent_h) * limb[..., None]
+    # The lit part, bounded by the terminator: at each height v the edge
+    # between light and shadow sits at u = cos(2 pi phase) times the disc's
+    # half-width. It grows from the right in the north while waxing, and from
+    # the left in the south, where the sky is seen the other way up.
+    u = (X - moon_x) / moon_r
+    v = (Y - moon_y) / moon_r
+    if south:
+        u = -u
+    half = np.sqrt(np.clip(1 - v * v, 0, 1))
+    edge = np.cos(2 * np.pi * phase) * half
+    inside = u - edge if phase < 0.5 else -edge - u
+    sunlit = np.clip(inside * moon_r / pixel + 0.5, 0, 1)
+    # Within about seven hours of full or new, the terminator lies on the
+    # disc's own edge; smoothing it there would dim the outline, so the disc
+    # is simply all lit or all dark.
+    if abs(phase - 0.5) < 0.01:
+        sunlit = np.ones_like(sunlit)
+    elif min(phase, 1 - phase) < 0.01:
+        sunlit = np.zeros_like(sunlit)
+    bright = linear(0.92, accent_c * 0.6, accent_h)
+    # The dark part keeps a faint earthshine, so the moon never disappears.
+    earthshine = linear(0.27, 0.035, hue + 4)
+    moon = (bright * sunlit[..., None] + earthshine * (1 - sunlit[..., None])) * limb[..., None]
     image = image * (1 - moon_cover) + moon * moon_cover
 
     # Hills from far to near. Each is darker, less tinted by haze, and lit less
@@ -209,7 +272,7 @@ def paint(width, height, seed):
             layer = fill * shade[..., None] + (0.22 * glow)[..., None] * glow_color
             crest = np.exp(-np.clip(peak_d, 0, None) / 0.0016) * near_moon
             crest *= np.clip((X - peak_x) / 0.03 + 0.5, 0.15, 1)  # the moon's side
-            rim = 0.12 * crest + 0.55 * np.exp(-np.clip(cut_d, 0, None) / 0.0020) * moon_near
+            rim = (0.12 * crest + 0.55 * np.exp(-np.clip(cut_d, 0, None) / 0.0020) * moon_near) * light
             layer += rim[..., None] * glow_color
             cover = peak_cover[..., None]
             image = image * (1 - cover) + layer * cover
@@ -224,7 +287,7 @@ def paint(width, height, seed):
         shade = 1.0 - 0.2 * np.clip(below / 0.14, 0, 1)  # a touch darker further down
         layer = fill * shade[..., None] + (glow_kept * glow)[..., None] * glow_color
         # Moonlight catching the crest, only on far ranges and only near the moon.
-        rim = rim_strength * np.exp(-np.clip(below, 0, None) / 0.0018) * near_moon
+        rim = rim_strength * np.exp(-np.clip(below, 0, None) / 0.0018) * near_moon * light
         layer += rim[..., None] * glow_color
         image = image * (1 - cover) + layer * cover
 
@@ -243,19 +306,40 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--size", default="3840x2400", help="WIDTHxHEIGHT, default 3840x2400")
     parser.add_argument("--seed", type=int, default=7, help="changes the shape of the hills")
-    parser.add_argument("--out", default=str(ROOT / "hypr/wallpapers/nocturne.jpg"))
+    parser.add_argument("--out", help="default: the repo's wallpaper, or tonight.jpg for --phase tonight")
+    parser.add_argument("--phase", default="full", help="full (default), tonight, or 0-1: 0 new, 0.5 full")
+    parser.add_argument("--hemisphere", choices=["auto", "north", "south"], default="auto",
+                        help="which way the moon is lit; auto reads the weather location")
     args = parser.parse_args()
 
+    if args.phase == "full":
+        phase = 0.5
+    elif args.phase == "tonight":
+        # The phase this evening, at 21:00 local time, when the moon is looked at.
+        evening = datetime.now().astimezone().replace(hour=21, minute=0, second=0, microsecond=0)
+        phase = moon_phase(evening)
+    else:
+        phase = float(args.phase) % 1.0
+    south = args.hemisphere == "south" or (args.hemisphere == "auto" and southern_hemisphere())
+    if args.out:
+        out = Path(args.out)
+    elif args.phase == "tonight":
+        state = Path(os.environ.get("XDG_STATE_HOME") or Path.home() / ".local/state")
+        out = state / "nocturne/tonight.jpg"
+    else:
+        out = ROOT / "hypr/wallpapers/nocturne.jpg"
+    out.parent.mkdir(parents=True, exist_ok=True)
+
     width, height = (int(v) for v in args.size.lower().split("x"))
-    image = paint(width, height, args.seed)
-    out = Path(args.out)
+    image = paint(width, height, args.seed, phase, south)
     if out.suffix.lower() in (".jpg", ".jpeg"):
         # JPEG at 95 with full colour resolution keeps the anti-banding grain;
         # WebP smooths it away and halves colour detail, which shows as bands.
         image.save(out, quality=95, subsampling=0)
     else:
         image.save(out)
-    print(f"wrote {out} ({width}x{height}, seed {args.seed})")
+    lit = (1 - math.cos(2 * math.pi * phase)) / 2
+    print(f"wrote {out} ({width}x{height}, seed {args.seed}, moon {lit:.0%} lit)")
 
 
 if __name__ == "__main__":

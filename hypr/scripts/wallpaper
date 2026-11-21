@@ -3,13 +3,20 @@
 # ~/.local/state/nocturne, so switching wallpapers never changes tracked files.
 #   wallpaper start       start hyprpaper with the saved wallpaper (autostart)
 #   wallpaper set FILE    switch now and remember the choice
-#   wallpaper current     print the current wallpaper path
+#   wallpaper refresh     show the saved wallpaper again, after a repaint
+#   wallpaper current     print the chosen wallpaper's path
+#
+# Choosing the Nocturne wallpaper shows tonight's version when there is one:
+# the same scene with the moon in its real phase, painted each night outside
+# the repo by `nocturne moon`. The choice itself stays the repo's file, which
+# the login screen uses.
 set -uo pipefail
 
 state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/nocturne"
 state="$state_dir/wallpaper"
 conf="$state_dir/hyprpaper.conf"
 default="$HOME/.config/hypr/wallpapers/nocturne.jpg"
+tonight="$state_dir/tonight.jpg"
 
 current() {
     local file
@@ -19,6 +26,25 @@ current() {
     else
         readlink -f "$default"
     fi
+}
+
+# What is on screen for a chosen file: tonight's moon for the Nocturne one.
+shown() {
+    if [[ "$1" == "$(readlink -f "$default")" && -r "$tonight" ]]; then
+        printf '%s\n' "$tonight"
+    else
+        printf '%s\n' "$1"
+    fi
+}
+
+# From a systemd service there is no HYPRLAND_INSTANCE_SIGNATURE; find the
+# running Hyprland's, so hyprctl can reach it and hyprpaper.
+find_hyprland() {
+    [[ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]] && return 0
+    local dir
+    dir=$(ls -td "${XDG_RUNTIME_DIR:-/run/user/$UID}"/hypr/*/ 2>/dev/null | head -1)
+    [[ -n "$dir" ]] || return 1
+    export HYPRLAND_INSTANCE_SIGNATURE="$(basename "$dir")"
 }
 
 # How much the lock screen dims the wallpaper. Bright wallpapers keep 0.6, the
@@ -46,7 +72,7 @@ write_conf() {
 
 case "${1:-}" in
     start)
-        write_conf "$(current)"
+        write_conf "$(shown "$(current)")"
         exec hyprpaper -c "$conf"
         ;;
     set)
@@ -57,16 +83,26 @@ case "${1:-}" in
         fi
         mkdir -p "$state_dir"
         printf '%s\n' "$file" >"$state"
-        write_conf "$file"
+        on_screen="$(shown "$file")"
+        write_conf "$on_screen"
         # Switch in place; if hyprpaper is not listening, restart it.
-        if ! hyprctl hyprpaper wallpaper ",$file,cover" >/dev/null 2>&1; then
+        if ! hyprctl hyprpaper wallpaper ",$on_screen,cover" >/dev/null 2>&1; then
             pkill -x hyprpaper
             setsid -f hyprpaper -c "$conf" >/dev/null 2>&1
         fi
         ;;
+    refresh)
+        # Never restarts hyprpaper: from a service, the new one would be
+        # stopped with the service. If it is not listening, the next login
+        # picks the new picture up from the config written here.
+        on_screen="$(shown "$(current)")"
+        write_conf "$on_screen"
+        find_hyprland && hyprctl hyprpaper wallpaper ",$on_screen,cover" >/dev/null 2>&1
+        exit 0
+        ;;
     current) current ;;
     *)
-        printf 'usage: wallpaper {start|set FILE|current}\n' >&2
+        printf 'usage: wallpaper {start|set FILE|refresh|current}\n' >&2
         exit 2
         ;;
 esac

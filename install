@@ -262,6 +262,11 @@ if [[ -f "$obsidian_vaults" ]]; then
     done < <(jq -r '.vaults[].path' "$obsidian_vaults")
 fi
 
+# The wallpaper's moon follows the real one: paint tonight's now and each night
+# after (systemd/user/nocturne-moon.timer, linked from links.txt).
+systemctl --user daemon-reload
+systemctl --user enable --now nocturne-moon.timer
+
 # bat's Nocturne theme, also used by delta and ranger's previews
 bat cache --build >/dev/null
 

@@ -1,0 +1,10 @@
+# Paints tonight's moon into the Nocturne wallpaper and shows it if that
+# wallpaper is the one chosen (bin/nocturne moon). Started by
+# nocturne-moon.timer; linked into ~/.config/systemd/user by install.
+[Unit]
+Description=Paint tonight's moon into the Nocturne wallpaper
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/nocturne moon
+Nice=10

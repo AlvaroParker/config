@@ -10,6 +10,7 @@
 #   nocturne check           print the contrast table
 #   nocturne doctor          check links, fonts, colour files and packages
 #   nocturne unlisted        packages installed on purpose that packages/ does not list
+#   nocturne moon            paint tonight's moon into the wallpaper and show it
 #   nocturne greeter preview open the login screen in a window
 #   nocturne greeter install install or update the login screen (needs sudo)
 #
@@ -277,12 +278,23 @@ set_accent() {
     local painted="$root/hypr/wallpapers/nocturne.jpg"
     echo "repainting the wallpaper..."
     if "$root/nocturne/wallpaper" >/dev/null; then
+        # Tonight's moon too, so the new accent shows at once.
+        "$root/nocturne/wallpaper" --phase tonight >/dev/null
         if [[ "$("$root/hypr/scripts/wallpaper" current 2>/dev/null)" == "$(readlink -f "$painted")" ]]; then
             "$root/hypr/scripts/wallpaper" set "$painted"
         fi
     else
         echo "nocturne: could not repaint the wallpaper (it needs python-numpy and python-pillow)" >&2
     fi
+}
+
+# ------------------------------------------------------------------- moon
+# Paint tonight's moon (the real phase, turned for your hemisphere) and show
+# it if the Nocturne wallpaper is the one chosen. The nocturne-moon timer runs
+# this after midnight and at login.
+moon() {
+    "$root/nocturne/wallpaper" --phase tonight || return 1
+    "$root/hypr/scripts/wallpaper" refresh
 }
 
 # ------------------------------------------------------------------- doctor
@@ -433,6 +445,14 @@ doctor() {
         fi
     fi
 
+    if command -v systemctl >/dev/null; then
+        if [[ "$(systemctl --user is-enabled nocturne-moon.timer 2>/dev/null)" == enabled ]]; then
+            ok "moon: the wallpaper follows the real moon each night"
+        else
+            note "moon: the nightly timer is off, so the wallpaper keeps a full moon. To turn it on: systemctl --user enable --now nocturne-moon.timer"
+        fi
+    fi
+
     # Thunderbird's chrome lives inside its profile, so it is not in links.txt.
     local tb_root="$HOME/.thunderbird" tb_profile tb_missing=()
     if [[ -f "$tb_root/profiles.ini" ]]; then
@@ -510,6 +530,7 @@ case "${1:-}" in
     check) "$root/nocturne/build" --check ;;
     doctor) doctor ;;
     unlisted) unlisted ;;
+    moon) moon ;;
     -h | --help | help) usage ;;
     *)
         printf 'nocturne: unknown command "%s"\n\n' "$1" >&2

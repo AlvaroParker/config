@@ -36,6 +36,9 @@ zshrc                                 ~/.zshrc
 starship.toml                         ~/.config/starship.toml
 bin/*                                 ~/.local/bin/
 
+# User services: the wallpaper's nightly moon. install enables the timer.
+systemd/user/*                        ~/.config/systemd/user/
+
 # bat's Nocturne theme, also used by delta and ranger's previews
 bat                                   ~/.config/bat
 

@@ -1,0 +1,12 @@
+# Repaints the wallpaper's moon just after midnight, and shortly after login.
+# Persistent catches up on a night the laptop spent asleep or off.
+[Unit]
+Description=Paint tonight's moon into the Nocturne wallpaper each night
+
+[Timer]
+OnCalendar=*-*-* 00:05:00
+OnStartupSec=30s
+Persistent=true
+
+[Install]
+WantedBy=timers.target
