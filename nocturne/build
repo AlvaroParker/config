@@ -38,7 +38,6 @@ TEMPLATES = {
     "qt6ct.conf": "nocturne/qt6ct.conf",
     "fzfrc": "nocturne/fzfrc",
     "delta.gitconfig": "nocturne/delta.gitconfig",
-    "firefox.css": "firefox/chrome/nocturne.css",
     "zed.json": "zed/themes/nocturne.json",
     "zen.css": "zen/chrome/nocturne.css",
     "zen-content.css": "zen/chrome/userContent.css",

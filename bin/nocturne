@@ -83,7 +83,6 @@ reload() {
     fi
 
     pgrep -f 'zen_browser|/zen( |$)|zen-bin' >/dev/null && restart+=("Zen")
-    running firefox && restart+=("Firefox")
     running btop && restart+=("btop")
     running thunderbird && restart+=("Thunderbird")
     running mpv && restart+=("mpv")
