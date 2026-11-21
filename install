@@ -221,6 +221,15 @@ else
     printf 'color_theme = "nocturne"\ntheme_background = false\n' >~/.config/btop/btop.conf
 fi
 
+# Vesktop (Vencord) rewrites its own settings, so only the theme is linked
+# (links.txt). Select it here, keeping any other themes. Vesktop writes the
+# file on its first start, and overwrites it while running, so close it first.
+vencord_settings=~/.config/vesktop/settings/settings.json
+if [[ -f "$vencord_settings" ]] && command -v jq >/dev/null; then
+    jq '.enabledThemes = ((.enabledThemes // []) - ["nocturne.theme.css"] + ["nocturne.theme.css"])' \
+        "$vencord_settings" >"$vencord_settings.new" && mv "$vencord_settings.new" "$vencord_settings"
+fi
+
 # Zen (Flatpak). The sandbox cannot see this repo, so allow read-only access
 # to the zen folder only, then link its files into the default profile.
 # Run Zen once first so the profile exists.

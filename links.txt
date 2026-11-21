@@ -24,6 +24,8 @@ fastfetch                             ~/.config/fastfetch
 btop/themes/nocturne.theme            ~/.config/btop/themes/nocturne.theme
 zathura                               ~/.config/zathura
 mpv                                   ~/.config/mpv
+# Vesktop rewrites its own settings, so only the theme is linked; install selects it.
+vesktop/themes/nocturne.theme.css     ~/.config/vesktop/themes/nocturne.theme.css
 
 # GTK apps
 gtk/gtk-3.0.css                       ~/.config/gtk-3.0/gtk.css
@@ -81,5 +83,4 @@ electron-flags.conf                   ~/.config/webcord-flags.conf
 electron-flags.conf                   ~/.config/obsidian/user-flags.conf
 
 # Wayland desktop entries. Power actions live in the launcher (SUPER + SHIFT + E).
-applications/discord-wayland.desktop  ~/.local/share/applications/discord-wayland.desktop
 applications/chatgpt-wayland.desktop  ~/.local/share/applications/chatgpt-wayland.desktop

@@ -96,6 +96,12 @@ reload() {
             reloaded_obsidian=yes
     done < <(obsidian_vaults)
     [[ $reloaded_obsidian == yes ]] && pgrep -f 'obsidian/app\.asar' >/dev/null && done+=("Obsidian")
+    # Vesktop (Vencord) is the same: it watches its themes folder, not the file.
+    local vesktop_theme="${XDG_CONFIG_HOME:-$HOME/.config}/vesktop/themes/nocturne.theme.css"
+    if [[ -L "$vesktop_theme" ]]; then
+        ln -sfn "$root/vesktop/themes/nocturne.theme.css" "$vesktop_theme" &&
+            pgrep -f '^/opt/vesktop/vesktop' >/dev/null && done+=("Vesktop")
+    fi
 
     ((${#done[@]})) && printf 'reloaded: %s\n' "$(join ', ' "${done[@]}")"
     ((${#restart[@]})) && printf 'restart to see the change: %s\n' "$(join ', ' "${restart[@]}")"
@@ -487,6 +493,16 @@ doctor() {
             detail "${unthemed[@]/#$HOME/\~}"
         else
             ok "Obsidian: every vault uses the Nocturne theme"
+        fi
+    fi
+
+    # Vesktop: the theme is linked, but Vencord's own settings must select it.
+    local vencord="${XDG_CONFIG_HOME:-$HOME/.config}/vesktop/settings/settings.json"
+    if [[ -f "$vencord" ]]; then
+        if jq -e '(.enabledThemes // []) | index("nocturne.theme.css")' "$vencord" >/dev/null 2>&1; then
+            ok "Vesktop: Vencord uses the Nocturne theme"
+        else
+            fix "Vesktop: the Nocturne theme is not selected. Pick it in Settings > Themes, or close Vesktop and run ./install"
         fi
     fi
 

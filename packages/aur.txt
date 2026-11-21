@@ -6,3 +6,5 @@ visual-studio-code-bin
 gh-dash-bin
 # Repackages Anthropic's official .deb of Claude desktop
 claude-desktop
+# Discord, with Vencord built in for the Nocturne theme (vesktop/themes)
+vesktop-bin

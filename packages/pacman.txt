@@ -69,7 +69,6 @@ firefox
 rofi
 less
 git-delta
-discord
 zoxide
 direnv
 # Sound: PipeWire with its PulseAudio and ALSA layers, which the volume

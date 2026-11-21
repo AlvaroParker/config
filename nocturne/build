@@ -51,6 +51,7 @@ TEMPLATES = {
     "thunderbird-user.js": "thunderbird/user.js",
     "mpv-osc.conf": "mpv/script-opts/osc.conf",
     "mpv-console.conf": "mpv/script-opts/console.conf",
+    "vesktop.css": "vesktop/themes/nocturne.theme.css",
 }
 
 # Template name -> (file, start marker, end marker). Only the lines between
