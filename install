@@ -400,6 +400,26 @@ curl -fsSL https://zed.dev/install.sh | ZED_CHANNEL=nightly sh
 starship_installer=$(curl -fsSL https://starship.rs/install.sh)
 sh -c "$starship_installer" -- --yes
 
+# The installers below put their programs in ~/.local/bin. zshrc already has
+# that folder on PATH. Say so here too: Codex's installer, when it does not
+# find the folder there, adds a line to ~/.zshrc, which is a link into this repo.
+export PATH="$HOME/.local/bin:$PATH"
+
+# Claude Code, from Anthropic's installer into ~/.local/bin. The installer
+# checks the download against a checksum, and Claude Code updates itself. Its
+# settings are claude/, linked above.
+if [[ ! -x ~/.local/bin/claude ]]; then
+    claude_installer=$(curl -fsSL https://claude.ai/install.sh)
+    bash -c "$claude_installer"
+fi
+
+# Codex, from OpenAI's installer into ~/.codex, with a link in ~/.local/bin.
+# The installer checks the download against a checksum.
+if [[ ! -x ~/.local/bin/codex ]]; then
+    codex_installer=$(curl -fsSL https://chatgpt.com/codex/install.sh)
+    CODEX_NON_INTERACTIVE=1 sh -c "$codex_installer"
+fi
+
 # Herdr, from its own installer into ~/.local/bin, where SUPER + ALT + Return
 # looks for it. The installer checks the download against a checksum. Herdr
 # updates itself afterwards with `herdr update`.
