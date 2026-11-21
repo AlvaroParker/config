@@ -72,6 +72,50 @@ what happens to the encryption.
 The three placeholders are the disk values in
 `system/etc/dracut.conf.d/cmdline.conf`. Step 6 shows how to find each one.
 
+## Btrfs instead of ext4
+
+The root volume is ext4 today, and the steps below are written for that. The
+next reinstall is meant to use btrfs, for one reason: it compresses files as
+it writes them, so the same data takes less of the disk. Snapshots are not
+part of the plan, so there are no subvolumes: one file system on
+`/dev/vg/root`, mounted with `compress=zstd`.
+
+LUKS and LVM stay as they are. Btrfs does not need LVM, but keeping `vg/root`
+means the encryption, the TPM unlock and most of the kernel command line do
+not change, and both ways of reinstalling still work.
+
+Follow the numbered steps, with these changes. None of them has been run on
+this machine: `btrfs-progs` is not installed here, so the commands come from
+its documentation, not from a test.
+
+| Step | With btrfs |
+| --- | --- |
+| 3, format | `mkfs.btrfs -f /dev/vg/root` in place of `mkfs.ext4`. `-f` is needed because the volume already holds a file system; check the device name first |
+| 3, mount | `mount -o compress=zstd /dev/vg/root /mnt`. The option must be there at this mount: `genfstab` copies it into `fstab`, and the files `pacstrap` writes are compressed from the start |
+| 4, packages | Add `btrfs-progs` to `pacstrap`. dracut needs its `btrfs` tool to put btrfs support in the boot image |
+| 4, `fstab` | The `/` entry is `btrfs`, and its options include `compress=zstd:3` |
+| 6, swap file | `btrfs filesystem mkswapfile --size 68g --uuid clear /swapfile` in place of `mkswap`. A swap file on btrfs must not be compressed or copied on write, and this command makes it that way |
+| 6, offset | `btrfs inspect-internal map-swapfile -r /swapfile` prints `<SWAP_OFFSET>`. **Do not use `filefrag` or `genswap`:** on btrfs they print a number the kernel cannot use, and hibernation then fails to resume. `<SWAP_UUID>` is found the same way as before |
+| 7, `cmdline.conf` | Besides the three placeholders, change `rootfstype=ext4 rootflags=rw,relatime` to `rootfstype=btrfs rootflags=rw,relatime,compress=zstd` |
+
+Three things to know afterwards:
+
+- **Virtual machine disks.** Large files that are rewritten in place, such
+  as the images in `/var/lib/libvirt/images`, fragment badly under copy on
+  write. Turn it off for that folder before putting images in it:
+  `sudo chattr +C /var/lib/libvirt/images`. It applies to files made there
+  from then on, and those files are not compressed.
+- **What it saved.** `compsize /`, from the `compsize` package, shows the
+  size on disk against the real size.
+- **The repo.** `system/etc/dracut.conf.d/cmdline.conf`, the placeholder
+  table in system/README.md and the `genswap` script still describe ext4.
+  Change them once the machine runs btrfs, so the repo matches it again.
+
+**Unverified:** that dracut, building in the chroot with `hostonly="yes"`,
+adds its btrfs module by itself. If the new system cannot find its root at
+boot, add a file in `/etc/dracut.conf.d` with `add_dracutmodules+=" btrfs "`
+and build the image again.
+
 ## 1. Before you start
 
 Do these in the running system, before booting the ISO.
@@ -163,7 +207,8 @@ running Arch, `systemctl reboot --firmware-setup` also opens the setup.
 ## 3. Prepare the root volume
 
 Do one of the two. Both end with an empty ext4 file system on
-`/dev/vg/root`.
+`/dev/vg/root`. For btrfs, the format and mount commands differ; see
+[Btrfs instead of ext4](#btrfs-instead-of-ext4).
 
 ### Keep the container
 
@@ -317,7 +362,9 @@ Hibernation writes memory into the swap file. At boot, the kernel finds it
 by two values on the command line: `resume=UUID=` names the file system that
 holds the file, and `resume_offset=` says where the file starts on it. Make
 the file at least as large as the memory (64 GB here; the current file is
-68 GiB):
+68 GiB). These commands are for ext4. On btrfs both the file and its offset
+are made differently, and the ext4 commands give a wrong offset; see
+[Btrfs instead of ext4](#btrfs-instead-of-ext4).
 
 ```sh
 mkswap -U clear --size 68G --file /swapfile
@@ -362,6 +409,7 @@ grep -o 'rd.luks.uuid=[^ ]*\|resume[^ ]*' /etc/dracut.conf.d/cmdline.conf
 
 The last command should print three lines with real values and no `<`.
 Replace only the placeholders: `rd.luks.uuid=` keeps its `luks-` prefix.
+On btrfs, change `rootfstype` and `rootflags` here too.
 
 The hooks in `/etc/pacman.d/hooks` replace dracut's and sbctl's own hooks of
 the same name. From now on, every kernel update rebuilds
