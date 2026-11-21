@@ -81,5 +81,4 @@ electron-flags.conf                   ~/.config/obsidian/user-flags.conf
 
 # Wayland desktop entries. Power actions live in the launcher (SUPER + SHIFT + E).
 applications/discord-wayland.desktop  ~/.local/share/applications/discord-wayland.desktop
-applications/obsidian-wayland.desktop ~/.local/share/applications/obsidian-wayland.desktop
 applications/chatgpt-wayland.desktop  ~/.local/share/applications/chatgpt-wayland.desktop
