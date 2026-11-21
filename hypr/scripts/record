@@ -19,6 +19,7 @@
 set -uo pipefail
 
 here="$(dirname "$0")"
+me="$(realpath "$0")"
 dir="$HOME/Videos/Recordings"
 run="${XDG_RUNTIME_DIR:-/tmp}/nocturne-record"
 render=/dev/dri/renderD128
@@ -72,11 +73,23 @@ freeze() {
     hyprctl keyword layerrule "noanim,selection" >/dev/null 2>&1 || true
 }
 
+# wf-recorder runs under a small watcher, which tells this script when it
+# exits, however that happens: `record ended` then clears the dot in the bar
+# and do not disturb, even if the recorder crashed. (set -m keeps Ctrl + C's
+# signal, which stop() sends, from being ignored in the background.)
 launch() { # file, then wf-recorder's arguments
     local file=$1
     shift
-    setsid -f sh -c 'echo $$ >"$1.pid"; shift; exec wf-recorder "$@"' sh "$run" "$@" -f "$file" \
-        >"$run.log" 2>&1
+    setsid -f bash -c '
+        set -m
+        run=$1 me=$2
+        shift 2
+        wf-recorder "$@" &
+        pid=$!
+        echo "$pid" >"$run.pid"
+        wait "$pid"
+        exec "$me" ended "$pid"
+    ' _ "$run" "$me" "$@" -f "$file" >"$run.log" 2>&1
     sleep 0.6
     recording
 }
@@ -86,6 +99,7 @@ start() { # wf-recorder's arguments for what to record
     mkdir -p "$dir" || fail "Could not create $dir"
     local file="$dir/Recording-$(date +%Y-%m-%d_%H:%M:%S).mp4"
     unfreeze
+    rm -f "$run.stopping" "$run.started"
     printf '%s\n' "$file" >"$run.file"
     # The GPU's encoder first. It refuses a picture with an odd width or
     # height, which a region or window on a display at a fractional scale
@@ -98,15 +112,40 @@ start() { # wf-recorder's arguments for what to record
     else
         fail "Could not start recording (see $run.log)"
     fi
+    # Which recorder is the real one: a first try that failed also ends.
+    cp "$run.pid" "$run.started"
     quiet
     refresh_bar
 }
 
+# The watcher in launch() calls this when a recorder exits.
+ended() { # the recorder's pid
+    if [[ "$(cat "$run.started" 2>/dev/null)" != "$1" ]]; then
+        refresh_bar # a first try that failed; start() carries on
+        return 0
+    fi
+    rm -f "$run.started" "$run.pid"
+    unquiet
+    refresh_bar
+    if [[ -f "$run.stopping" ]]; then
+        rm -f "$run.stopping"
+    else
+        notify "The recording stopped by itself (see $run.log)" dialog-error 5000
+    fi
+}
+
 stop() {
-    recording || return 0
+    if ! recording; then
+        # Nothing runs. Clear what a recorder that died may have left on.
+        rm -f "$run.pid" "$run.started"
+        unquiet
+        refresh_bar
+        return 0
+    fi
     local pid file
     pid=$(cat "$run.pid")
     file=$(cat "$run.file" 2>/dev/null)
+    touch "$run.stopping"
     # SIGINT lets wf-recorder finish the file properly.
     kill -INT "$pid"
     for _ in $(seq 1 50); do
@@ -151,6 +190,7 @@ case "${1:-}" in
         start -o "$monitor"
         ;;
     stop) stop ;;
+    ended) ended "${2:-}" ;;
     toggle)
         if recording; then
             stop
