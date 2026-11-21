@@ -84,6 +84,7 @@ reload() {
     pgrep -f 'zen_browser|/zen( |$)|zen-bin' >/dev/null && restart+=("Zen")
     running firefox && restart+=("Firefox")
     running btop && restart+=("btop")
+    running thunderbird && restart+=("Thunderbird")
     # Obsidian does not notice when a linked file's target changes, but it
     # reloads the theme when the link itself is made again.
     local vault reloaded_obsidian=no
@@ -429,6 +430,23 @@ doctor() {
         unlisted_count=$(unlisted_packages | wc -l)
         if ((unlisted_count)); then
             note "$unlisted_count installed on purpose but in no list. See: nocturne unlisted"
+        fi
+    fi
+
+    # Thunderbird's chrome lives inside its profile, so it is not in links.txt.
+    local tb_root="$HOME/.thunderbird" tb_profile tb_missing=()
+    if [[ -f "$tb_root/profiles.ini" ]]; then
+        tb_profile=$(awk -F= '/^\[Install/ { found = 1 } found && /^Default=/ { print $2; exit }' "$tb_root/profiles.ini")
+        if [[ -n "$tb_profile" ]]; then
+            for f in chrome/userChrome.css chrome/userContent.css chrome/variables.css chrome/nocturne.css; do
+                check_link "thunderbird/$f" "$tb_root/$tb_profile/$f" || tb_missing+=("$f")
+            done
+            check_link thunderbird/user.js "$tb_root/$tb_profile/user.js" || tb_missing+=(user.js)
+            if ((${#tb_missing[@]})); then
+                fix "Thunderbird: the profile is missing the Nocturne files ($(join ', ' "${tb_missing[@]}")). Run ./install"
+            else
+                ok "Thunderbird: the profile uses the Nocturne theme"
+            fi
         fi
     fi
 

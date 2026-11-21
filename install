@@ -197,6 +197,21 @@ if [ ! -f ~/.config/qt6ct/qt6ct.conf ]; then
         "$HOME/.config/nocturne/qt6ct.conf" >~/.config/qt6ct/qt6ct.conf
 fi
 
+# Thunderbird: link the Nocturne chrome and appearance prefs into the profile
+# it starts with, the [Install...] entry in profiles.ini. Open Thunderbird once
+# first so the profile exists.
+thunderbird_root="$HOME/.thunderbird"
+if [[ -f "$thunderbird_root/profiles.ini" ]]; then
+    thunderbird_profile=$(awk -F= '/^\[Install/ { found = 1 } found && /^Default=/ { print $2; exit }' "$thunderbird_root/profiles.ini")
+    if [[ -n "$thunderbird_profile" && -d "$thunderbird_root/$thunderbird_profile" ]]; then
+        mkdir -p "$thunderbird_root/$thunderbird_profile/chrome"
+        for f in userChrome.css userContent.css variables.css nocturne.css; do
+            ln -sfn "${current_dir}/thunderbird/chrome/$f" "$thunderbird_root/$thunderbird_profile/chrome/$f"
+        done
+        ln -sfn "${current_dir}/thunderbird/user.js" "$thunderbird_root/$thunderbird_profile/user.js"
+    fi
+fi
+
 # btop rewrites its own config, so only its theme is linked (links.txt). Select
 # it here, keeping the rest of the config.
 if [[ -f ~/.config/btop/btop.conf ]]; then

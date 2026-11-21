@@ -47,6 +47,8 @@ TEMPLATES = {
     "greeter.sh": "system/usr/local/bin/nocturne-greeter.sh",
     "obsidian.css": "obsidian/themes/Nocturne/theme.css",
     "btop.theme": "btop/themes/nocturne.theme",
+    "thunderbird.css": "thunderbird/chrome/nocturne.css",
+    "thunderbird-user.js": "thunderbird/user.js",
 }
 
 # Template name -> (file, start marker, end marker). Only the lines between

@@ -1,0 +1,240 @@
+/* Thunderbird's own variables, recoloured in Nocturne. Imported by both
+   userChrome.css (the main window) and userContent.css (pages such as the
+   Address Book, which only read userContent.css). Only custom properties
+   live here, so the mail you read, which never uses them, is unaffected.
+
+   Thunderbird declares many of these on particular elements, not only at
+   the top, so they are set on every element with !important. */
+
+* {
+    /* Base levels */
+    --layout-background-0: var(--nc-ink-1) !important;
+    --layout-background-1: var(--nc-ink-0) !important;
+    --layout-background-2: var(--nc-ink-2) !important;
+    --layout-background-3: var(--nc-ink-3) !important;
+    --layout-background-4: var(--nc-line) !important;
+    --layout-color-0: var(--nc-bright) !important;
+    --layout-color-1: var(--nc-text) !important;
+    --layout-color-2: var(--nc-muted) !important;
+    --layout-color-3: var(--nc-faint) !important;
+    --layout-border-0: var(--nc-line) !important;
+    --layout-border-1: var(--nc-line) !important;
+    --layout-border-2: var(--nc-line) !important;
+
+    /* Design tokens used by newer parts of the interface */
+    --color-surface-lower: var(--nc-ink-0) !important;
+    --color-surface-base: var(--nc-ink-1) !important;
+    --color-surface-subtle: var(--nc-ink-2) !important;
+    --color-surface-raised: var(--nc-ink-2) !important;
+    --color-surface-deep: var(--nc-ink-3) !important;
+    --color-surface-border: var(--nc-line) !important;
+    --color-surface-border-intense: var(--nc-line) !important;
+    --color-text-base: var(--nc-text) !important;
+    --color-text-base-inverted: var(--nc-ink-0) !important;
+    --color-text-secondary: var(--nc-muted) !important;
+    --color-text-muted: var(--nc-faint) !important;
+    --color-text-disabled: var(--nc-faint) !important;
+    --color-text-brand: var(--nc-accent) !important;
+    --color-text-highlight: var(--nc-accent) !important;
+    --color-text-critical: var(--nc-red) !important;
+    --color-text-warning: var(--nc-gold) !important;
+    --color-text-success: var(--nc-green) !important;
+    --color-primary-default: var(--nc-accent) !important;
+    --color-primary-hover: var(--nc-accent-bright) !important;
+    --color-primary-pressed: var(--nc-accent) !important;
+    --color-primary-soft: var(--nc-accent-dim) !important;
+
+    /* The accent: focus, primary buttons, the current tab's line */
+    --selected-item-color: var(--nc-accent) !important;
+    --selected-item-text-color: var(--nc-ink-0) !important;
+    --focus-outline-color: var(--nc-accent) !important;
+    --tabline-color: var(--nc-accent) !important;
+    --button-primary-background-color: var(--nc-accent) !important;
+    --button-primary-hover-background-color: var(--nc-accent-bright) !important;
+    --button-primary-active-background-color: var(--nc-accent) !important;
+    --button-primary-border-color: var(--nc-accent) !important;
+    --button-primary-text-color: var(--nc-ink-0) !important;
+    --button-link-text-color: var(--nc-blue) !important;
+    --button-link-active-text-color: var(--nc-blue-bright) !important;
+    /* The newer design tokens fall back to the system accent (blue) */
+    --color-accent-primary: var(--nc-accent) !important;
+    --color-accent-primary-hover: var(--nc-accent-bright) !important;
+    --color-accent-primary-active: var(--nc-accent) !important;
+    --color-accent-primary-selected: var(--nc-accent-dim) !important;
+    --button-background-color-primary: var(--nc-accent) !important;
+    --button-background-color-primary-hover: var(--nc-accent-bright) !important;
+    --button-background-color-primary-active: var(--nc-accent) !important;
+    --button-text-color-primary: var(--nc-ink-0) !important;
+    --button-border-color-primary: var(--nc-accent) !important;
+
+    /* Panes and lists */
+    --sidebar-background-color: var(--nc-ink-0) !important;
+    --tree-view-bg: var(--nc-ink-1) !important;
+    --tree-pane-background: var(--nc-ink-1) !important;
+    --tree-view-color: var(--nc-text) !important;
+    --treeitem-background-hover: var(--nc-ink-3) !important;
+    --treeitem-background-selected: var(--nc-ink-3) !important;
+    --treeitem-background-active: var(--nc-accent-dim) !important;
+    --treeitem-text-active: var(--nc-bright) !important;
+    --tree-card-background-selected: var(--nc-ink-3) !important;
+    --tree-card-background-selected-current: var(--nc-accent-dim) !important;
+    --tree-card-background-selected-unfocused: var(--nc-ink-3) !important;
+    --tree-card-background-current: var(--nc-ink-2) !important;
+    --listbox-selected-bg: var(--nc-ink-3) !important;
+    --listbox-focused-selected-bg: var(--nc-accent-dim) !important;
+    --listbox-focused-selected-color: var(--nc-bright) !important;
+    --listbox-hover: var(--nc-ink-3) !important;
+    --unread-color: var(--nc-bright) !important;
+    --new-color: var(--nc-bright) !important;
+    --new-folder-color: var(--nc-bright) !important;
+    --folderpane-unread-count-background: var(--nc-ink-3) !important;
+    --folderpane-unread-count-text: var(--nc-bright) !important;
+
+    /* Marks in the message list: unread, starred, junk */
+    --thread-pane-unread-fill: var(--nc-bright) !important;
+    --thread-pane-unread-stroke: var(--nc-bright) !important;
+    --thread-pane-flag-fill: var(--nc-gold) !important;
+    --thread-pane-flag-stroke: var(--nc-gold) !important;
+    --thread-pane-spam-fill: var(--nc-red) !important;
+    --thread-pane-spam-stroke: var(--nc-red) !important;
+
+    /* Folder icons are decoration, so they stay grey. */
+    --folder-color-inbox: var(--nc-muted) !important;
+    --folder-color-sent: var(--nc-muted) !important;
+    --folder-color-draft: var(--nc-muted) !important;
+    --folder-color-archive: var(--nc-muted) !important;
+    --folder-color-template: var(--nc-muted) !important;
+    --folder-color-spam: var(--nc-muted) !important;
+    --folder-color-trash: var(--nc-muted) !important;
+    --folder-color-outbox: var(--nc-muted) !important;
+    --folder-color-newsletter: var(--nc-muted) !important;
+    --folder-color-rss: var(--nc-muted) !important;
+    --folder-color-folder: var(--nc-muted) !important;
+    --folder-color-folder-filter: var(--nc-muted) !important;
+    --folder-color-folder-rss: var(--nc-muted) !important;
+
+    /* The spaces strip on the left: the open space is a lighter square with
+       its icon in the accent. */
+    --spaces-bg-color: var(--nc-ink-0) !important;
+    --spaces-button-active-bg-color: var(--nc-ink-3) !important;
+    --spaces-button-active-text-color: var(--nc-accent) !important;
+
+    /* The built-in dark theme's own colours, for the frame, tabs and
+       toolbars; it sets them on the window itself. */
+    --lwt-accent-color: var(--nc-ink-0) !important;
+    --lwt-accent-color-inactive: var(--nc-ink-0) !important;
+    --lwt-text-color: var(--nc-text) !important;
+    --lwt-selected-tab-background-color: var(--nc-ink-1) !important;
+    --lwt-tab-line-color: var(--nc-accent) !important;
+    --lwt-tab-text: var(--nc-text) !important;
+    --lwt-tabs-border-color: var(--nc-line) !important;
+    --lwt-toolbarbutton-hover-background: var(--nc-ink-3) !important;
+    --lwt-toolbarbutton-active-background: var(--nc-line) !important;
+    --lwt-toolbar-field-highlight: var(--nc-accent-dim) !important;
+    --lwt-toolbar-field-highlight-text: var(--nc-bright) !important;
+    --toolbar-bgcolor: var(--nc-ink-0) !important;
+    --toolbar-color: var(--nc-text) !important;
+    --sidebar-background: var(--nc-ink-0) !important;
+    --sidebar-text-color: var(--nc-text) !important;
+    --sidebar-color: var(--nc-text) !important;
+    --sidebar-border-color: var(--nc-line) !important;
+    --sidebar-highlight-background-color: var(--nc-accent-dim) !important;
+    --sidebar-highlight-text-color: var(--nc-bright) !important;
+
+    /* The card view's own read marks: unread in bright, new in gold */
+    --read-status-fill: var(--nc-bright) !important;
+    --read-status-stroke: var(--nc-bright) !important;
+    --new-subject-color: var(--nc-bright) !important;
+
+    /* Toolbars, tabs and the search field */
+    --toolbar-background-color: var(--nc-ink-0) !important;
+    --toolbar-text-color: var(--nc-text) !important;
+    --toolbar-field-background-color: var(--nc-ink-2) !important;
+    --toolbar-field-color: var(--nc-text) !important;
+    --toolbar-field-border-color: var(--nc-line) !important;
+    --toolbar-field-focus-border-color: var(--nc-accent) !important;
+    --search-bar-background: var(--nc-ink-2) !important;
+    --search-bar-color: var(--nc-text) !important;
+    --search-bar-border-color: var(--nc-line) !important;
+    --search-bar-focus-background: var(--nc-ink-2) !important;
+    --tab-selected-background: var(--nc-ink-1) !important;
+    --tab-hover-background: var(--nc-ink-2) !important;
+    --chrome-content-separator-color: var(--nc-line) !important;
+
+    /* Menus and popups: ink-2, one hairline, 10 px corners */
+    --panel-background-color: var(--nc-ink-2) !important;
+    --panel-text-color: var(--nc-text) !important;
+    --panel-border-color: var(--nc-line) !important;
+    --panel-border-radius: 10px !important;
+    --panel-separator-color: var(--nc-line) !important;
+    --arrowpanel-background: var(--nc-ink-2) !important;
+    --arrowpanel-color: var(--nc-text) !important;
+    --arrowpanel-border-color: var(--nc-line) !important;
+
+    /* Calendar and tasks: weekends and off-hours a step lighter, today's
+       date in the accent (where you are) rather than a tinted column. */
+    --viewBackground: var(--nc-ink-1) !important;
+    --viewColor: var(--nc-text) !important;
+    --viewBorderColor: var(--nc-line) !important;
+    --viewCalendarHeaderBackground: var(--nc-ink-0) !important;
+    --viewHeaderSelectedBackground: var(--nc-ink-3) !important;
+    --viewWeekendBackground: var(--nc-ink-2) !important;
+    --viewOffTimeBackground: var(--nc-ink-2) !important;
+    --viewTodayBackground: var(--nc-ink-1) !important;
+    --viewTodayWeekendBackground: var(--nc-ink-2) !important;
+    --viewTodayOffBackground: var(--nc-ink-2) !important;
+    --viewTodayDayLabelBackground: var(--nc-accent-dim) !important;
+    --viewTodayLabelBackground: var(--nc-accent) !important;
+    --viewTodayLabelColor: var(--nc-ink-0) !important;
+    --viewDayBoxSelectedBackground: var(--nc-accent-dim) !important;
+    --viewDayBoxOtherSelectedBackground: var(--nc-ink-3) !important;
+    --viewDayBoxOffSelectedBackground: var(--nc-ink-3) !important;
+    --viewMonthOtherBackground: var(--nc-ink-0) !important;
+    --viewMonthDayOtherBackground: var(--nc-ink-2) !important;
+    --viewMonthDayOffLabelBackground: var(--nc-ink-2) !important;
+    --viewMonthWeekLabelBackground: var(--nc-ink-2) !important;
+    --viewTimeBoxColor: var(--nc-muted) !important;
+
+    /* The small month calendar in the calendar and task panels: a card on
+       ink-2, today a step lighter, the chosen day a selection. */
+    --mmMainBackground: var(--nc-ink-2) !important;
+    --mmMainBorderColor: var(--nc-line) !important;
+    --mmMainBorderRadius: 10px !important;
+    --mmBoxBackground: var(--nc-ink-3) !important;
+    --mmBoxBorderColor: var(--nc-line) !important;
+    --mmBoxItemColor: var(--nc-muted) !important;
+    --mmDayColor: var(--nc-text) !important;
+    --mmDayOtherColor: var(--nc-faint) !important;
+    --mmDayWeekColor: var(--nc-faint) !important;
+    --mmDayTodayColor: var(--nc-bright) !important;
+    --mmDayTodayBackground: var(--nc-ink-3) !important;
+    --mmDaySelectedColor: var(--nc-bright) !important;
+    --mmDaySelectedBackground: var(--nc-accent-dim) !important;
+    --mmDaySelectedBorderColor: var(--nc-accent) !important;
+    --mmDaySelectedTodayBackground: var(--nc-accent-dim) !important;
+    --mmDaySelectedTodayBorderColor: var(--nc-accent) !important;
+    --mmDayBorderRadius: 6px !important;
+    --mmDayBusyColor: var(--nc-accent) !important;
+
+    /* Notices: a dark tint of their meaning, never a bright block. */
+    --background-color-information: var(--nc-ink-2) !important;
+    --background-color-warning: color-mix(in srgb, var(--nc-gold) 14%, var(--nc-ink-1)) !important;
+    --background-color-critical: color-mix(in srgb, var(--nc-red) 16%, var(--nc-ink-1)) !important;
+    --background-color-success: color-mix(in srgb, var(--nc-green) 14%, var(--nc-ink-1)) !important;
+    --background-color-box-info: var(--nc-ink-2) !important;
+    --icon-color-information: var(--nc-blue) !important;
+    --icon-color-warning: var(--nc-gold) !important;
+    --icon-color-critical: var(--nc-red) !important;
+    --icon-color-success: var(--nc-green) !important;
+
+    /* Shape (DESIGN.md): 10 px for objects, 6 px for the parts inside them.
+       Thunderbird's own sizes are 2-4 px, plus a ladder of 4/8/16/24. */
+    --button-border-radius: 6px !important;
+    --listbox-border-radius: 6px !important;
+    --panel-menuitem-border-radius: 6px !important;
+    --border-radius-small: 6px !important;
+    --border-radius-medium: 6px !important;
+    --border-radius-large: 10px !important;
+    --border-radius-xlarge: 10px !important;
+    --popup-border-radius: 10px !important;
+}

@@ -1,0 +1,24 @@
+/* Thunderbird's reading pane in Nocturne. Plain-text messages take the
+   palette; HTML messages keep their own design, because most fix their own
+   colours and would break if forced dark. (Ones that offer a dark version
+   show it, since user.js asks for dark.) Colours come from nocturne.css. */
+
+@import url("nocturne.css");
+/* Pages such as the Address Book read this file, not userChrome.css. */
+@import url("variables.css");
+
+body.moz-text-plain,
+body.moz-text-flowed {
+    background-color: var(--nc-ink-1) !important;
+    color: var(--nc-text) !important;
+}
+
+:is(body.moz-text-plain, body.moz-text-flowed) a {
+    color: var(--nc-blue) !important;
+}
+
+/* Quoted text, one step quieter, with a hairline rather than a coloured bar. */
+:is(body.moz-text-plain, body.moz-text-flowed) blockquote[type="cite"] {
+    color: var(--nc-muted) !important;
+    border-inline-start-color: var(--nc-line) !important;
+}
