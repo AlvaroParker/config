@@ -57,8 +57,9 @@ against a checksum kept in the script before unpacking it into
 so `install` fetches one pinned commit of its repository and runs the
 project's own install script, which puts the icons in the same folder.
 
-`install` also makes zsh the login shell, and enables NetworkManager, Docker
-and TLP with its profiles daemon. If another network service is running
+`install` also makes zsh the login shell, and enables NetworkManager, Docker,
+Tailscale and TLP with its profiles daemon. Tailscale still needs a sign-in:
+`sudo tailscale up`. If another network service is running
 (iwd, dhcpcd or systemd-networkd), NetworkManager is enabled but not started;
 disable the other one and restart.
 

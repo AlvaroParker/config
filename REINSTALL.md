@@ -340,9 +340,9 @@ EDITOR=vim visudo                             # uncomment %wheel ALL=(ALL:ALL) A
 `video` and so on). It would also set the login shell, but `useradd` sets it
 here so the first login is already zsh.
 
-Services. `install` enables Bluetooth, TLP, Docker and libvirt itself. The
-network is needed before `install` can run, so it is enabled here, with the
-others `install` leaves alone:
+Services. `install` enables Bluetooth, TLP, Docker, Tailscale and libvirt
+itself. The network is needed before `install` can run, so it is enabled
+here, with the others `install` leaves alone:
 
 ```sh
 systemctl enable NetworkManager systemd-resolved systemd-timesyncd fstrim.timer

@@ -81,6 +81,9 @@ wireplumber
 github-cli
 # nmcli, for the launcher's Wi-Fi menu and the control centre
 networkmanager
+# Tailscale. Its own install script does the same on Arch: this package, then
+# the service, which install enables. Sign in afterwards with `sudo tailscale up`.
+tailscale
 pavucontrol
 go
 nodejs

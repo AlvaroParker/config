@@ -367,6 +367,9 @@ fi
 # Docker at boot
 sudo systemctl enable docker.service --now
 
+# Tailscale's daemon. Signing in is by hand: sudo tailscale up
+sudo systemctl enable tailscaled.service --now
+
 # Configure virtual machines
 sudo systemctl enable libvirtd.service --now
 active_networks=$(sudo virsh net-list --name)
