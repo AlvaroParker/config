@@ -94,9 +94,29 @@ local function bring_monitors(group)
     moving = false
 end
 
+-- Some apps ask for the focus as soon as they are hidden; the Claude desktop
+-- app does, and Hyprland grants it when the app was just in use. Right after
+-- you switch groups, that would take you straight back. So for a moment after
+-- a switch, focus pulled into another group is put back instead of followed.
+M.hold_ms = 3000
+local held -- the group just switched to, while the moment lasts
+local holds = 0
+
+local function hold(group)
+    holds = holds + 1
+    local this_hold = holds
+    held = group
+    hl.timer(function()
+        if this_hold == holds then
+            held = nil
+        end
+    end, { timeout = M.hold_ms, type = "oneshot" })
+end
+
 function M.switch_group(group)
     slide_vertically()
     bring_monitors(group)
+    hold(group)
 end
 
 -- Focus can reach another group without these keys: a notification you
@@ -111,6 +131,10 @@ hl.on("workspace.active", function()
         return
     end
     local group = M.group_of(workspace.id)
+    if held and group ~= held then
+        bring_monitors(held)
+        return
+    end
     for _, monitor in ipairs(hl.get_monitors()) do
         local other = numbered(monitor.active_workspace)
         if other and M.group_of(other.id) ~= group then

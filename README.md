@@ -99,7 +99,7 @@ says how, and why the keyring still wants the password.
 | `SUPER + ALT + R` | Stop the screen recording (a gold dot in the bar while it runs; clicking it stops too), or pick one to start. Notifications wait until it ends. The file's path is copied |
 | `SUPER + SHIFT + N` | Night light on or off. It also follows a schedule in `hypr/hyprsunset.conf` |
 | `SUPER + 1` … `0` | Workspace 1 to 10 of the current group. Add `SHIFT` to move the window there |
-| `SUPER + CTRL + 1` … `9` | Switch both screens to that workspace group: a clean set of ten workspaces, while the others wait. Add `SHIFT` to send the window to that group. Anything else that takes you to another group, such as clicking a notification, brings both screens along too |
+| `SUPER + CTRL + 1` … `9` | Switch both screens to that workspace group: a clean set of ten workspaces, while the others wait. Add `SHIFT` to send the window to that group. Anything else that takes you to another group, such as clicking a notification, brings both screens along too, except an app grabbing the focus in the 3 seconds after you switch |
 | `SUPER + CTRL + scroll` | The next or previous workspace group |
 | Three fingers up / down | The next or previous workspace group. Three fingers sideways move between this group's workspaces, and past the last one open its next empty workspace |
 
