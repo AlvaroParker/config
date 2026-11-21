@@ -107,6 +107,9 @@ zbar
 # Screen recording (SUPER + ALT + R, hypr/scripts/record), and mpv to play it
 wf-recorder
 mpv
+# Unlocking the disk with the TPM: dracut's tpm2-tss module needs these tools
+# to go into the boot image (system/README.md, "Unlocking with the TPM")
+tpm2-tools
 # Fingerprint for the lock screen, and for polkit and the login screen
 # through the PAM files in system/etc/pam.d
 fprintd

@@ -8,7 +8,8 @@ the paths on the system.
 | File | What it does |
 | --- | --- |
 | `etc/modprobe.d/thinkpad_acpi.conf` | Lets `bin/set-fan` control the ThinkPad fan |
-| `etc/dracut.conf.d/cmdline.conf` | Kernel command line for the unified kernel image: encrypted root, hibernation, fan control, the Intel `xe` driver for this GPU, and a quiet boot |
+| `etc/dracut.conf.d/cmdline.conf` | Kernel command line for the unified kernel image: encrypted root unlocked by the TPM, hibernation, fan control, the Intel `xe` driver for this GPU, and a quiet boot |
+| `etc/dracut.conf.d/tpm2.conf` | Puts the TPM's libraries in the boot image. See [Unlocking with the TPM](#unlocking-with-the-tpm) |
 | `etc/dracut.conf.d/drivers.conf`, `flags.conf` | Extra drivers, zstd compression and host-only images |
 | `etc/dracut.conf.d/secureboot.conf` | Signs the image with the sbctl keys |
 | `etc/pacman.d/hooks/90-dracut-install.hook`, `60-dracut-remove.hook` | Rebuild or remove the kernel image when the kernel package changes |
@@ -67,6 +68,73 @@ archives after the initramfs, and the kernel's lz4 decoder cannot tell where
 the lz4 data ends. With lz4 the kernel logs `Initramfs unpacking failed:
 Decoding failed` on every boot. The machine still starts, but the added
 archives are lost.
+
+## Unlocking with the TPM
+
+The disk unlocks by itself at boot, as BitLocker does by default: the TPM
+holds a key for it and releases that key only when the machine started
+through this Secure Boot setup (PCR 7, which records the Secure Boot state
+and the keys that checked each step). A USB stick, Secure Boot turned off or
+changed keys all make the TPM refuse, and the disk password is asked for
+instead; it always stays as the fallback. The login screen is then the one
+door, so the password there, and the firmware password, matter more.
+
+Three parameters at the end of `cmdline.conf` go with it:
+
+| Parameter | What it does |
+| --- | --- |
+| `rd.luks.options=tpm2-device=auto` | Tries the TPM before asking for the password |
+| `rd.shell=0` | No shell in the boot image if something fails. The disk is already unlocked by then, so a shell would be a way in |
+| `rd.emergency=reboot` | Restarts instead |
+
+The kernel image is signed and carries its own command line, so none of this
+can be changed at the boot menu. A firmware (BIOS) password keeps anyone from
+turning Secure Boot off, which would only make the TPM refuse, but it closes
+that door earlier.
+
+It needs `tpm2-tools` (in `packages/pacman.txt`): without it dracut refuses
+its TPM module and stops before writing the image, so the old image boots and
+asks for the password. To set it up, add the three parameters to
+`/etc/dracut.conf.d/cmdline.conf` (the real one, with the disk identifiers),
+then:
+
+```sh
+sudo install -Dm644 etc/dracut.conf.d/tpm2.conf /etc/dracut.conf.d/tpm2.conf
+sudo dracut --force --uefi --kver "$(uname -r)" /boot/efi/EFI/Linux/bootx64.efi
+sudo sbctl verify
+```
+
+Restart (it still asks for the password this time), and only then enroll:
+
+```sh
+sudo systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=7 /dev/<encrypted partition>   # asks for the disk password
+```
+
+The order matters. Once the boot image has TPM support, systemd marks the
+start of the operating system in PCR 7 (`os-separator` in the journal),
+before the disk unlocks. Enrolling from a boot without that mark ties the key
+to a value no later boot reproduces, and the journal says "TPM policy does
+not match current system state".
+
+Restart again: no password prompt means it worked. `journalctl -b | grep -i
+cryptsetup` shows the unlock.
+
+**When the TPM refuses.** A firmware update, a Secure Boot key change or a
+revocation list update (fwupd installs those) changes PCR 7. The boot then
+asks for the disk password once. Type it, and enroll again:
+
+```sh
+sudo systemd-cryptenroll --wipe-slot=tpm2 --tpm2-device=auto --tpm2-pcrs=7 /dev/<encrypted partition>
+```
+
+**If the boot breaks.** With `rd.shell=0` there is no rescue shell. Turn
+Secure Boot off in the firmware, start the Arch ISO, unlock the disk with its
+password, and fix it from there; with Secure Boot off the TPM will not unlock
+anything, which is the point.
+
+**To go back** to typing the password: `sudo systemd-cryptenroll
+--wipe-slot=tpm2 /dev/<encrypted partition>`. The three parameters can stay;
+without a TPM key they change nothing.
 
 ## A quiet boot
 
