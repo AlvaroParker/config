@@ -30,7 +30,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageFilter
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
@@ -51,6 +51,8 @@ RANGES = [
 # The rock arch, in height units. Its outline is the Arch logo's: a sharp apex,
 # flanks that flare out towards a wide base, a fold cut into the left face, and
 # an arch underneath whose legs splay out at the feet.
+LAKE_SHORE = 0.862     # the far shore of the lake in the nearest valley
+
 PEAK_HEIGHT = 0.27     # apex to where the base would be
 PEAK_HALF = 0.145      # half the width at the base
 PEAK_FLARE = 0.82      # below 1 the flanks curve outwards, like the logo
@@ -160,11 +162,32 @@ def southern_hemisphere():
         return False
 
 
-def paint(width, height, seed, phase=0.5, south=False):
+def sparkle_field(width, height, rng):
+    """Light on rippled water: random noise, stretched sideways like ripples
+    catching it, kept only at its peaks, then softened. 0 to 1.
+
+    Soft on purpose: the moving wallpaper takes these out with a half-size
+    copy and draws sharp glints of its own, and only soft streaks come out
+    cleanly that way."""
+    grid = rng.uniform(0, 1, (max(height // 3, 2), max(width // 14, 2))).astype(np.float32)
+    noise = np.asarray(Image.fromarray(grid).resize((width, height), Image.BICUBIC))
+    peaks = np.clip((noise - 0.80) / 0.20, 0, 1) ** 2
+    grey = Image.fromarray((peaks * 255).astype(np.uint8), "L")  # the blur needs 8 bits
+    soft = np.asarray(grey.filter(ImageFilter.GaussianBlur(max(height / 800, 1.5))), dtype=np.float32) / 255
+    return np.clip(soft * 1.6, 0, 1)
+
+
+def paint(width, height, seed, phase=0.5, south=False, live=False):
+    """The wallpaper as an image. With live, also the layers the moving
+    wallpaper (quickshell/LiveWallpaper.qml) animates, as a dict."""
     config = tomllib.loads((HERE / "palette.toml").read_text())
     hue = config["neutral"]["hue"]
     accent_l, accent_c, accent_h = config["accents"][config["accent"]]
     rng = np.random.default_rng(seed)
+    # Separate streams for the lake and the stars' timing, so adding them never
+    # changes the shape of the hills.
+    lake_rng = np.random.default_rng(seed + 1000)
+    twinkle_rng = np.random.default_rng(seed + 2000)
 
     # Coordinates in height units, so circles stay round on any aspect ratio.
     aspect = width / height
@@ -202,6 +225,10 @@ def paint(width, height, seed, phase=0.5, south=False):
     # Part the next range so the arch's flared feet show.
     span = np.exp(-(((xs - peak_x) / (PEAK_HALF * 1.1)) ** 4))[None, :]
     lines[1] = lines[1] * (1 - span) + np.maximum(lines[1], base_y + 0.004) * span
+    # The nearest range opens below the moon, so the lake shows between its
+    # two arms.
+    opening = np.exp(-(((xs - moon_x) / 0.46) ** 4))[None, :]
+    lines[4] = lines[4] * (1 - opening) + 1.06 * opening
 
     # How much of the moon is lit, 0 at new moon and 1 at full. The glow and the
     # light on the arch follow it, but never below 15%: the one warm light
@@ -226,7 +253,25 @@ def paint(width, height, seed, phase=0.5, south=False):
     brightness = rng.lognormal(-2.3, 0.7, count).clip(0, 0.6)
     stars[sy.clip(0, height - 1), sx.clip(0, width - 1)] = brightness
     stars = np.asarray(Image.fromarray(stars).resize((width // 2, height // 2), Image.BOX).resize((width, height), Image.BICUBIC))
-    image += (stars * 4.0 * sky_mask)[..., None] * linear(0.95, 0.015, hue)
+    star_color = linear(0.95, 0.015, hue)
+    image += (stars * 4.0 * sky_mask)[..., None] * star_color
+
+    # What the moving wallpaper needs: how much of each animated thing is
+    # still visible once everything in front is painted over it.
+    star_seen = stars * 4.0 * sky_mask
+    mist_seen = np.zeros((height, width), dtype=np.float32)
+    glow_seen = glow.copy()  # the moon's glow in the sky; layers in front add theirs
+    # Each star's own moment in its twinkle, over the few pixels it covers.
+    star_timing = np.zeros((height, width), dtype=np.float32)
+    for y, x in zip(sy.clip(0, height - 1), sx.clip(0, width - 1)):
+        star_timing[max(y - 3, 0):y + 4, max(x - 3, 0):x + 4] = twinkle_rng.uniform(0.02, 1)
+
+    def covered(cover):
+        """Something opaque painted over: the animated parts behind it hide."""
+        nonlocal star_seen, mist_seen, glow_seen
+        star_seen = star_seen * (1 - cover)
+        mist_seen = mist_seen * (1 - cover)
+        glow_seen = glow_seen * (1 - cover)
 
     # The moon disc, slightly darker at its edge, drawn before the hills cover it.
     moon_d = np.sqrt((X - moon_x) ** 2 + (Y - moon_y) ** 2)
@@ -256,6 +301,7 @@ def paint(width, height, seed, phase=0.5, south=False):
     earthshine = linear(0.27, 0.035, hue + 4)
     moon = (bright * sunlit[..., None] + earthshine * (1 - sunlit[..., None])) * limb[..., None]
     image = image * (1 - moon_cover) + moon * moon_cover
+    covered(moon_cover[..., 0])
 
     # Hills from far to near. Each is darker, less tinted by haze, and lit less
     # by the moon along its crest. Mist pools in the valley behind each one.
@@ -276,12 +322,37 @@ def paint(width, height, seed, phase=0.5, south=False):
             layer += rim[..., None] * glow_color
             cover = peak_cover[..., None]
             image = image * (1 - cover) + layer * cover
+            covered(peak_cover)
+            glow_seen = glow_seen + 0.22 * glow * peak_cover
+
+        if index == 4:
+            # The lake, in the valley between the last two ranges: still water
+            # holding the sky's colour, the far shore mirrored darker beneath
+            # it, and the moon's light laid on it as a path of glints that
+            # widens towards you.
+            water_cover = np.clip((Y - LAKE_SHORE) / pixel + 0.5, 0, 1)
+            depth = np.clip((Y - LAKE_SHORE) / (1 - LAKE_SHORE), 0, 1)[..., None]
+            water = linear(0.205, 0.044, hue + 5) * (1 - depth) + linear(0.120, 0.030, hue + 3) * depth
+            mirrored = LAKE_SHORE + (LAKE_SHORE - lines[3]) * 0.5
+            reflection = np.clip((mirrored - Y) / pixel + 0.5, 0, 1) * (Y > LAKE_SHORE)
+            water = water * (1 - 0.45 * reflection[..., None])
+            out = np.clip(Y - LAKE_SHORE, 0, None)
+            width_at = 0.010 + out * 0.32
+            path = np.exp(-(((X - moon_x) / width_at) ** 2)) * np.exp(-out / 0.11) * (Y > LAKE_SHORE) * light
+            sparkle = sparkle_field(width, height, lake_rng) * path
+            shore = np.exp(-np.abs(Y - LAKE_SHORE) / 0.0012) * near_moon * light
+            water = water + (0.10 * path + 0.9 * sparkle + 0.18 * shore)[..., None] * glow_color
+            image = image * (1 - water_cover[..., None]) + water * water_cover[..., None]
+            covered(water_cover)
+            glints_seen = path * water_cover
+            sparkle_seen = sparkle * water_cover
 
         below = Y - line
         cover = np.clip(below / pixel + 0.5, 0, 1)[..., None]
 
         mist = 0.12 * np.exp(-np.clip(-below, 0, None) / 0.035) * (below < 0)
         image += mist[..., None] * mist_color
+        mist_seen = mist_seen + mist
 
         fill = linear(l, c, hue + h)
         shade = 1.0 - 0.2 * np.clip(below / 0.14, 0, 1)  # a touch darker further down
@@ -290,16 +361,63 @@ def paint(width, height, seed, phase=0.5, south=False):
         rim = rim_strength * np.exp(-np.clip(below, 0, None) / 0.0018) * near_moon * light
         layer += rim[..., None] * glow_color
         image = image * (1 - cover) + layer * cover
+        covered(cover[..., 0])
+        glow_seen = glow_seen + glow_kept * glow * cover[..., 0]
+        if index == 4:
+            glints_seen = glints_seen * (1 - cover[..., 0])
+            sparkle_seen = sparkle_seen * (1 - cover[..., 0])
 
     # A gentle vignette keeps the corners quiet.
     cx, cy = (X - aspect / 2) / aspect, Y - 0.5
-    image *= (1 - 0.22 * np.clip((cx * cx + cy * cy) * 2.2, 0, 1))[..., None]
+    vignette = 1 - 0.22 * np.clip((cx * cx + cy * cy) * 2.2, 0, 1)
+    image *= vignette[..., None]
 
     # Fine grain and dithering, so the long gradients never band.
     out = encode(image) * 255.0
     out += rng.normal(0, 1.1, out.shape)
     out = np.floor(out + rng.uniform(0, 1, out.shape))
-    return Image.fromarray(out.clip(0, 255).astype(np.uint8), "RGB")
+    picture = Image.fromarray(out.clip(0, 255).astype(np.uint8), "RGB")
+    if not live:
+        return picture
+
+    # The layers, at half size: everything in them is soft. Amounts are scaled
+    # to fill 0-255, and the scales go in the JSON so the shader can undo them.
+    def channel(values, scale):
+        small = Image.fromarray((values / scale).clip(0, 1).astype(np.float32) * 255.0)
+        return small.convert("L").resize((width // 2, height // 2), Image.BOX)
+
+    def timing_channel(values):
+        # Nearest, not averaged: a star's timing must not blend with the sky's.
+        small = Image.fromarray((values * 255.0).astype(np.uint8), "L")
+        return small.resize((width // 2, height // 2), Image.NEAREST)
+
+    scales = {
+        "mist": float(max(mist_seen.max(), 1e-6) * float(vignette.max())),
+        "stars": float(max(star_seen.max(), 1e-6)),
+        "glints": float(max(glints_seen.max(), 1e-6)),
+        "sparkle": float(max(sparkle_seen.max(), 1e-6)),
+        "glow": float(max(glow_seen.max(), 1e-6)),
+    }
+    motion = Image.merge("RGB", (
+        channel(mist_seen * vignette, scales["mist"]),
+        channel(star_seen * vignette, scales["stars"]),
+        timing_channel(star_timing),
+    ))
+    lake = Image.merge("RGB", (
+        channel(glints_seen * vignette, scales["glints"]),
+        channel(sparkle_seen * vignette, scales["sparkle"]),
+        channel(glow_seen * vignette, scales["glow"]),
+    ))
+    settings = {
+        "scales": scales,
+        "mist": [float(v) for v in mist_color],
+        "stars": [float(v) for v in star_color],
+        "glow": [float(v) for v in glow_color],
+        "moon": [float(moon_x / aspect), float(moon_y), float(light)],
+        "shore": LAKE_SHORE,
+        "aspect": width / height,
+    }
+    return picture, {"motion": motion, "lake": lake, "settings": settings}
 
 
 def main():
@@ -310,6 +428,8 @@ def main():
     parser.add_argument("--phase", default="full", help="full (default), tonight, or 0-1: 0 new, 0.5 full")
     parser.add_argument("--hemisphere", choices=["auto", "north", "south"], default="auto",
                         help="which way the moon is lit; auto reads the weather location")
+    parser.add_argument("--live", help="also write the moving wallpaper's layers here "
+                        "(done by default for --phase tonight, into live/ beside it)")
     args = parser.parse_args()
 
     if args.phase == "full":
@@ -331,7 +451,18 @@ def main():
     out.parent.mkdir(parents=True, exist_ok=True)
 
     width, height = (int(v) for v in args.size.lower().split("x"))
-    image = paint(width, height, args.seed, phase, south)
+    # Tonight's picture is the one on screen, so the moving wallpaper's layers
+    # are painted with it, into live/ beside it.
+    live_dir = Path(args.live) if args.live else (out.parent / "live" if args.phase == "tonight" else None)
+    if live_dir:
+        image, layers = paint(width, height, args.seed, phase, south, live=True)
+        live_dir.mkdir(parents=True, exist_ok=True)
+        layers["motion"].save(live_dir / "motion.png")
+        layers["lake"].save(live_dir / "lake.png")
+        settings = dict(layers["settings"], image=str(out.resolve()))
+        (live_dir / "live.json").write_text(json.dumps(settings, indent=1) + "\n")
+    else:
+        image = paint(width, height, args.seed, phase, south)
     if out.suffix.lower() in (".jpg", ".jpeg"):
         # JPEG at 95 with full colour resolution keeps the anti-banding grain;
         # WebP smooths it away and halves colour detail, which shows as bands.

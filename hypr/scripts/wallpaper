@@ -65,6 +65,9 @@ write_conf() {
     mkdir -p "$state_dir"
     printf 'splash = false\nipc = true\n\nwallpaper {\n    monitor =\n    path = %s\n    fit_mode = cover\n}\n' \
         "$1" >"$conf"
+    # The moving wallpaper (quickshell/LiveWallpaper.qml) runs only while the
+    # picture on screen is the one it was painted for.
+    printf '%s\n' "$1" >"$state_dir/shown"
     # The lock screen shows the same wallpaper (hypr/hyprlock.conf sources this).
     printf '# Written by hypr/scripts/wallpaper.\n$wallpaper = %s\n$lock_brightness = %s\n' \
         "$1" "$(lock_brightness "$1")" >"$state_dir/hyprlock.conf"
