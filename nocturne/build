@@ -52,6 +52,7 @@ TEMPLATES = {
     "mpv-osc.conf": "mpv/script-opts/osc.conf",
     "mpv-console.conf": "mpv/script-opts/console.conf",
     "vesktop.css": "vesktop/themes/nocturne.theme.css",
+    "hyprtoolkit.conf": "hypr/hyprtoolkit.conf",
 }
 
 # Template name -> (file, start marker, end marker). Only the lines between
