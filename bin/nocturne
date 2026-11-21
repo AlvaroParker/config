@@ -86,6 +86,7 @@ reload() {
     running firefox && restart+=("Firefox")
     running btop && restart+=("btop")
     running thunderbird && restart+=("Thunderbird")
+    running mpv && restart+=("mpv")
     # Obsidian does not notice when a linked file's target changes, but it
     # reloads the theme when the link itself is made again.
     local vault reloaded_obsidian=no

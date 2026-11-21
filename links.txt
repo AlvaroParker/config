@@ -23,6 +23,7 @@ fastfetch                             ~/.config/fastfetch
 # btop rewrites btop.conf, so only its theme is linked; install selects it.
 btop/themes/nocturne.theme            ~/.config/btop/themes/nocturne.theme
 zathura                               ~/.config/zathura
+mpv                                   ~/.config/mpv
 
 # GTK apps
 gtk/gtk-3.0.css                       ~/.config/gtk-3.0/gtk.css

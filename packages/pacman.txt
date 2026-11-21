@@ -105,8 +105,9 @@ tesseract
 tesseract-data-eng
 tesseract-data-spa
 zbar
-# Screen recording (SUPER + ALT + R, hypr/scripts/record)
+# Screen recording (SUPER + ALT + R, hypr/scripts/record), and mpv to play it
 wf-recorder
+mpv
 # Fingerprint for the lock screen, and for polkit and the login screen
 # through the PAM files in system/etc/pam.d
 fprintd
