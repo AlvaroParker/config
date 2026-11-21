@@ -78,6 +78,11 @@ itself. After changing the accent or the wallpaper, run
 out of date. If the screen ever fails to start, the text login takes over.
 [system/README.md](./system/README.md) has the details and how to go back.
 
+The lock screen takes a fingerprint as well as the password. The login
+screen and the polkit password window take one too once the PAM files
+in `system/` are installed; [system/README.md](./system/README.md#fingerprint)
+says how, and why the keyring still wants the password.
+
 ## Everyday keys
 
 | Key | Action |

@@ -84,9 +84,17 @@ ShellRoot {
     }
 
     // ---- The conversation with greetd ---------------------------------
-    // Enter sends the password. greetd may then ask something else (a
-    // one-time code, a new password); that question takes the name's place
-    // and the same field answers it.
+    // The login starts as soon as the screen shows, so the fingerprint
+    // sensor listens straight away (system/etc/pam.d/greetd). While it
+    // listens, greetd cannot take a password: one typed meanwhile waits
+    // ("Checking") and goes when the sensor gives up, after 10 seconds.
+    // After that only the password works, until a failed try starts over.
+    //
+    // greetd may also ask something else (a one-time code, a new password);
+    // that question takes the name's place and the same field answers it.
+    property bool started: false    // a login is under way in greetd
+    property bool listening: false  // the fingerprint sensor is waiting
+    property bool wanted: false     // greetd asked for the password, none typed yet
     property string password: ""    // typed, not yet asked for
     property bool checking: false   // between Enter and the answer
     property bool slow: false       // still checking after a moment
@@ -97,6 +105,32 @@ ShellRoot {
     property bool capsLock: false
 
     readonly property bool preview: !Greetd.available
+
+    // Start a login for the chosen account, without a password yet.
+    function begin() {
+        if (preview || started || user === null)
+            return;
+        started = true;
+        Greetd.createSession(user.name);
+    }
+
+    Component.onCompleted: begin()
+    onUserIndexChanged: {
+        if (started) {
+            Greetd.cancelSession();
+            settle();
+        }
+        again.restart();
+    }
+
+    // Start over after a cancelled or failed login. The pause lets greetd's
+    // answer to the cancel arrive first: taken for the new login's answer,
+    // it would end it.
+    Timer {
+        id: again
+        interval: 500
+        onTriggered: shell.begin()
+    }
 
     function submit(text) {
         if (question !== "") {
@@ -115,13 +149,23 @@ ShellRoot {
             field.clear();
             return;
         }
-        password = text;
         checking = true;
         patience.restart();
-        Greetd.createSession(user.name);
+        if (wanted) {
+            wanted = false;
+            Greetd.respond(text);
+            return;
+        }
+        // Held until greetd asks for it (onAuthMessage).
+        password = text;
+        if (!again.running)
+            begin();
     }
 
     function settle() {
+        started = false;
+        listening = false;
+        wanted = false;
         password = "";
         question = "";
         showAnswer = false;
@@ -130,6 +174,19 @@ ShellRoot {
         patience.stop();
         field.clear();
         field.takeFocus();
+    }
+
+    // pam_fprintd's messages, in the screen's own words.
+    function fingerprint(message, error) {
+        if (/^(Place|Swipe) your/.test(message)) {
+            listening = true;
+        } else if (/timed out/.test(message)) {
+            listening = false;
+        } else if (/Failed to match/.test(message)) {
+            trouble = "That fingerprint did not match.";
+        } else {
+            notice = message; // try again, centre the finger, and so on
+        }
     }
 
     function power(action) {
@@ -153,16 +210,28 @@ ShellRoot {
 
         function onAuthMessage(message, error, responseRequired, echoResponse) {
             if (!responseRequired) {
-                if (error)
+                if (shell.listening || /finger|sensor|reader/i.test(message))
+                    shell.fingerprint(message, error);
+                else if (error)
                     shell.trouble = message;
                 else
                     shell.notice = message;
                 return;
             }
+            shell.listening = false;
             if (shell.password !== "") {
                 const answer = shell.password;
                 shell.password = "";
                 Greetd.respond(answer);
+                return;
+            }
+            // The usual password question, before anything was typed: the
+            // name stays, and Enter answers it.
+            if (!echoResponse && /^password[:\s]*$/i.test(message)) {
+                shell.wanted = true;
+                shell.checking = false;
+                shell.slow = false;
+                patience.stop();
                 return;
             }
             shell.question = message.replace(/[:\s]+$/, "");
@@ -180,6 +249,8 @@ ShellRoot {
             const said = shell.trouble;
             shell.settle();
             shell.trouble = said || "That password did not work.";
+            // Start over, so the fingerprint sensor listens again.
+            again.restart();
         }
 
         function onError(error) {
@@ -338,7 +409,7 @@ ShellRoot {
                     lineHeight: 20 * view.u
                     lineHeightMode: Text.FixedHeight
                     elide: Text.ElideRight
-                    text: shell.trouble || shell.notice || (shell.capsLock ? "Caps Lock is on" : shell.slow ? "Checking" : "")
+                    text: shell.trouble || shell.notice || (shell.capsLock ? "Caps Lock is on" : shell.slow ? "Checking" : shell.listening ? "Or touch the fingerprint sensor" : "")
                     color: shell.trouble ? Nocturne.red : shell.notice ? Nocturne.text : shell.capsLock ? Nocturne.gold : Nocturne.text
                     font.family: "IBM Plex Sans"
                     font.pixelSize: 13 * view.u

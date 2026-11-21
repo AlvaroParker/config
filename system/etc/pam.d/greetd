@@ -1,0 +1,17 @@
+#%PAM-1.0
+# The login screen. The fingerprint is tried first, for 10 seconds; a password
+# typed meanwhile is sent as soon as the sensor gives up (greeter/shell.qml).
+# With the lid closed, the password comes first.
+#
+# A fingerprint cannot unlock the GNOME keyring, which needs the password: after
+# a fingerprint login, the first app that wants a saved secret asks for it once.
+
+auth       required     pam_securetty.so
+auth       requisite    pam_nologin.so
+auth       [success=1 default=ignore]  pam_exec.so quiet /usr/local/bin/lid-closed
+auth       sufficient   pam_fprintd.so timeout=10
+auth       include      system-local-login
+auth       optional     pam_gnome_keyring.so
+account    include      system-local-login
+session    include      system-local-login
+session    optional     pam_gnome_keyring.so auto_start

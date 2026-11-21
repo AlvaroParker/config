@@ -1,0 +1,11 @@
+#%PAM-1.0
+# The polkit password window (apps asking for admin rights). A copy of
+# /usr/lib/pam.d/polkit-1 with the fingerprint first: touch the sensor, or the
+# password field takes over after 10 seconds. With the lid closed, the
+# password comes first.
+auth       [success=1 default=ignore]  pam_exec.so quiet /usr/local/bin/lid-closed
+auth       sufficient   pam_fprintd.so timeout=10
+auth       include      system-auth
+account    include      system-auth
+password   include      system-auth
+session    include      system-auth
