@@ -8,7 +8,7 @@ the paths on the system.
 | File | What it does |
 | --- | --- |
 | `etc/modprobe.d/thinkpad_acpi.conf` | Lets `bin/set-fan` control the ThinkPad fan |
-| `etc/dracut.conf.d/cmdline.conf` | Kernel command line for the unified kernel image: encrypted root unlocked by the TPM, hibernation, fan control, the Intel `xe` driver for this GPU, and a quiet boot |
+| `etc/dracut.conf.d/cmdline.conf` | Kernel command line for the unified kernel image: encrypted root unlocked by the TPM, hibernation, fan control, and a quiet boot. The GPU (Meteor Lake) uses `i915`, the driver Intel supports for it; `xe` runs it only when forced, which taints the kernel |
 | `etc/dracut.conf.d/tpm2.conf` | Puts the TPM's libraries in the boot image. See [Unlocking with the TPM](#unlocking-with-the-tpm) |
 | `etc/dracut.conf.d/drivers.conf`, `flags.conf` | Extra drivers, zstd compression and host-only images |
 | `etc/dracut.conf.d/secureboot.conf` | Signs the image with the sbctl keys |
@@ -156,8 +156,8 @@ Two parameters to leave out:
   them to `/var/log/boot.log`. With `plymouth.nolog` it does not catch them,
   so they land on the screen for a moment before the splash draws.
 - `plymouth.use-simpledrm`. It makes Plymouth draw the password prompt on the
-  firmware display about three seconds sooner. But the `xe` driver then takes
-  the display over, and the screen goes black until `xe` is ready and
+  firmware display about three seconds sooner. But the GPU's driver then
+  takes the display over, and the screen goes black until it is ready and
   Plymouth draws again.
 
 And `retain-splash.conf`, which makes Plymouth leave its picture on screen
