@@ -24,7 +24,8 @@ the paths on the system.
 | `etc/systemd/sleep.conf.d/hibernate.conf` | Sleep, then hibernate after two hours on battery. See [Sleep](#sleep) |
 | `etc/systemd/logind.conf.d/lid.conf` | Closing the lid does the same |
 
-See `secure-arch/` for the full setup and `Hibernation.md` for the swap file.
+[REINSTALL.md](../REINSTALL.md) installs Arch from the ISO up to these files,
+including the swap file that hibernation uses.
 
 ## Placeholders in cmdline.conf
 
@@ -249,8 +250,9 @@ Sleeping from the power menu, after 30 idle minutes, or by closing the lid
 runs `systemctl suspend-then-hibernate`. On battery, the laptop hibernates
 after two hours asleep (or sooner, if the battery runs low), so it never
 drains flat; on the charger it stays asleep. With an external display
-connected, closing the lid still does nothing. Hibernation must already work
-(`Hibernation.md`).
+connected, closing the lid still does nothing. Hibernation must already work:
+the swap file and the `resume=` values in `cmdline.conf`, as REINSTALL.md
+step 6 sets them up.
 
 ```sh
 sudo install -Dm644 -t /etc/systemd/sleep.conf.d etc/systemd/sleep.conf.d/hibernate.conf

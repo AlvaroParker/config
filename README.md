@@ -24,6 +24,10 @@ The [NixOS version](https://github.com/AlvaroParker/NixOS-config) is also availa
 
 ## Installation
 
+To install Arch itself on this laptop, beside Windows, start with
+[REINSTALL.md](./REINSTALL.md). It goes from the Arch ISO to the point where
+the steps below take over.
+
 **The `install` script will overwrite your existing dotfiles.** It has only been tested on a fresh Arch Linux installation with GNOME. Use at your own risk.
 
 It is recommended to first configure your fastest mirrors. You can use `rate-mirrors`, from the official repositories:
@@ -119,7 +123,7 @@ Spanish, or the contents of a QR code if the region holds one
 (`hypr/scripts/screen-text`, using tesseract and zbar). It all runs locally.
 `SUPER + /` lists every key binding.
 
-The `genswap` script will generate a new swapfile located at `/swapfile` and will output the needed kernel parameters to add for hibernation. **Do not run if you already have swap configured.**
+The `genswap` script will generate a new swapfile located at `/swapfile` and will output the needed kernel parameters to add for hibernation. **Do not run if you already have swap configured.** A reinstall makes the swap file by hand instead; see [REINSTALL.md](./REINSTALL.md), step 6.
 
 ## Programs used
 
