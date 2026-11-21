@@ -119,4 +119,9 @@ esac
 cleanup
 freeze_pid=""
 copy || fail "Could not copy the screenshot"
-notify "$message" "$file" wl-copy 1000
+# Clicking the notification shows the file in Files. It waits in the
+# background for 3 seconds (hovering keeps it open), so the script never hangs.
+setsid -f bash -c '
+    action=$(notify-send -a wl-copy -i "$1" -t 3000 -A default="Show in Files" "$2" "Click to show it in Files")
+    [[ $action == default ]] && exec nautilus --select "$1"
+' _ "$file" "$message" >/dev/null 2>&1

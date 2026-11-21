@@ -90,7 +90,7 @@ out of date. If the screen ever fails to start, the text login takes over.
 | `SUPER + ALT + A` | Accent colour. Repaints the desktop, the terminal and the wallpaper's moon |
 | `SUPER + /` | Search every key binding |
 | `SUPER + SHIFT + R` | Resize mode (shown in the bar). `H J K L` resize, `Esc` or `Enter` leave |
-| `SUPER + SHIFT + S` | Screenshot: pick a region, a window, this display or all displays. Saved in `~/Pictures/Screenshots` and copied. `SUPER + SHIFT + D` or `Print` takes this display straight away. The same menu records a region, a window's area or this display, without sound, into `~/Videos/Recordings` |
+| `SUPER + SHIFT + S` | Screenshot: pick a region, a window, this display or all displays. Saved in `~/Pictures/Screenshots` and copied. `SUPER + SHIFT + D` or `Print` takes this display straight away. Click the notification to show the file in Files. The same menu records a region, a window's area or this display, without sound, into `~/Videos/Recordings` |
 | `SUPER + ALT + R` | Stop the screen recording (a gold dot in the bar while it runs; clicking it stops too), or pick one to start. The file's path is copied |
 | `SUPER + SHIFT + N` | Night light on or off. It also follows a schedule in `hypr/hyprsunset.conf` |
 | `SUPER + 1` … `0` | Workspace 1 to 10 of the current group. Add `SHIFT` to move the window there |
