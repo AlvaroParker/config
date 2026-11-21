@@ -1,0 +1,148 @@
+#!/usr/bin/env bash
+# Record the screen into ~/Videos/Recordings, without sound. While a
+# recording runs, the bar shows a gold dot; clicking it, SUPER + ALT + R or
+# `record stop` ends it, and the file's path is copied.
+#
+#   record region    drag over an area
+#   record window    click a window (its area: if the window moves, or
+#                    something covers it, that is what gets recorded)
+#   record display   the display you are on
+#   record stop      end the recording
+#   record toggle    end the recording, or ask what to record (SUPER + ALT + R)
+#   record status    print true or false (for the bar)
+#
+# Video is AV1, about a third smaller than H.264, through the GPU's encoder
+# (VA-API), so recording costs almost no CPU; sizes the GPU refuses are
+# encoded on the CPU instead. AV1 plays in browsers, Discord, Telegram, mpv
+# and recent phones; older devices may need H.264.
+set -uo pipefail
+
+here="$(dirname "$0")"
+dir="$HOME/Videos/Recordings"
+run="${XDG_RUNTIME_DIR:-/tmp}/nocturne-record"
+render=/dev/dri/renderD128
+
+recording() {
+    [[ -f "$run.pid" ]] && kill -0 "$(cat "$run.pid")" 2>/dev/null
+}
+
+refresh_bar() {
+    qs ipc call bar refresh >/dev/null 2>&1 || true
+}
+
+notify() { # message, icon, timeout
+    notify-send -a "Screen recording" -i "$2" -t "$3" "$1"
+}
+
+fail() {
+    notify "$1" dialog-error 2000
+    exit 1
+}
+
+freeze_pid=""
+unfreeze() {
+    [[ -n "$freeze_pid" ]] && kill "$freeze_pid" 2>/dev/null
+    freeze_pid=""
+}
+trap unfreeze EXIT
+
+# The screen holds still while you pick, as it does for screenshots.
+freeze() {
+    if command -v hyprpicker >/dev/null; then
+        hyprpicker -r -z >/dev/null 2>&1 &
+        freeze_pid=$!
+        sleep 0.2
+    fi
+    hyprctl keyword layerrule "noanim,selection" >/dev/null 2>&1 || true
+}
+
+launch() { # file, then wf-recorder's arguments
+    local file=$1
+    shift
+    setsid -f sh -c 'echo $$ >"$1.pid"; shift; exec wf-recorder "$@"' sh "$run" "$@" -f "$file" \
+        >"$run.log" 2>&1
+    sleep 0.6
+    recording
+}
+
+start() { # wf-recorder's arguments for what to record
+    command -v wf-recorder >/dev/null || fail "Recording needs wf-recorder (sudo pacman -S wf-recorder)"
+    mkdir -p "$dir" || fail "Could not create $dir"
+    local file="$dir/Recording-$(date +%Y-%m-%d_%H:%M:%S).mp4"
+    unfreeze
+    printf '%s\n' "$file" >"$run.file"
+    # The GPU's encoder first. It refuses a picture with an odd width or
+    # height, which a region or window on a display at a fractional scale
+    # often has; then the CPU records it instead, still AV1 (SVT-AV1 keeps up
+    # with 60 fps at full size), padded by a pixel to even.
+    if [[ -r "$render" && -w "$render" ]] && launch "$file" -c av1_vaapi -d "$render" "$@"; then
+        :
+    elif rm -f "$file" && launch "$file" -r 60 -c libsvtav1 -p preset=10 -F "pad=ceil(iw/2)*2:ceil(ih/2)*2" "$@"; then
+        :
+    else
+        fail "Could not start recording (see $run.log)"
+    fi
+    refresh_bar
+}
+
+stop() {
+    recording || return 0
+    local pid file
+    pid=$(cat "$run.pid")
+    file=$(cat "$run.file" 2>/dev/null)
+    # SIGINT lets wf-recorder finish the file properly.
+    kill -INT "$pid"
+    for _ in $(seq 1 50); do
+        kill -0 "$pid" 2>/dev/null || break
+        sleep 0.1
+    done
+    rm -f "$run.pid"
+    refresh_bar
+    if [[ -s "$file" ]]; then
+        printf '%s' "$file" | wl-copy
+        # Clicking the notification shows the file in Files. It waits in the
+        # background, so stopping never hangs on it; once the popup times out,
+        # the click no longer does anything.
+        setsid -f bash -c '
+            action=$(notify-send -a "Screen recording" -i video-x-generic -A default="Show in Files" \
+                "Recording saved; its path is copied" "Click to show it in Files")
+            [[ $action == default ]] && exec nautilus --select "$1"
+        ' _ "$file" >/dev/null 2>&1
+    else
+        notify "The recording is empty (see $run.log)" dialog-error 3000
+    fi
+}
+
+case "${1:-}" in
+    region)
+        recording && stop
+        freeze
+        geometry=$(slurp) || exit 0
+        start -g "$geometry"
+        ;;
+    window)
+        recording && stop
+        freeze
+        choice=$("$here/window-boxes" | slurp -r -f '%x,%y %wx%h') || exit 0
+        start -g "$choice"
+        ;;
+    display)
+        recording && stop
+        monitor=$(hyprctl monitors -j | jq -r '.[] | select(.focused).name')
+        [[ -n "$monitor" ]] || fail "Could not find the display"
+        start -o "$monitor"
+        ;;
+    stop) stop ;;
+    toggle)
+        if recording; then
+            stop
+        else
+            exec "$HOME/.config/rofi/launcher" screenshot
+        fi
+        ;;
+    status) if recording; then echo true; else echo false; fi ;;
+    *)
+        printf 'usage: record {region|window|display|stop|toggle|status}\n' >&2
+        exit 2
+        ;;
+esac

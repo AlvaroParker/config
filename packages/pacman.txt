@@ -105,6 +105,8 @@ tesseract
 tesseract-data-eng
 tesseract-data-spa
 zbar
+# Screen recording (SUPER + ALT + R, hypr/scripts/record)
+wf-recorder
 # Other sessions, picked on the login screen. GNOME stays usable, and GDM stays
 # installed (disabled) as a way back to GNOME's own login screen.
 gnome-shell

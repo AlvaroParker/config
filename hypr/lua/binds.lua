@@ -169,7 +169,8 @@ bind("Caps_Lock", "Show Caps Lock state", exec("sleep 0.1 && swayosd-client --ca
 -- Screenshots -------------------------------------------------------------
 -- All go through scripts/screenshot, which saves to ~/Pictures/Screenshots
 -- and copies to the clipboard.
-bind(SUPER .. "SHIFT + S", "Screenshot: region, window, this display or all", exec(launcher .. " screenshot"))
+bind(SUPER .. "SHIFT + S", "Screenshot or recording: pick what to capture", exec(launcher .. " screenshot"))
+bind(SUPER .. "ALT + R", "Stop the screen recording, or start one", exec(scripts .. "record toggle"))
 bind(SUPER .. "SHIFT + D", "Screenshot of this display", exec(scripts .. "screenshot display"))
 bind("Print", "Screenshot of this display", exec(scripts .. "screenshot display"))
 bind("XF86SelectiveScreenshot", "Screenshot of a region", exec(scripts .. "screenshot region"))

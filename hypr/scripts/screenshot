@@ -39,22 +39,6 @@ freeze() {
     hyprctl keyword layerrule "noanim,selection" >/dev/null 2>&1 || true
 }
 
-# The windows on the workspaces you can see, as boxes slurp can choose from.
-# A box takes in the window's border, as it looks on screen, and its label
-# carries the outer corner radius and the class: "11:com.mitchellh.ghostty".
-# Fullscreen windows have neither border nor rounding.
-window_boxes() {
-    local workspaces rounding border
-    # Matched by name: scratchpads have no number, and a closed one has none.
-    workspaces=$(hyprctl monitors -j | jq -c '[.[].activeWorkspace.name, .[].specialWorkspace.name] | map(select(. != null and . != ""))')
-    rounding=$(hyprctl getoption decoration:rounding -j | jq '.int // 0')
-    border=$(hyprctl getoption general:border_size -j | jq '.int // 0')
-    hyprctl clients -j | jq -r --argjson shown "$workspaces" --argjson r "$rounding" --argjson b "$border" '
-        .[] | select(.mapped and (.hidden | not) and (.workspace.name as $name | ($shown | index($name)) != null))
-        | (if .fullscreen != 0 then 0 else $b end) as $e
-        | (if .fullscreen != 0 or $r == 0 then 0 else $r + $b end) as $radius
-        | "\(.at[0] - $e),\(.at[1] - $e) \(.size[0] + 2 * $e)x\(.size[1] + 2 * $e) \($radius):\(.class)"'
-}
 
 capture() { # grim arguments...
     mkdir -p "$dir" || fail "Could not create $dir"
@@ -108,7 +92,7 @@ case "${1:-region}" in
         ;;
     window)
         freeze
-        choice=$(window_boxes | slurp -r -f '%x,%y %w %h %l') || exit 0
+        choice=$("$(dirname "$0")/window-boxes" | slurp -r -f '%x,%y %w %h %l') || exit 0
         read -r x_y w h label <<<"$choice"
         radius=${label%%:*}
         class=${label#*:}

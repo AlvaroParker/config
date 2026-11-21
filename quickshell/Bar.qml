@@ -95,6 +95,14 @@ PanelWindow {
             anchors.rightMargin: 5
             anchors.verticalCenter: parent.verticalCenter
 
+            // A recording is a mode you can forget is on, so gold.
+            BarText {
+                text: BarState.recording ? "󰑊" : ""
+                color: Nocturne.gold
+                tooltip: "Recording the screen. Click to stop."
+                onClicked: BarState.stopRecording()
+            }
+
             BarPrivacy {}
 
             BarText {

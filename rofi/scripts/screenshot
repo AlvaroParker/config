@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
-# rofi script mode: which screenshot to take (SUPER + SHIFT + S). Region comes
-# first, so SUPER + SHIFT + S then Enter is the region screenshot it always was.
-# The capture itself is hypr/scripts/screenshot.
+# rofi script mode: capture the screen (SUPER + SHIFT + S, and SUPER + ALT + R
+# when nothing is recording). Screenshots first, with Region on top, so
+# SUPER + SHIFT + S then Enter is the region screenshot it always was; then
+# recordings. While one runs, Stop comes first.
+# The work is done by hypr/scripts/screenshot and hypr/scripts/record.
 set -uo pipefail
 
-shot="$HOME/.config/hypr/scripts/screenshot"
+scripts="$HOME/.config/hypr/scripts"
 
-row() { # label, hint, icon, kind
+row() { # label, hint, icon, action
     printf '%s  <span alpha="55%%">%s</span>\0icon\x1f%s\x1finfo\x1f%s\n' "$1" "$2" "$3" "$4"
 }
 
@@ -19,10 +21,17 @@ case "${ROFI_INFO:-}" in
     "")
         printf '\0no-custom\x1ftrue\n'
         printf '\0markup-rows\x1ftrue\n'
-        row "Region" "drag over an area" transform-crop region
-        row "Window" "click a window" window window
-        row "This display" "the one you are on" display-symbolic display
-        row "All displays" "every screen at once" view-fullscreen all
+        if [[ "$("$scripts/record" status)" == true ]]; then
+            row "Stop recording" "and copy the file's path" media-playback-stop-symbolic record:stop
+        fi
+        row "Region" "drag over an area" transform-crop shot:region
+        row "Window" "click a window" window shot:window
+        row "This display" "the one you are on" display-symbolic shot:display
+        row "All displays" "every screen at once" view-fullscreen shot:all
+        row "Record a region" "drag over an area" media-record-symbolic record:region
+        row "Record a window" "its area, click a window" media-record-symbolic record:window
+        row "Record this display" "the one you are on" media-record-symbolic record:display
         ;;
-    region | window | display | all) later "$shot $ROFI_INFO" ;;
+    shot:*) later "$scripts/screenshot ${ROFI_INFO#shot:}" ;;
+    record:*) later "$scripts/record ${ROFI_INFO#record:}" ;;
 esac

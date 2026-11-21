@@ -40,6 +40,22 @@ Singleton {
         Quickshell.execDetached([Quickshell.env("HOME") + "/.config/hypr/scripts/keep-awake", "off"]);
     }
 
+    // ---- Screen recording (hypr/scripts/record) -------------------------
+    property bool recording: false
+
+    Process {
+        id: recordingCheck
+        command: [Quickshell.env("HOME") + "/.config/hypr/scripts/record", "status"]
+        running: true
+        stdout: StdioCollector {
+            onStreamFinished: state.recording = this.text.trim() === "true"
+        }
+    }
+
+    function stopRecording() {
+        Quickshell.execDetached([Quickshell.env("HOME") + "/.config/hypr/scripts/record", "stop"]);
+    }
+
     // ---- Pending updates (scripts/updates), hourly ----------------------
     property string updatesText: ""
     property string updatesTooltip: ""
@@ -174,9 +190,10 @@ Singleton {
             state.shown = !state.shown;
         }
 
-        // keep-awake calls this when it changes; anything else may too.
+        // keep-awake and record call this when they change; anything else may too.
         function refresh(): void {
             keepAwakeCheck.running = true;
+            recordingCheck.running = true;
             updatesCheck.running = true;
         }
     }
