@@ -396,7 +396,7 @@ ShellRoot {
                     fast: view.fast
                     curve: view.settleCurve
                     label: "Sleep"
-                    onActivated: shell.power("suspend")
+                    onActivated: shell.power("suspend-then-hibernate")
                 }
                 PowerButton {
                     u: view.u

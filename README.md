@@ -84,7 +84,7 @@ out of date. If the screen ever fails to start, the text login takes over.
 | --- | --- |
 | `SUPER + D` | Launcher. `Tab` moves between Apps, Windows, Clipboard, Wi-Fi and Power |
 | `SUPER + V` | Clipboard history |
-| `SUPER + SHIFT + E` | Power: lock, sleep, log out, restart, shut down, power profile |
+| `SUPER + SHIFT + E` | Power: lock, sleep, log out, restart, shut down, power profile. Sleep turns into hibernation after two hours on battery |
 | `SUPER + N` | Notifications and controls (Wi-Fi, Bluetooth, night light, do not disturb, keep awake, performance) |
 | `SUPER + ALT + W` | Wallpapers |
 | `SUPER + ALT + A` | Accent colour. Repaints the desktop, the terminal and the wallpaper's moon |

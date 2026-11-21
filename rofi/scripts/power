@@ -46,7 +46,8 @@ confirm() { # action, question, yes label
 case "${ROFI_INFO:-}" in
     "" | back) menu ;;
     lock) later "loginctl lock-session" ;;
-    suspend) later "systemctl suspend" ;;
+    # Sleep turns into hibernation after two hours on battery.
+    suspend) later "systemctl suspend-then-hibernate" ;;
     hibernate) later "systemctl hibernate" ;;
     ask:logout) confirm logout "Log out and close every app?" "Log out" ;;
     ask:reboot) confirm reboot "Restart the computer?" "Restart" ;;
