@@ -23,6 +23,10 @@ the paths on the system.
 | `usr/local/bin/lid-closed` | Tells those PAM files that the lid is shut, so they skip the sensor |
 | `etc/systemd/sleep.conf.d/hibernate.conf` | Sleep, then hibernate after two hours on battery. See [Sleep](#sleep) |
 | `etc/systemd/logind.conf.d/lid.conf` | Closing the lid does the same |
+| `etc/tlp.d/10-power.conf` | What TLP's three power profiles do, and the battery's charge limits. See [Power and battery](#power-and-battery) |
+| `etc/systemd/system/libvirt-docker-forwarding.service` | Lets virtual machines reach the network while Docker runs. See [Virtual machines beside Docker](#virtual-machines-beside-docker) |
+| `etc/NetworkManager/conf.d/wifi-powersave.conf` | Turns Wi-Fi power saving off for every connection |
+| `etc/X11/xorg.conf.d/90-touchpad.conf` | Tap to click under Xorg, for the i3 session. Hyprland has its own setting |
 
 [REINSTALL.md](../REINSTALL.md) installs Arch from the ISO up to these files,
 including the swap file that hibernation uses.
@@ -50,8 +54,8 @@ sudo install -Dm644 -t /etc/systemd/system/systemd-pcrlogin@954.service.d etc/sy
 sudoedit /etc/dracut.conf.d/cmdline.conf   # replace the three placeholders
 ```
 
-The fingerprint and sleep files are installed the same way; their sections
-below have the commands.
+The fingerprint, sleep, power and network files are installed the same way;
+their sections below have the commands.
 
 ## The boot image
 
@@ -259,3 +263,70 @@ sudo install -Dm644 -t /etc/systemd/sleep.conf.d etc/systemd/sleep.conf.d/hibern
 sudo install -Dm644 -t /etc/systemd/logind.conf.d etc/systemd/logind.conf.d/lid.conf
 sudo systemctl kill -s HUP systemd-logind   # reads the lid setting again; your session stays
 ```
+
+## Power and battery
+
+TLP has three profiles. It picks **performance** on the charger and
+**balanced** on battery, and the launcher's power menu and the control
+centre's performance switch pick one by hand through `tlpctl`, which the
+`tlp-pd` service answers. `install` enables TLP and that service.
+
+`etc/tlp.d/10-power.conf` says what the profiles do on this laptop:
+
+- **Performance** lets the processor run as fast as it can.
+- **Balanced** is set for battery life, the same as **power-saver**, because
+  it is the profile the laptop is in whenever it is unplugged.
+- **Wi-Fi power saving** is off in every profile. TLP's default turns it on
+  in balanced and power-saver, which would undo `wifi-powersave.conf` (see
+  [Wi-Fi and the touchpad](#wi-fi-and-the-touchpad)) each time the laptop is
+  unplugged.
+- **The battery** starts charging only below 80% and stops at 90%. A battery
+  that is not kept full lasts more years. To fill it once before a trip:
+  `sudo tlp fullcharge`.
+
+```sh
+sudo install -Dm644 -t /etc/tlp.d etc/tlp.d/10-power.conf
+sudo tlp start          # applies it now
+tlp-stat -c             # every setting, and the file it came from
+```
+
+TLP reads `/etc/tlp.conf` after the files in `/etc/tlp.d`, and the last value
+wins. Keep these settings out of `/etc/tlp.conf`, or the copy there quietly
+overrides this one. The names here end in `_PRF`, `_BAL` and `_SAV`; TLP 1.11
+renamed the older `_AC` and `_BAT`, and `tlp-stat -c` marks any that are left.
+
+## Virtual machines beside Docker
+
+Docker drops forwarded traffic it does not know about, and that includes the
+traffic of libvirt's virtual machines: with Docker running, a machine on the
+default network (`virbr0`, `192.168.122.0/24`) cannot reach the internet.
+`libvirt-docker-forwarding.service` adds two rules to the chain Docker keeps
+for this, `DOCKER-USER`, each time Docker starts: traffic from the virtual
+machines may pass, and so may the replies to it.
+
+```sh
+sudo install -Dm644 -t /etc/systemd/system etc/systemd/system/libvirt-docker-forwarding.service
+sudo systemctl daemon-reload
+sudo systemctl enable --now libvirt-docker-forwarding.service
+sudo iptables -S DOCKER-USER      # shows the two virbr0 rules
+```
+
+The rules name libvirt's default network. A network with another bridge or
+address range needs its own lines in the service.
+
+## Wi-Fi and the touchpad
+
+Two small files, each one setting:
+
+```sh
+sudo install -Dm644 -t /etc/NetworkManager/conf.d etc/NetworkManager/conf.d/wifi-powersave.conf
+sudo systemctl reload NetworkManager      # applies at the next connection
+sudo install -Dm644 -t /etc/X11/xorg.conf.d etc/X11/xorg.conf.d/90-touchpad.conf
+```
+
+`wifi-powersave.conf` tells NetworkManager to turn the Wi-Fi card's power
+saving off on every connection (`2` means off). `iw dev <interface> get
+power_save` shows the current state. TLP has a setting for the same thing,
+and `10-power.conf` keeps it off as well, so the two agree.
+`90-touchpad.conf` turns on tap to click
+for the i3 session, which runs on Xorg; it shows at the next i3 login.

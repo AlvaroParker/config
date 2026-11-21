@@ -572,7 +572,8 @@ Then:
    shows. The pacman hook rebuilds it only when the kernel changes, and the
    image needs Plymouth, which `install` has now added.
 2. Follow [system/README.md](system/README.md) for the rest: the splash, the
-   login screen, the fingerprint and sleep. Check the greeter's user id
+   login screen, the fingerprint, sleep, the power settings, and the network
+   rules for virtual machines. Check the greeter's user id
    before installing `skip-greeter.conf`; a new install may give it a
    number other than 954.
 3. README.md's [Installation](README.md#installation) section covers

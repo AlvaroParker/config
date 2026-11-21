@@ -1,0 +1,14 @@
+[Unit]
+Description=Allow libvirt NAT traffic through Docker forwarding rules
+After=docker.service
+Requires=docker.service
+PartOf=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c '/usr/bin/iptables -C DOCKER-USER -o virbr0 -d 192.168.122.0/24 -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT || /usr/bin/iptables -I DOCKER-USER 1 -o virbr0 -d 192.168.122.0/24 -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT'
+ExecStart=/bin/sh -c '/usr/bin/iptables -C DOCKER-USER -i virbr0 -s 192.168.122.0/24 -j ACCEPT || /usr/bin/iptables -I DOCKER-USER 2 -i virbr0 -s 192.168.122.0/24 -j ACCEPT'
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
