@@ -79,7 +79,6 @@ codex/AGENTS.md                       ~/.codex/AGENTS.md
 chromium-flags.conf                   ~/.config/chromium-flags.conf
 chromium-flags.conf                   ~/.config/helium-browser-flags.conf
 electron-flags.conf                   ~/.config/code-flags.conf
-electron-flags.conf                   ~/.config/webcord-flags.conf
 electron-flags.conf                   ~/.config/obsidian/user-flags.conf
 
 # Wayland desktop entries. Power actions live in the launcher (SUPER + SHIFT + E).
