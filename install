@@ -59,9 +59,39 @@ gpu_lists() {
     done | sort -u
 }
 
+# pacman's config comes first, so the packages below can use the repositories
+# it enables. It replaces /etc/pacman.conf; the first run keeps the old one as
+# /etc/pacman.conf.before-nocturne.
+if [[ ! -e /etc/pacman.conf.before-nocturne ]]; then
+    sudo cp /etc/pacman.conf /etc/pacman.conf.before-nocturne
+fi
+sudo cp "$current_dir/pacman.conf" /etc/pacman.conf
+
+# ChatGPT desktop, from OpenAI's own pacman repository. The copy above drops
+# the repository's Include line, so add it back. The signing key is kept in
+# packages/ and pinned by fingerprint. The repository file below matches what
+# chatgpt-bin's install hook writes, so the hook keeps it and the key current.
+openai_key=3BFA0E4AE8B8CC16A2D9BA684A3B4A566C4660E4
+openai_repo=/etc/pacman.d/openai-chatgpt.conf
+sudo pacman-key --add "$current_dir/packages/openai-chatgpt.asc"
+sudo pacman-key --lsign-key "$openai_key"
+if [[ ! -f "$openai_repo" ]]; then
+    sudo tee "$openai_repo" >/dev/null <<'EOF'
+### THIS FILE IS AUTOMATICALLY CONFIGURED ###
+# Remove it and its Include line to opt out of automatic package updates.
+[openai-chatgpt]
+SigLevel = Required DatabaseRequired TrustedOnly
+Server = https://persistent.oaistatic.com/codex-app-prod/linux/arch/$arch
+EOF
+fi
+if ! grep -qxF "Include = $openai_repo" /etc/pacman.conf; then
+    printf '\nInclude = %s\n' "$openai_repo" | sudo tee -a /etc/pacman.conf >/dev/null
+fi
+
 mapfile -t packages < <(
     read_list packages/pacman.txt
     for list in $(gpu_lists); do read_list "$list"; done
+    echo chatgpt-bin
 )
 # Filter out already installed packages
 to_install=()
@@ -71,19 +101,35 @@ for pkg in "${packages[@]}"; do
     fi
 done
 if (( ${#to_install[@]} > 0 )); then
-    sudo pacman -S --noconfirm "${to_install[@]}"
+    # New repositories need a sync, and Arch does not support partial upgrades.
+    sudo pacman -Syu --needed --noconfirm "${to_install[@]}"
 else
     echo "Dependencies already installed."
 fi
 
-# Install paru
+# Groups and the login shell come right after the packages that create them,
+# so a later step that fails cannot leave them out.
+sudo usermod -aG libvirt $USER
+sudo usermod -aG libvirt-qemu $USER
+sudo usermod -aG kvm $USER
+sudo usermod -aG docker $USER
+sudo usermod -aG video $USER
+
+# zsh as the login shell; its config is zshrc, linked below
+if [[ "$(getent passwd "$USER" | cut -d: -f7)" != */zsh ]]; then
+    sudo chsh -s /usr/bin/zsh "$USER"
+fi
+
+# Install paru. makepkg also builds a debug package by default; only paru
+# itself is installed.
 if ! command -v paru >/dev/null; then
     (
         build_dir=$(mktemp -d)
         trap 'rm -rf -- "$build_dir"' EXIT
         git clone https://aur.archlinux.org/paru-bin.git "$build_dir"
         cd "$build_dir"
-        makepkg -si --noconfirm
+        makepkg -s --noconfirm
+        sudo pacman -U --noconfirm "$(makepkg --packagelist | grep -v -- '-debug-')"
     )
 else
     echo "Paru already installed."
@@ -309,34 +355,6 @@ bat cache --build >/dev/null
 # Reload font cache
 fc-cache
 
-# Install pacman config
-sudo cp "$current_dir/pacman.conf" /etc/pacman.conf
-
-# ChatGPT desktop, from OpenAI's own pacman repository. The copy above drops
-# the repository's Include line, so add it back. The signing key is kept in
-# packages/ and pinned by fingerprint. The repository file below matches what
-# chatgpt-bin's install hook writes, so the hook keeps it and the key current.
-openai_key=3BFA0E4AE8B8CC16A2D9BA684A3B4A566C4660E4
-openai_repo=/etc/pacman.d/openai-chatgpt.conf
-sudo pacman-key --add "$current_dir/packages/openai-chatgpt.asc"
-sudo pacman-key --lsign-key "$openai_key"
-if [[ ! -f "$openai_repo" ]]; then
-    sudo tee "$openai_repo" >/dev/null <<'EOF'
-### THIS FILE IS AUTOMATICALLY CONFIGURED ###
-# Remove it and its Include line to opt out of automatic package updates.
-[openai-chatgpt]
-SigLevel = Required DatabaseRequired TrustedOnly
-Server = https://persistent.oaistatic.com/codex-app-prod/linux/arch/$arch
-EOF
-fi
-if ! grep -qxF "Include = $openai_repo" /etc/pacman.conf; then
-    printf '\nInclude = %s\n' "$openai_repo" | sudo tee -a /etc/pacman.conf >/dev/null
-fi
-if ! pacman -Qq chatgpt-bin &>/dev/null; then
-    # A new repository needs a sync, and Arch does not support partial upgrades.
-    sudo pacman -Syu --needed --noconfirm chatgpt-bin
-fi
-
 # Boot and Secure Boot files are not installed automatically; see system/README.md.
 
 # Ranger dev icons
@@ -370,23 +388,32 @@ sudo systemctl enable docker.service --now
 # Tailscale's daemon. Signing in is by hand: sudo tailscale up
 sudo systemctl enable tailscaled.service --now
 
-# Configure virtual machines
+# Configure virtual machines. libvirt's default network cannot start when its
+# subnet is already in use, as inside another virtual machine; that is no
+# reason to stop the rest of the install.
 sudo systemctl enable libvirtd.service --now
 active_networks=$(sudo virsh net-list --name)
 if ! grep -Fxq default <<< "$active_networks"; then
-    sudo virsh net-start default
+    sudo virsh net-start default ||
+        echo "libvirt's default network did not start, so virtual machines have no network yet. See: sudo virsh net-start default" >&2
 fi
 sudo virsh net-autostart default
 
-sudo usermod -aG libvirt $USER
-sudo usermod -aG libvirt-qemu $USER
-sudo usermod -aG kvm $USER
-sudo usermod -aG docker $USER
-sudo usermod -aG video $USER
-
-# zsh as the login shell; its config is zshrc, linked above
-if [[ "$(getent passwd "$USER" | cut -d: -f7)" != */zsh ]]; then
-    sudo chsh -s /usr/bin/zsh "$USER"
+# The Nocturne login screen, through greetd. `nocturne greeter install` copies
+# it into /etc; run it again after changing the accent or the wallpaper. greetd
+# is enabled only when no other login manager is, so a chosen one stays.
+if "$current_dir/bin/nocturne" greeter install; then
+    display_manager=$(readlink /etc/systemd/system/display-manager.service || true)
+    display_manager=${display_manager##*/}
+    display_manager=${display_manager%.service}
+    if [[ -z "$display_manager" ]]; then
+        sudo systemctl enable greetd.service
+    elif [[ "$display_manager" != greetd ]]; then
+        echo "$display_manager is the login manager, so greetd was not enabled. To switch:" >&2
+        echo "  sudo systemctl disable $display_manager && sudo systemctl enable greetd" >&2
+    fi
+else
+    echo "The login screen could not be installed. Try again with: nocturne greeter install" >&2
 fi
 
 flatpak override --filesystem=~/.themes:ro --filesystem=~/.icons:ro --user

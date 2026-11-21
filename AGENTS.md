@@ -78,7 +78,9 @@ was installed.
 
 - `system/` holds files for `/etc` and `/usr/local`. Nothing installs them
   automatically, because they control how the machine boots;
-  `system/README.md` says how. Disk identifiers there are placeholders.
+  `system/README.md` says how. The login screen's two files are the
+  exception: `install` runs `nocturne greeter install`. Disk identifiers
+  there are placeholders.
 - The login screen (`greeter/`) runs from root-owned copies in
   `/etc/greetd/nocturne`. Preview changes with `nocturne greeter preview`;
   the user installs them with `nocturne greeter install`, which needs sudo.

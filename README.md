@@ -70,13 +70,13 @@ in `~/.local/state/nocturne`, and the weather location in
 
 ### Login screen
 
-`install` does not set up the login screen, because that means replacing the
-login manager you already have. It only installs what the screen needs
-(`greetd`, `labwc`, `wlr-randr` and `greetd-tuigreet`). To switch to it:
+`install` sets up the login screen with `nocturne greeter install`, and
+enables greetd when no other login manager is enabled, as on a fresh install.
+If one is, such as GNOME's gdm, it is left alone and `install` says how to
+switch:
 
 ```sh
 nocturne greeter preview         # optional: look at it in a window first
-nocturne greeter install         # copies it into /etc and points greetd at it
 sudo systemctl disable gdm       # or whichever login manager is enabled now
 sudo systemctl enable greetd
 ```

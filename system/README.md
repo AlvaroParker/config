@@ -2,7 +2,8 @@
 
 Root-owned files from `/etc` and `/usr/local/bin` that this laptop depends on.
 The install script does not copy them: they control how the machine boots, so
-put them in place by hand and check each one first. The folder layout mirrors
+put them in place by hand and check each one first. The login screen's two
+files are the exception; see [The login screen](#the-login-screen). The folder layout mirrors
 the paths on the system.
 
 | File | What it does |
@@ -174,8 +175,9 @@ cannot start at all, the first console keeps showing the frozen splash;
 
 ## The login screen
 
-The login screen is separate and does not touch the boot image. One command
-installs or updates it:
+The login screen is separate and does not touch the boot image. The repo's
+`install` sets it up on a new machine, and enables greetd when no other login
+manager is enabled. One command installs or updates it:
 
 ```sh
 nocturne greeter preview   # look at it in a window first
