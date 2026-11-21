@@ -121,11 +121,10 @@ cryptsetup` shows the unlock.
 
 **When the TPM refuses.** A firmware update, a Secure Boot key change or a
 revocation list update (fwupd installs those) changes PCR 7. The boot then
-asks for the disk password once. Type it, and enroll again:
-
-```sh
-sudo systemd-cryptenroll --wipe-slot=tpm2 --tpm2-device=auto --tpm2-pcrs=7 /dev/<encrypted partition>
-```
+asks for the disk password once. Type it, then run `tpm-reenroll`
+(`bin/tpm-reenroll`). It finds the encrypted disk from the boot command line
+and enrolls the TPM again for the current state; `tpm-reenroll status` says
+whether the TPM unlocked this boot and lists the disk's key slots.
 
 **If the boot breaks.** With `rd.shell=0` there is no rescue shell. Turn
 Secure Boot off in the firmware, start the Arch ISO, unlock the disk with its

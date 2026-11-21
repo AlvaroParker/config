@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# Tie the disk's TPM key to how this machine boots now, so the disk unlocks
+# by itself again. Run it after a boot that asked for the disk password
+# because the TPM refused: after a firmware update, a Secure Boot key change
+# or a Secure Boot revocation update (fwupd installs those). See
+# system/README.md, "Unlocking with the TPM".
+#
+#   tpm-reenroll           enroll again (asks for the disk password)
+#   tpm-reenroll status    say whether the TPM unlocked this boot, and list
+#                          the disk's key slots
+set -euo pipefail
+
+if ((EUID != 0)); then
+    exec sudo "$0" "$@"
+fi
+
+# The encrypted disk is the one the boot command line unlocks.
+uuid=$(tr ' ' '\n' </proc/cmdline | sed -n 's/^rd\.luks\.uuid=\(luks-\)\{0,1\}//p' | head -1)
+device="/dev/disk/by-uuid/$uuid"
+if [[ -z "$uuid" || ! -b "$device" ]]; then
+    echo "tpm-reenroll: could not find the encrypted disk from the boot command line" >&2
+    exit 1
+fi
+
+this_boot() {
+    if journalctl -b --no-pager -q -u 'systemd-cryptsetup@*' 2>/dev/null |
+        grep -q 'TPM policy does not match'; then
+        echo "This boot, the TPM refused and the disk password unlocked the disk."
+    else
+        echo "This boot, the TPM unlocked the disk (or it was not tried)."
+    fi
+}
+
+case "${1:-}" in
+    status)
+        this_boot
+        echo
+        systemd-cryptenroll "$device"
+        ;;
+    "")
+        this_boot
+        echo "Enrolling the TPM again for $device. The new key replaces the old"
+        echo "one; the disk password stays."
+        systemd-cryptenroll --wipe-slot=tpm2 --tpm2-device=auto --tpm2-pcrs=7 "$device"
+        echo "Done. The next boot should unlock without the password."
+        ;;
+    *)
+        echo "usage: tpm-reenroll [status]" >&2
+        exit 2
+        ;;
+esac
