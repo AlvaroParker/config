@@ -170,12 +170,22 @@ blankwindow {
 
 /* Control centre ---------------------------------------------------------- */
 
+/* The panel is a scrolled window around one box, and swaync makes the box as
+   tall as the panel. Padding or a border on the window would leave the box
+   taller than the room inside it, so the whole panel would scroll and cut
+   off the top row. The box carries the surface instead. */
 .control-center {
+    padding: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: @text;
+}
+
+.control-center > viewport > .widgets {
     padding: 8px;
     border: 1px solid @line;
     border-radius: 10px;
     background: alpha(@ink_2, 0.9);
-    color: @text;
 }
 
 .control-center .control-center-list {
