@@ -8,9 +8,12 @@ replaces the generic guide that used to be in `secure-arch/`, which gave
 Linux the whole disk and would have formatted the EFI partition Windows
 boots from.
 
-Nobody has run this guide from start to finish yet. Each step was checked
-against the running system and the man pages where that was possible. Steps
-marked **Unverified** could not be checked; read them with care.
+The guide was run from start to finish in a virtual machine set up like this
+laptop: the same five partitions with stand-ins for Windows', an emulated
+TPM, and firmware in Secure Boot setup mode. It worked with btrfs, through
+`./install` and a real hibernation. What a virtual machine cannot show,
+mostly BitLocker and the ThinkPad's own firmware menus, is marked
+**Unverified**; read those parts with care.
 
 ## The disk
 
@@ -26,9 +29,11 @@ the last partition, and writes one file on the first.
 | `nvme0n1p5` | 1.3 TiB | LUKS2, holding LVM volume group `vg` with one volume, `root` (ext4, mounted at `/`) | The only partition Arch reinstalls |
 
 - The partition table stays as it is. No partitioning tool (`fdisk`,
-  `gdisk`, `cfdisk`, `parted`) is needed, so do not open one.
-- There is no `/home` volume. Home lives on the root volume, so both ways
-  of reinstalling erase it.
+  `gdisk`, `cfdisk`, `parted`) is needed, so do not open one. Making the
+  new encryption in step 3 erases `nvme0n1p5` by itself; there is no need
+  to delete the partition first.
+- There is no `/home` volume. Home lives on the root volume, so the
+  reinstall erases it.
 - There is no swap partition. Swap is a file, `/swapfile`, on the root
   volume.
 - The boot image is a single signed file on the EFI partition,
@@ -56,21 +61,19 @@ nvme0n1       1.9T
 
 If the sizes or types differ, stop and find out why before going on.
 
-## Two ways to reinstall
+## What the reinstall makes new
 
-Both erase everything on the root volume, including home. They differ in
-what happens to the encryption.
+Everything on `nvme0n1p5` starts over: the encryption, with a new disk
+password, the file system, and the Secure Boot keys that sign the boot
+image. Nothing from the old system comes back except the few files step 1
+copies off. Three things follow from that:
 
-| | **Keep the container**: reformat the root volume only | **New container**: recreate LUKS on `nvme0n1p5` |
-| --- | --- | --- |
-| When it fits | The normal case. The encryption is fine and you only want a clean system | You want a new disk password and a new encryption key, the LUKS header is damaged, or the LVM layout should change |
-| Disk password | Stays the same | You choose a new one |
-| LUKS UUID (`<LUKS_UUID>`) | Stays the same | Changes |
-| TPM unlock | The TPM key stays in the LUKS header. It keeps working if the Secure Boot keys stay the same; otherwise enroll it again | Gone. Enroll it again |
-| `<SWAP_UUID>`, `<SWAP_OFFSET>` | Change: the root file system and the swap file are new | Change |
-
-The three placeholders are the disk values in
-`system/etc/dracut.conf.d/cmdline.conf`. Step 6 shows how to find each one.
+- The three disk values in `system/etc/dracut.conf.d/cmdline.conf`
+  (`<LUKS_UUID>`, `<SWAP_UUID>`, `<SWAP_OFFSET>`) all change. Step 6 shows
+  how to find each one.
+- The TPM key goes with the old encryption. Step 9 enrolls a new one.
+- New Secure Boot keys replace the firmware's, so Windows' BitLocker may
+  ask for its recovery key once. Step 1 says how to avoid that.
 
 ## Btrfs instead of ext4
 
@@ -82,17 +85,16 @@ part of the plan, so there are no subvolumes: one file system on
 
 LUKS and LVM stay as they are. Btrfs does not need LVM, but keeping `vg/root`
 means the encryption, the TPM unlock and most of the kernel command line do
-not change, and both ways of reinstalling still work.
+not change.
 
-Follow the numbered steps, with these changes. None of them has been run on
-this machine: `btrfs-progs` is not installed here, so the commands come from
-its documentation, not from a test.
+Follow the numbered steps, with these changes. All of them were run in the
+virtual machine, and a hibernation came back to the open session.
 
 | Step | With btrfs |
 | --- | --- |
-| 3, format | `mkfs.btrfs -f /dev/vg/root` in place of `mkfs.ext4`. `-f` is needed because the volume already holds a file system; check the device name first |
+| 3, format | `mkfs.btrfs -f /dev/vg/root` in place of `mkfs.ext4`. `-f` makes it write over any old signature it finds; check the device name first |
 | 3, mount | `mount -o compress=zstd /dev/vg/root /mnt`. The option must be there at this mount: `genfstab` copies it into `fstab`, and the files `pacstrap` writes are compressed from the start |
-| 4, packages | Add `btrfs-progs` to `pacstrap`. dracut needs its `btrfs` tool to put btrfs support in the boot image |
+| 4, packages | Add `btrfs-progs` to `pacstrap`. dracut needs its `btrfs` tool, and with it installed, dracut puts btrfs support in the boot image by itself |
 | 4, `fstab` | The `/` entry is `btrfs`, and its options include `compress=zstd:3` |
 | 6, swap file | `btrfs filesystem mkswapfile --size 68g --uuid clear /swapfile` in place of `mkswap`. A swap file on btrfs must not be compressed or copied on write, and this command makes it that way |
 | 6, offset | `btrfs inspect-internal map-swapfile -r /swapfile` prints `<SWAP_OFFSET>`. **Do not use `filefrag`:** on btrfs it prints a number the kernel cannot use, and hibernation then fails to resume. `genswap` knows the difference, but it is for an installed system, not this step. `<SWAP_UUID>` is found the same way as before |
@@ -111,14 +113,10 @@ Three things to know afterwards:
   `rootfstype` and `rootflags`. Change it once the machine runs btrfs, so
   the repo matches it again.
 
-**Unverified:** that dracut, building in the chroot with `hostonly="yes"`,
-adds its btrfs module by itself. If the new system cannot find its root at
-boot, add a file in `/etc/dracut.conf.d` with `add_dracutmodules+=" btrfs "`
-and build the image again.
-
 ## 1. Before you start
 
-Do these in the running system, before booting the ISO.
+Do these in the running Arch, before booting the ISO. The last one is in
+Windows.
 
 **The BitLocker recovery key.** Write it down somewhere off this laptop.
 It is in the Microsoft account that Windows signed in with, or Windows
@@ -127,28 +125,24 @@ terminal. Turning Secure Boot off and on, and above all changing the Secure
 Boot keys, can make Windows ask for it at its next start. Without it,
 Windows' data is gone.
 
-**The disk password.** To keep the container, you need it: the ISO starts
-with Secure Boot off, so the TPM will not unlock the disk there.
+**Your files.** The reinstall erases home. Three things are worth keeping:
 
-**Your home folder.** Both ways erase it. Copy off what you want to keep,
-including the personal files listed in DESIGN.md's "State outside the repo".
+- `~/.ssh`: the SSH keys, their config and the known hosts.
+- `~/.custom_zshrc`: this machine's environment and secrets.
+- The authenticator app's export. Whoever holds it can make your one-time
+  codes.
 
-**The Secure Boot keys.** sbctl keeps the keys that sign the boot image in
-`/var/lib/sbctl`, on the root volume, so the reinstall erases them. The
-firmware still trusts them afterwards. Restoring them means the firmware's
-keys never change: Windows should not ask for its recovery key, and a kept
-container's TPM key should keep working. Copy them to an encrypted USB
-stick or similar:
+All three are secrets, so copy them as one encrypted archive. `gpg` asks for
+a passphrase to lock it with. Put it on a drive other than the ISO stick,
+which writing the ISO erases:
 
 ```sh
-sudo tar -C /var/lib -czf /path/to/usb/sbctl-keys.tar.gz sbctl
+tar -C ~ -czf - .ssh .custom_zshrc <authenticator export> | gpg --symmetric -o /path/to/usb/home.tar.gz.gpg
 ```
 
-Treat that file like a password. Whoever holds `db.key` can sign anything
-this laptop will boot, and whoever holds `PK.key` can change which keys the
-firmware trusts. Without the backup, step 7 makes new keys, which changes
-the firmware's keys. If that is the plan, read "New keys" in step 7 now: it
-suggests suspending BitLocker in Windows before you start.
+The rest of DESIGN.md's "State outside the repo" is made again: `install`
+asks for the weather location, and `~/.gitconfig` and the logins (`gh`,
+Codex, Claude) are set up by hand.
 
 **The EFI partition's files.** Nothing in this guide formats the EFI
 partition, but Windows' boot manager lives there, and a copy makes a slip
@@ -158,22 +152,15 @@ recoverable:
 sudo tar -C /boot/efi -czf /path/to/usb/efi-files.tar.gz EFI
 ```
 
-**To keep the container, its header.** The LUKS header holds the key slots.
-If it is damaged, the disk password no longer opens the disk. A copy can be
-written back with `cryptsetup luksHeaderRestore`:
-
-```sh
-sudo cryptsetup luksHeaderBackup /dev/nvme0n1p5 --header-backup-file /path/to/usb/luks-header.img
-```
-
-Keep it as safe as the keys above: with the disk password, it opens the disk.
-
-**For a new container, the LUKS flags.** Recreating the container drops the
-flags saved in the old header. Note them now:
+**The LUKS flags.** The new encryption starts without the flags saved in
+the old header. Note them now:
 
 ```sh
 sudo cryptsetup luksDump /dev/nvme0n1p5 | grep -i flags
 ```
+
+With a TPM key enrolled, it also prints lines about that key. The
+container's own flags are on the line that starts with `Flags:`.
 
 On this machine TRIM reaches the drive through the encryption (`lsblk -D`
 shows discard sizes on the `luks-…` device), and `fstrim.timer` uses it, so
@@ -183,6 +170,21 @@ shows.
 
 **A USB stick with the Arch ISO.** Writing the ISO erases the stick. Check
 the stick's name with `lsblk` first, and never write to `nvme0n1`.
+
+**Last, suspend BitLocker.** Step 9 replaces the firmware's Secure Boot
+keys, which changes what the TPM measures, so BitLocker will very likely
+ask for its recovery key once. To avoid the question, start Windows, run
+this in an administrator PowerShell, then shut Windows down and go straight
+to step 2:
+
+```powershell
+Suspend-BitLocker -MountPoint "C:" -RebootCount 2
+```
+
+Its protection comes back by itself after two Windows starts, sealed to the
+new keys. **Unverified** on this machine, as is whether BitLocker asks at
+all; it depends on how Windows sealed its key. Keep the recovery key at
+hand either way.
 
 ## 2. Boot the ISO
 
@@ -206,25 +208,11 @@ running Arch, `systemctl reboot --firmware-setup` also opens the setup.
 
 ## 3. Prepare the root volume
 
-Do one of the two. Both end with an empty ext4 file system on
-`/dev/vg/root`. For btrfs, the format and mount commands differ; see
+This ends with an empty ext4 file system on `/dev/vg/root`. For btrfs, the
+format and mount commands differ; see
 [Btrfs instead of ext4](#btrfs-instead-of-ext4).
 
-### Keep the container
-
-```sh
-lsblk -dno FSTYPE /dev/nvme0n1p5             # must print crypto_LUKS
-cryptsetup open /dev/nvme0n1p5 cryptlvm      # asks for the disk password
-vgchange -ay vg
-lsblk /dev/nvme0n1p5                         # cryptlvm and vg-root under it
-mkfs.ext4 /dev/vg/root
-```
-
-Flags saved in the header apply by themselves when the container opens. If
-`mkfs.ext4` says the volume already holds a file system and asks whether to
-go on, that is the old system: answer `y`.
-
-### New container
+### The encryption
 
 This erases the whole of `nvme0n1p5`. Check it first, and read the device
 name in `luksFormat`'s question before typing `YES`.
@@ -260,13 +248,6 @@ That is the shared EFI partition: mount it, never format it. The
 `fmask`/`dmask` options keep it readable by root only, as now, and
 `genfstab` copies them into `fstab`.
 
-If you are restoring the Secure Boot keys, copy the backup in now, so the
-chroot can reach it:
-
-```sh
-cp /path/to/usb/sbctl-keys.tar.gz /mnt/root/
-```
-
 ## 4. Install the base system
 
 ```sh
@@ -290,13 +271,16 @@ before it runs:
 | `networkmanager` | The network. The desktop's Wi-Fi menu drives it with `nmcli`. The old guide's `iwd` and `dhcpcd` are not used |
 | `git`, `zsh`, `sudo`, `vim` | To clone this repo, the login shell, and editing |
 
-If pacman asks which package should provide `initramfs`, pick `dracut`.
+If pacman asks which package should provide `initramfs`, pick `dracut`. A
+question about which package provides `iptables` may scroll past, answered
+with the default; that is fine.
 
-dracut's and sbctl's own pacman hooks run during `pacstrap` and may print
-errors, because the boot files are not in place yet. They are harmless: step
-7 builds the image. dracut's hook may also leave `/boot/vmlinuz-linux` and
-`/boot/initramfs-linux.img` on the root volume; nothing uses them, and they
-can be deleted. **Unverified:** what these hooks print in `pacstrap`.
+dracut's and sbctl's own pacman hooks run during `pacstrap`, before the boot
+files are in place. dracut's prints `dracut[E]: i18n_vars not set!` and
+sbctl's prints `Generating EFI bundles....`. Both are harmless: step 7
+builds the real image. `/boot` also ends up holding `vmlinuz-linux`,
+`initramfs-linux.img` and `intel-ucode.img`. Nothing boots from them; the
+image on the EFI partition carries its own copies.
 
 Write `fstab`:
 
@@ -423,39 +407,21 @@ until after `./install`, because it needs packages `install` brings.
 
 `secureboot.conf` tells dracut to sign the image with the key in
 `/var/lib/sbctl/keys/db/`, so the keys must be there before the image is
-built. Do one of the two.
-
-**Restore the backup** (step 1). The firmware already trusts these keys, so
-nothing changes in the firmware:
-
-```sh
-tar -C /var/lib -xzf /root/sbctl-keys.tar.gz
-rm /root/sbctl-keys.tar.gz
-ls /var/lib/sbctl/keys                        # db  KEK  PK
-```
-
-**New keys**, when there is no backup:
+built. Make new ones:
 
 ```sh
 sbctl create-keys
 ```
 
-The firmware does not trust new keys until they are enrolled, which happens
-after the first boot (step 9). Enrolling replaces the firmware's keys, which
-changes what the TPM measures in PCR 7. Windows' BitLocker will very likely
-ask for its recovery key once, and a kept container's TPM key stops working
-until it is enrolled again. **Unverified:** that BitLocker asks; it depends
-on how Windows sealed its key. To avoid the question, suspend BitLocker in
-Windows before step 2, in an administrator PowerShell, then shut Windows
-down and go straight to the reinstall:
-`Suspend-BitLocker -MountPoint "C:" -RebootCount 2`. Its protection comes
-back by itself after two Windows starts, sealed to the new keys.
-**Unverified** on this machine. Keep the recovery key at hand either way.
+The firmware does not trust them until they are enrolled, after the first
+boot (step 9). Enrolling replaces the firmware's keys, which is why step 1
+suspends BitLocker.
 
 ### Build the image
 
 ```sh
 kver=$(ls /usr/lib/modules)                   # one kernel is installed
+mkdir -p /boot/efi/EFI/Linux                  # dracut does not make the folder
 dracut --force --uefi --kver "$kver" /boot/efi/EFI/Linux/bootx64.efi
 sbverify --cert /var/lib/sbctl/keys/db/db.pem /boot/efi/EFI/Linux/bootx64.efi
 ```
@@ -463,12 +429,11 @@ sbverify --cert /var/lib/sbctl/keys/db/db.pem /boot/efi/EFI/Linux/bootx64.efi
 `sbverify` should say `Signature verification OK`. The image replaces the
 old system's at the same path; nothing else on the EFI partition changes.
 
-**Unverified:** building in the chroot with `hostonly="yes"` (from
-`flags.conf`). dracut then picks drivers from the ISO's running system, which
-should match this hardware. If the new system cannot find its disk at boot,
-come back to the chroot (see [If the boot breaks](#if-the-boot-breaks)),
-build again with `--no-hostonly` added, and once the system runs, rebuild
-without it.
+`flags.conf` sets `hostonly="yes"`, so dracut picks drivers from the ISO's
+running system, which is this hardware. That worked in the test. If the new
+system ever cannot find its disk at boot, come back to the chroot (see
+[If the boot breaks](#if-the-boot-breaks)), build again with
+`--no-hostonly` added, and once the system runs, rebuild without it.
 
 ### The firmware boot entry
 
@@ -502,25 +467,24 @@ umount -R /mnt
 reboot
 ```
 
-Open the firmware setup (F1) on the way.
-
-- **Restored keys:** turn Secure Boot back on. The disk may unlock by itself
-  (a kept container, with PCR 7 as before) or ask for its password.
-- **New keys:** put Secure Boot in Setup Mode by clearing its keys. On
-  ThinkPads the option is under Security, Secure Boot, named something like
-  "Reset to Setup Mode" or "Clear All Secure Boot Keys" (**Unverified**
-  wording). Do not start Windows until step 9 is done.
+Open the firmware setup (F1) on the way, and put Secure Boot in Setup Mode
+by clearing its keys. On ThinkPads the option is under Security, Secure
+Boot, named something like "Reset to Setup Mode" or "Clear All Secure Boot
+Keys" (**Unverified** wording). Do not start Windows until step 9 is done.
+The disk asks for its password at this boot and the next; the TPM takes
+over in step 9.
 
 ## 9. First boot
 
-There is no login screen yet. Log in on the text console as your user, then
-connect:
+There is no login screen yet. Log in on the text console as your user. zsh
+finds no `.zshrc` and opens its setup menu for new users: press `q`.
+`install` links the repo's `.zshrc` in later. Then connect:
 
 ```sh
 sudo nmcli --ask device wifi connect "<SSID>"
 ```
 
-**New keys only.** Enroll them, with Microsoft's beside them:
+**The Secure Boot keys.** Enroll them, with Microsoft's beside them:
 
 ```sh
 sudo sbctl status                             # Setup Mode: Enabled
@@ -540,25 +504,25 @@ this image, which already carries the TPM module. system/README.md,
 [Unlocking with the TPM](system/README.md#unlocking-with-the-tpm), explains
 why the order matters.
 
-- Kept container, and the boot did not ask for the disk password: nothing to
-  do. The old TPM key still works.
-- Kept container, and it asked: enroll again. The old TPM key is replaced;
-  the password stays.
+```sh
+sudo systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=7 /dev/nvme0n1p5
+```
 
-  ```sh
-  sudo systemd-cryptenroll --wipe-slot=tpm2 --tpm2-device=auto --tpm2-pcrs=7 /dev/nvme0n1p5
-  ```
-
-  After `./install`, `tpm-reenroll` runs the same command.
-- New container: enroll for the first time.
-
-  ```sh
-  sudo systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=7 /dev/nvme0n1p5
-  ```
-
-Restart: no password prompt means it worked.
+Restart: no password prompt means it worked. The password still opens the
+disk too. Later, when PCR 7 changes, `tpm-reenroll` (after `./install`)
+enrolls the TPM again.
 
 ## 10. Hand over to `./install` and system/README.md
+
+First bring back the files from step 1. With the USB stick mounted:
+
+```sh
+gpg -d /path/to/usb/home.tar.gz.gpg | tar -C ~ -xzf -
+chmod 700 ~/.ssh
+```
+
+The authenticator export lands in home; import it into the app, then
+delete it. Then:
 
 ```sh
 cd ~/config
@@ -574,8 +538,8 @@ Then:
 2. Follow [system/README.md](system/README.md) for the rest: the splash, the
    login screen, the fingerprint, sleep, the power settings, and the network
    rules for virtual machines. Check the greeter's user id
-   before installing `skip-greeter.conf`; a new install may give it a
-   number other than 954.
+   before installing `skip-greeter.conf`: it is 954 today, and the test
+   install gave it 955.
 3. README.md's [Installation](README.md#installation) section covers
    mirrors and the login screen.
 4. Test hibernation with `systemctl hibernate`. If it does not come back to
