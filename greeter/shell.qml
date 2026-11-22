@@ -84,16 +84,14 @@ ShellRoot {
     }
 
     // ---- The conversation with greetd ---------------------------------
-    // The login starts as soon as the screen shows, so the fingerprint
-    // sensor listens straight away (system/etc/pam.d/greetd). While it
-    // listens, greetd cannot take a password: one typed meanwhile waits
-    // ("Checking") and goes when the sensor gives up, after 10 seconds.
-    // After that only the password works, until a failed try starts over.
+    // The login starts as soon as the screen shows, so greetd is already
+    // asking for the password when you start typing. One typed in the moment
+    // before it asks (at the start, or after a failed try) is held and sent
+    // when the question arrives ("Checking" meanwhile).
     //
     // greetd may also ask something else (a one-time code, a new password);
     // that question takes the name's place and the same field answers it.
     property bool started: false    // a login is under way in greetd
-    property bool listening: false  // the fingerprint sensor is waiting
     property bool wanted: false     // greetd asked for the password, none typed yet
     property string password: ""    // typed, not yet asked for
     property bool checking: false   // between Enter and the answer
@@ -164,7 +162,6 @@ ShellRoot {
 
     function settle() {
         started = false;
-        listening = false;
         wanted = false;
         password = "";
         question = "";
@@ -174,19 +171,6 @@ ShellRoot {
         patience.stop();
         field.clear();
         field.takeFocus();
-    }
-
-    // pam_fprintd's messages, in the screen's own words.
-    function fingerprint(message, error) {
-        if (/^(Place|Swipe) your/.test(message)) {
-            listening = true;
-        } else if (/timed out/.test(message)) {
-            listening = false;
-        } else if (/Failed to match/.test(message)) {
-            trouble = "That fingerprint did not match.";
-        } else {
-            notice = message; // try again, centre the finger, and so on
-        }
     }
 
     function power(action) {
@@ -210,15 +194,12 @@ ShellRoot {
 
         function onAuthMessage(message, error, responseRequired, echoResponse) {
             if (!responseRequired) {
-                if (shell.listening || /finger|sensor|reader/i.test(message))
-                    shell.fingerprint(message, error);
-                else if (error)
+                if (error)
                     shell.trouble = message;
                 else
                     shell.notice = message;
                 return;
             }
-            shell.listening = false;
             if (shell.password !== "") {
                 const answer = shell.password;
                 shell.password = "";
@@ -249,7 +230,7 @@ ShellRoot {
             const said = shell.trouble;
             shell.settle();
             shell.trouble = said || "That password did not work.";
-            // Start over, so the fingerprint sensor listens again.
+            // Start over, so the next try has a question to answer.
             again.restart();
         }
 
@@ -409,7 +390,7 @@ ShellRoot {
                     lineHeight: 20 * view.u
                     lineHeightMode: Text.FixedHeight
                     elide: Text.ElideRight
-                    text: shell.trouble || shell.notice || (shell.capsLock ? "Caps Lock is on" : shell.slow ? "Checking" : shell.listening ? "Or touch the fingerprint sensor" : "")
+                    text: shell.trouble || shell.notice || (shell.capsLock ? "Caps Lock is on" : shell.slow ? "Checking" : "")
                     color: shell.trouble ? Nocturne.red : shell.notice ? Nocturne.text : shell.capsLock ? Nocturne.gold : Nocturne.text
                     font.family: "IBM Plex Sans"
                     font.pixelSize: 13 * view.u

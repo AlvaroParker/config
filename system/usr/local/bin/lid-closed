@@ -1,8 +1,8 @@
 #!/bin/sh
-# Succeeds when the laptop's lid is closed. The PAM files in system/etc/pam.d
-# run it first, so with the lid shut (docked, on an external display) they
-# skip the fingerprint sensor, which cannot be reached, and ask for the
-# password straight away.
+# Succeeds when the laptop's lid is closed. The polkit PAM file in
+# system/etc/pam.d runs it first, so with the lid shut (docked, on an external
+# display) it skips the fingerprint sensor, which cannot be reached, and asks
+# for the password straight away.
 for state in /proc/acpi/button/lid/*/state; do
     /usr/bin/grep -qs closed "$state" && exit 0
 done

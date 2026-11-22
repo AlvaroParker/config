@@ -118,8 +118,8 @@ mpv
 # Unlocking the disk with the TPM: dracut's tpm2-tss module needs these tools
 # to go into the boot image (system/README.md, "Unlocking with the TPM")
 tpm2-tools
-# Fingerprint for the lock screen, and for polkit and the login screen
-# through the PAM files in system/etc/pam.d
+# Fingerprint for the lock screen, and for polkit through the PAM file in
+# system/etc/pam.d
 fprintd
 # Other sessions, picked on the login screen. GNOME stays usable, and GDM stays
 # installed (disabled) as a way back to GNOME's own login screen.
