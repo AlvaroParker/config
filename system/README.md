@@ -9,13 +9,12 @@ the paths on the system.
 | File | What it does |
 | --- | --- |
 | `etc/modprobe.d/thinkpad_acpi.conf` | Lets `bin/set-fan` control the ThinkPad fan |
-| `etc/dracut.conf.d/cmdline.conf` | Kernel command line for the unified kernel image: encrypted root unlocked by the TPM, hibernation, fan control, and a quiet boot. The GPU (Meteor Lake) uses `i915`, the driver Intel supports for it; `xe` runs it only when forced, which taints the kernel |
-| `etc/dracut.conf.d/tpm2.conf` | Puts the TPM's libraries in the boot image. See [Unlocking with the TPM](#unlocking-with-the-tpm) |
+| `etc/dracut.conf.d/cmdline.conf` | Kernel command line for the boot images: encrypted root unlocked by the TPM, hibernation, fan control, and a quiet boot. The GPU (Meteor Lake) uses `i915`, the driver Intel supports for it; `xe` runs it only when forced, which taints the kernel |
+| `etc/dracut.conf.d/tpm2.conf` | Puts the TPM's libraries in the boot images. See [Unlocking with the TPM](#unlocking-with-the-tpm) |
 | `etc/dracut.conf.d/drivers.conf`, `flags.conf` | Extra drivers, zstd compression and host-only images |
-| `etc/dracut.conf.d/secureboot.conf` | Signs the image with the sbctl keys |
-| `etc/pacman.d/hooks/90-dracut-install.hook`, `60-dracut-remove.hook` | Rebuild or remove the kernel image when the kernel package changes |
-| `etc/pacman.d/hooks/zz-sbctl.hook` | Re-signs the image after every kernel update |
-| `usr/local/bin/dracut-install.sh`, `dracut-remove.sh` | The scripts those hooks run |
+| `etc/dracut.conf.d/secureboot.conf` | Signs the images with the sbctl keys |
+| `usr/local/bin/boot-image` | Builds one signed boot image per installed kernel, and lists them with their firmware entries. See [The boot images](#the-boot-images) |
+| `etc/pacman.d/hooks/90-dracut-install.hook`, `60-dracut-remove.hook` | Run `boot-image`: build a kernel's image when its package is installed or updated, and remove the image when the package is removed. They take the place of dracut's own hooks of the same name |
 | `etc/systemd/system/plymouth-quit.service.d/retain-splash.conf` | Keeps the boot splash on screen until the login screen takes over |
 | `etc/systemd/system/systemd-pcrlogin@954.service.d/skip-greeter.conf` | Stops a TPM measurement of the greeter user from holding the login screen back by about 1.7 seconds. `954` is the greeter's user id on this machine; check it with `id -u greeter` and rename the folder if it differs |
 | `etc/greetd/config.toml` | The login screen: runs the script below on the first console |
@@ -49,7 +48,7 @@ repo keeps placeholders. Fill them in when installing:
 sudo install -Dm644 etc/modprobe.d/thinkpad_acpi.conf /etc/modprobe.d/thinkpad_acpi.conf
 sudo install -Dm644 -t /etc/dracut.conf.d etc/dracut.conf.d/*.conf
 sudo install -Dm644 -t /etc/pacman.d/hooks etc/pacman.d/hooks/*.hook
-sudo install -Dm755 -t /usr/local/bin usr/local/bin/*.sh
+sudo install -Dm755 -t /usr/local/bin usr/local/bin/boot-image
 sudo install -Dm644 -t /etc/systemd/system/plymouth-quit.service.d etc/systemd/system/plymouth-quit.service.d/retain-splash.conf
 sudo install -Dm644 -t /etc/systemd/system/systemd-pcrlogin@954.service.d etc/systemd/system/systemd-pcrlogin@954.service.d/skip-greeter.conf
 sudoedit /etc/dracut.conf.d/cmdline.conf   # replace the three placeholders
@@ -58,16 +57,83 @@ sudoedit /etc/dracut.conf.d/cmdline.conf   # replace the three placeholders
 The fingerprint, sleep, power and network files are installed the same way;
 their sections below have the commands.
 
-## The boot image
+## The boot images
 
-The files in `etc/dracut.conf.d` only take effect when the image is rebuilt.
-The pacman hook does that on every kernel update. After changing one by hand,
-rebuild the image and check that it is signed:
+There is no boot loader. Each installed kernel has one signed file on the EFI
+partition, named after its package, and the firmware starts that file directly
+from a boot entry of its own:
+
+| Kernel | Image | Boot entry | For |
+| --- | --- | --- | --- |
+| `linux` | `EFI/Linux/arch-linux.efi` | `Arch Linux (linux)` | Every day |
+| `linux-lts` | `EFI/Linux/arch-linux-lts.efi` | `Arch Linux (linux-lts)` | The way back when the first does not start |
+
+There are two because one image is one way to boot. With a single kernel, an
+update that breaks the screen, the disk or hibernation leaves only the Arch
+ISO. `linux-lts` is an older, long-term series, so a fault that is new in
+`linux` is rarely in it. `linux-zen` would not do as the second kernel: it
+follows the same releases as `linux`.
+
+`boot-image` builds the images. For each kernel, dracut packs the kernel, the
+initramfs and the command line from `etc/dracut.conf.d` into one file and
+signs it. The new file is written beside the old one and takes its place only
+once it is whole and signed, so a failed build leaves the image that last
+worked. The pacman hooks build a kernel's image when its package is installed
+or updated, and remove the image when the package is removed.
 
 ```sh
-sudo dracut --force --uefi --kver "$(uname -r)" /boot/efi/EFI/Linux/bootx64.efi
-sudo sbctl verify
+boot-image                    # each kernel, its image and its boot entry
+sudo boot-image build         # build every image again
+sudo boot-image build linux   # or only one
 ```
+
+Run `boot-image` now and then, and after a firmware update, which can drop
+boot entries. It says `fix` for a kernel with no image, an image that still
+holds an older kernel, a missing signature or a missing boot entry.
+
+**Choosing at boot.** The firmware tries the entries in its boot order and
+goes on to the next when an image is missing or its signature is wrong. A
+kernel that starts and then hangs is not such a case: press F12 at the Lenovo
+logo and pick `Arch Linux (linux-lts)`. Both images are signed with the same
+key, and that is what the TPM checks, so the disk unlocks by itself under
+either; `tpm-reenroll status` says whether it did. A session hibernated
+under one kernel cannot be resumed by the other. It is lost, as after a power
+cut. So after hibernating under the second kernel, pick it again with F12 at
+power on.
+
+**After changing a file in `etc/dracut.conf.d`**, the images only pick it up
+when rebuilt. Rebuild one, restart into it, and rebuild the other only when
+that worked. A mistake in the command line then costs one image, not both:
+
+```sh
+sudo boot-image build linux
+# restart and check, then:
+sudo boot-image build linux-lts
+```
+
+**Adding a kernel.** Install its package, and the hook builds its image. Then
+give it a boot entry. `boot-image` prints the command for any kernel that has
+none:
+
+```sh
+sudo efibootmgr --create-only --disk /dev/nvme0n1 --part 1 --label "Arch Linux (linux-lts)" --loader '\EFI\Linux\arch-linux-lts.efi'
+efibootmgr                                    # the new entry's number, and the order now
+sudo efibootmgr --bootorder XXXX,YYYY,ZZZZ    # linux, linux-lts, Windows, then the rest as listed
+sudo efibootmgr --bootnext YYYY               # start the new one once, at the next restart
+```
+
+`XXXX`, `YYYY` and `ZZZZ` stand for entry numbers such as `0001`; put in the
+real ones that `efibootmgr` lists. `--create-only` keeps the new entry out of
+the boot order, so an image that was never tried does not become the default
+by itself. `--bootorder` replaces the whole order: list every number that was
+in it. After the restart, `boot-image` marks the entry the machine started
+from.
+
+**Changing the everyday kernel**, for example to `linux-zen`: install it, add
+its entry as above, and start it once with `--bootnext`. When it works, put
+its number first in the boot order; `linux-lts` stays second. Removing `linux`
+afterwards removes its image. Its entry goes with `sudo efibootmgr --bootnum
+XXXX --delete-bootnum`.
 
 Keep `compress="zstd"` in `flags.conf`. At boot, systemd-stub adds small
 archives after the initramfs, and the kernel's lz4 decoder cannot tell where
@@ -93,7 +159,7 @@ Three parameters at the end of `cmdline.conf` go with it:
 | `rd.shell=0` | No shell in the boot image if something fails. The disk is already unlocked by then, so a shell would be a way in |
 | `rd.emergency=reboot` | Restarts instead |
 
-The kernel image is signed and carries its own command line, so none of this
+Each boot image is signed and carries its own command line, so none of this
 can be changed at the boot menu. A firmware (BIOS) password keeps anyone from
 turning Secure Boot off, which would only make the TPM refuse, but it closes
 that door earlier.
@@ -106,8 +172,7 @@ then:
 
 ```sh
 sudo install -Dm644 etc/dracut.conf.d/tpm2.conf /etc/dracut.conf.d/tpm2.conf
-sudo dracut --force --uefi --kver "$(uname -r)" /boot/efi/EFI/Linux/bootx64.efi
-sudo sbctl verify
+sudo boot-image build linux
 ```
 
 Restart (it still asks for the password this time), and only then enroll:
@@ -116,14 +181,16 @@ Restart (it still asks for the password this time), and only then enroll:
 sudo systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=7 /dev/<encrypted partition>   # asks for the disk password
 ```
 
-The order matters. Once the boot image has TPM support, systemd marks the
+The order matters. Once a boot image has TPM support, systemd marks the
 start of the operating system in PCR 7 (`os-separator` in the journal),
 before the disk unlocks. Enrolling from a boot without that mark ties the key
 to a value no later boot reproduces, and the journal says "TPM policy does
 not match current system state".
 
 Restart again: no password prompt means it worked. `journalctl -b | grep -i
-cryptsetup` shows the unlock.
+cryptsetup` shows the unlock. Then build the second kernel's image as well
+(`sudo boot-image build linux-lts`). Until it carries the TPM support too,
+that kernel asks for the password.
 
 **When the TPM refuses.** A firmware update, a Secure Boot key change or a
 revocation list update (fwupd installs those) changes PCR 7. The boot then
@@ -132,10 +199,12 @@ asks for the disk password once. Type it, then run `tpm-reenroll`
 and enrolls the TPM again for the current state; `tpm-reenroll status` says
 whether the TPM unlocked this boot and lists the disk's key slots.
 
-**If the boot breaks.** With `rd.shell=0` there is no rescue shell. Turn
-Secure Boot off in the firmware, start the Arch ISO, unlock the disk with its
-password, and fix it from there; with Secure Boot off the TPM will not unlock
-anything, which is the point.
+**If the boot breaks.** With `rd.shell=0` there is no rescue shell. Try the
+other kernel first: F12 at the Lenovo logo (see [The boot
+images](#the-boot-images)). If neither starts, turn Secure Boot off in the
+firmware, start the Arch ISO, unlock the disk with its password, and fix it
+from there; with Secure Boot off the TPM will not unlock anything, which is
+the point.
 
 **To go back** to typing the password: `sudo systemd-cryptenroll
 --wipe-slot=tpm2 /dev/<encrypted partition>`. The three parameters can stay;
@@ -175,7 +244,7 @@ cannot start at all, the first console keeps showing the frozen splash;
 
 ## The login screen
 
-The login screen is separate and does not touch the boot image. The repo's
+The login screen is separate and does not touch the boot images. The repo's
 `install` sets it up on a new machine, and enables greetd when no other login
 manager is enabled. One command installs or updates it:
 

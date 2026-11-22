@@ -13,12 +13,15 @@ laptop: the same five partitions with stand-ins for Windows', an emulated
 TPM, and firmware in Secure Boot setup mode. It worked with btrfs, through
 `./install` and a real hibernation. What a virtual machine cannot show,
 mostly BitLocker and the ThinkPad's own firmware menus, is marked
-**Unverified**; read those parts with care.
+**Unverified**; read those parts with care. The second kernel and
+`boot-image` came after that run. They work on the installed laptop, but the
+parts of steps 4 and 7 that use them were never run from the ISO, so they
+are **Unverified** too, until the next reinstall.
 
 ## The disk
 
 The drive is `nvme0n1`. Windows and Arch share it. A reinstall erases only
-the last partition, and writes one file on the first.
+the last partition, and writes the two boot images on the first.
 
 | Partition | Size | What it holds | During a reinstall |
 | --- | --- | --- | --- |
@@ -36,9 +39,10 @@ the last partition, and writes one file on the first.
   reinstall erases it.
 - There is no swap partition. Swap is a file, `/swapfile`, on the root
   volume.
-- The boot image is a single signed file on the EFI partition,
-  `EFI/Linux/bootx64.efi`. There is no boot loader: the firmware entry
-  "Arch Linux" starts the image directly.
+- There is no boot loader. Each of the two kernels has one signed boot image
+  on the EFI partition, `EFI/Linux/arch-linux.efi` and
+  `EFI/Linux/arch-linux-lts.efi`, and a firmware entry that starts it
+  directly. The second is the way back when the first does not start.
 
 Partition numbers are the thing that goes wrong. Before any step that
 erases something, confirm the layout:
@@ -251,7 +255,7 @@ That is the shared EFI partition: mount it, never format it. The
 ## 4. Install the base system
 
 ```sh
-pacstrap -K /mnt base linux linux-firmware intel-ucode sof-firmware \
+pacstrap -K /mnt base linux linux-lts linux-firmware intel-ucode sof-firmware \
     lvm2 dracut tpm2-tools sbctl sbsigntools binutils efibootmgr \
     e2fsprogs dosfstools networkmanager sudo vim git zsh man-db
 ```
@@ -261,12 +265,13 @@ before it runs:
 
 | Packages | Why |
 | --- | --- |
-| `intel-ucode` | CPU microcode; dracut adds it to the image |
+| `linux`, `linux-lts` | Two kernels, each with its own boot image. `linux` is for every day; `linux-lts` is the way back when it does not start |
+| `intel-ucode` | CPU microcode; dracut adds it to the images |
 | `sof-firmware` | Firmware for the laptop's audio |
 | `lvm2`, `dracut` | The encrypted LVM root, and the tool that builds the boot image. dracut stands in for mkinitcpio, which is not used |
 | `tpm2-tools` | Without it, dracut refuses the TPM module that `tpm2.conf` asks for and stops before writing the image |
 | `sbctl`, `sbsigntools`, `binutils` | Secure Boot keys, and the signing and packing that `dracut --uefi` does |
-| `efibootmgr` | The firmware boot entry |
+| `efibootmgr` | The firmware boot entries |
 | `e2fsprogs`, `dosfstools` | File system checks for `/` and `/boot/efi`; `filefrag` for the swap offset |
 | `networkmanager` | The network. The desktop's Wi-Fi menu drives it with `nmcli`. The old guide's `iwd` and `dhcpcd` are not used |
 | `git`, `zsh`, `sudo`, `vim` | To clone this repo, the login shell, and editing |
@@ -278,9 +283,10 @@ with the default; that is fine.
 dracut's and sbctl's own pacman hooks run during `pacstrap`, before the boot
 files are in place. dracut's prints `dracut[E]: i18n_vars not set!` and
 sbctl's prints `Generating EFI bundles....`. Both are harmless: step 7
-builds the real image. `/boot` also ends up holding `vmlinuz-linux`,
-`initramfs-linux.img` and `intel-ucode.img`. Nothing boots from them; the
-image on the EFI partition carries its own copies.
+builds the real images. `/boot` also ends up holding `vmlinuz-linux` and
+`initramfs-linux.img`, the same two for `linux-lts`, and `intel-ucode.img`.
+Nothing boots from them; the images on the EFI partition carry their own
+copies.
 
 Write `fstab`:
 
@@ -373,9 +379,9 @@ The `genswap` script does the same on an installed system, on ext4 or
 btrfs: it makes the file, turns it on, adds the `fstab` line and prints the
 two swap values. It is for making a swap file later. Do not run it after this step, or `fstab`
 gets a second swap line. If the swap file is ever made again, its offset
-changes: put the new value in `cmdline.conf` and rebuild the image.
+changes: put the new value in `cmdline.conf` and rebuild the images.
 
-## 7. Boot files, Secure Boot keys and the boot image
+## 7. Boot files, Secure Boot keys and the boot images
 
 ### Boot files
 
@@ -386,7 +392,7 @@ system/README.md's "Installing"; you are root here, so no `sudo`:
 cd /home/<user>/config/system
 install -Dm644 -t /etc/dracut.conf.d etc/dracut.conf.d/*.conf
 install -Dm644 -t /etc/pacman.d/hooks etc/pacman.d/hooks/*.hook
-install -Dm755 -t /usr/local/bin usr/local/bin/dracut-install.sh usr/local/bin/dracut-remove.sh
+install -Dm755 -t /usr/local/bin usr/local/bin/boot-image
 install -Dm644 etc/modprobe.d/thinkpad_acpi.conf /etc/modprobe.d/thinkpad_acpi.conf
 vim /etc/dracut.conf.d/cmdline.conf           # fill in the three values from step 6
 grep -o 'rd.luks.uuid=[^ ]*\|resume[^ ]*' /etc/dracut.conf.d/cmdline.conf
@@ -396,17 +402,17 @@ The last command should print three lines with real values and no `<`.
 Replace only the placeholders: `rd.luks.uuid=` keeps its `luks-` prefix.
 On btrfs, change `rootfstype` and `rootflags` here too.
 
-The hooks in `/etc/pacman.d/hooks` replace dracut's and sbctl's own hooks of
-the same name. From now on, every kernel update rebuilds
-`EFI/Linux/bootx64.efi` and signs it.
+The hooks in `/etc/pacman.d/hooks` replace dracut's own hooks of the same
+name. From now on, a kernel update rebuilds that kernel's image and signs
+it.
 
 The rest of `system/` (login screen, fingerprint, sleep, the splash) waits
 until after `./install`, because it needs packages `install` brings.
 
 ### Secure Boot keys
 
-`secureboot.conf` tells dracut to sign the image with the key in
-`/var/lib/sbctl/keys/db/`, so the keys must be there before the image is
+`secureboot.conf` tells dracut to sign the images with the key in
+`/var/lib/sbctl/keys/db/`, so the keys must be there before the images are
 built. Make new ones:
 
 ```sh
@@ -417,47 +423,46 @@ The firmware does not trust them until they are enrolled, after the first
 boot (step 9). Enrolling replaces the firmware's keys, which is why step 1
 suspends BitLocker.
 
-### Build the image
+### Build the images
 
 ```sh
-kver=$(ls /usr/lib/modules)                   # one kernel is installed
-mkdir -p /boot/efi/EFI/Linux                  # dracut does not make the folder
-dracut --force --uefi --kver "$kver" /boot/efi/EFI/Linux/bootx64.efi
-sbverify --cert /var/lib/sbctl/keys/db/db.pem /boot/efi/EFI/Linux/bootx64.efi
+boot-image build                              # one image for each kernel
+boot-image                                    # lists them
 ```
 
-`sbverify` should say `Signature verification OK`. The image replaces the
-old system's at the same path; nothing else on the EFI partition changes.
+`boot-image build` checks each image's signature before it puts the image in
+place. `boot-image` should then show `ok` on the `image` line of both `linux`
+and `linux-lts`; its `entry` lines are the next section. The images replace
+the old system's at the same paths; nothing else on the EFI partition
+changes.
 
 `flags.conf` sets `hostonly="yes"`, so dracut picks drivers from the ISO's
 running system, which is this hardware. That worked in the test. If the new
 system ever cannot find its disk at boot, come back to the chroot (see
-[If the boot breaks](#if-the-boot-breaks)), build again with
-`--no-hostonly` added, and once the system runs, rebuild without it.
+[If the boot breaks](#if-the-boot-breaks)), set `hostonly="no"` in
+`/etc/dracut.conf.d/flags.conf` and build again. Once the system runs, set
+it back and rebuild.
 
-### The firmware boot entry
+### The firmware boot entries
 
-The reinstall keeps the image's path, so the firmware entry from the old
-system still points at it. Check:
-
-```sh
-efibootmgr
-```
-
-Look for `Arch Linux` with `EFI\Linux\bootx64.efi`, and a `BootOrder`
-that starts with it, followed by `Windows Boot Manager`. If both hold, there
-is nothing to do. If the entry is missing, add it:
+The reinstall keeps the images' paths, so the firmware entries from the old
+system still point at them. `boot-image` shows each kernel's entry and its
+place in the boot order. `linux` should be at place 1 and `linux-lts` at
+place 2, and `efibootmgr` should list `Windows Boot Manager` after them. If
+all that holds, there is nothing to do. For a kernel without an entry,
+`boot-image` prints the command that adds it:
 
 ```sh
-efibootmgr --create --disk /dev/nvme0n1 --part 1 --label "Arch Linux" --loader '\EFI\Linux\bootx64.efi'
+efibootmgr --create-only --disk /dev/nvme0n1 --part 1 --label "Arch Linux (linux)" --loader '\EFI\Linux\arch-linux.efi'
+efibootmgr --create-only --disk /dev/nvme0n1 --part 1 --label "Arch Linux (linux-lts)" --loader '\EFI\Linux\arch-linux-lts.efi'
 ```
 
 `--part 1` only says where the image lives; it does not change the
-partition. `--create` puts the new entry in the boot order. Run `efibootmgr`
-again, and if the order is wrong, set it with
-`efibootmgr --bootorder XXXX,YYYY,…`: Arch's number, then Windows', then
-the rest as listed. Do not delete the Windows entry or the firmware's own
-entries.
+partition. `--create-only` leaves the boot order alone. Run `efibootmgr`
+to see the new numbers, then set the order with
+`efibootmgr --bootorder XXXX,YYYY,ZZZZ,…`: the number of `linux`, of
+`linux-lts`, of Windows, then the rest as listed. Do not delete the Windows
+entry or the firmware's own entries.
 
 ## 8. Restart
 
@@ -509,8 +514,10 @@ sudo systemd-cryptenroll --tpm2-device=auto --tpm2-pcrs=7 /dev/nvme0n1p5
 ```
 
 Restart: no password prompt means it worked. The password still opens the
-disk too. Later, when PCR 7 changes, `tpm-reenroll` (after `./install`)
-enrolls the TPM again.
+disk too. Start the second kernel once as well (F12 at the Lenovo logo,
+`Arch Linux (linux-lts)`): it is signed with the same key, so it unlocks
+the same way. Later, when PCR 7 changes, `tpm-reenroll` (after
+`./install`) enrolls the TPM again.
 
 ## 10. Hand over to `./install` and system/README.md
 
@@ -531,10 +538,11 @@ cd ~/config
 
 Then:
 
-1. Restart, since `install` may have updated the kernel. Rebuild the boot
-   image as system/README.md, [The boot image](system/README.md#the-boot-image),
-   shows. The pacman hook rebuilds it only when the kernel changes, and the
-   image needs Plymouth, which `install` has now added.
+1. Restart, since `install` may have updated a kernel. Rebuild the boot
+   images with `sudo boot-image build` (system/README.md,
+   [The boot images](system/README.md#the-boot-images)). The pacman hook
+   rebuilds an image only when its kernel changes, and the images need
+   Plymouth, which `install` has now added.
 2. Follow [system/README.md](system/README.md) for the rest: the splash, the
    login screen, the fingerprint, sleep, the power settings, and the network
    rules for virtual machines. Check the greeter's user id
@@ -552,9 +560,10 @@ update from `fwupd` changes PCR 7; `tpm-reenroll` handles that.
 
 ## If the boot breaks
 
-The image has no rescue shell (`rd.shell=0`) and restarts on failure
-(`rd.emergency=reboot`). To fix it from the ISO, turn Secure Boot off, start
-the ISO, and:
+The images have no rescue shell (`rd.shell=0`) and restart on failure
+(`rd.emergency=reboot`). Try the other kernel first: F12 at the Lenovo logo,
+then `Arch Linux (linux-lts)`. If neither starts, fix it from the ISO: turn
+Secure Boot off, start the ISO, and:
 
 ```sh
 cryptsetup open /dev/nvme0n1p5 cryptlvm       # the disk password
@@ -564,6 +573,6 @@ mount /dev/nvme0n1p1 /mnt/boot/efi
 arch-chroot /mnt
 ```
 
-Fix the problem, build the image again (step 7), and turn Secure Boot back
+Fix the problem, build the images again (step 7), and turn Secure Boot back
 on before starting Arch. With Secure Boot off the TPM unlocks nothing, which
 is the point.

@@ -1,0 +1,234 @@
+#!/usr/bin/env bash
+# Build the boot images: one signed file per installed kernel, in EFI/Linux
+# on the EFI partition, named after the kernel's package (arch-linux.efi,
+# arch-linux-lts.efi). The firmware starts each one directly, from its own
+# boot entry, so a second kernel is a second way to boot. See
+# system/README.md, "The boot images".
+#
+#   boot-image                 list the kernels, their images and boot entries
+#   boot-image build           build the image of every installed kernel
+#   boot-image build NAME...   build only these (linux, linux-lts, ...)
+#   boot-image prune           remove the images of kernels no longer installed
+#   boot-image hook            build the kernels pacman lists on standard
+#                              input (90-dracut-install.hook)
+set -euo pipefail
+shopt -s nullglob
+
+if ((EUID != 0)); then
+    exec sudo "$0" "$@"
+fi
+
+esp=/boot/efi
+images=$esp/EFI/Linux
+modules=/usr/lib/modules
+cert=/var/lib/sbctl/keys/db/db.pem
+
+# Every installed kernel, as "package version" lines. pacman keeps the
+# package's name in the kernel's modules folder.
+kernels() {
+    local file
+    for file in "$modules"/*/pkgbase; do
+        printf '%s %s\n' "$(<"$file")" "$(basename "$(dirname "$file")")"
+    done | sort
+}
+
+version_of() { # package
+    kernels | awk -v name="$1" '$1 == name { print $2 }'
+}
+
+# Without the EFI partition mounted, the images would land in a plain folder
+# on the root volume and the firmware would never see them.
+need_esp() {
+    if ! mountpoint -q "$esp"; then
+        echo "boot-image: $esp is not mounted" >&2
+        exit 1
+    fi
+}
+
+signed() { # file
+    sbverify --cert "$cert" "$1" >/dev/null 2>&1
+}
+
+# Whether an image carries the kernel that is installed now. File dates
+# cannot say: pacman gives a kernel the date it was packaged, not installed.
+holds_kernel() { # image, kernel version
+    local kernel=$modules/$2/vmlinuz inside same=1
+    inside=$(mktemp)
+    # Through a file, not a pipe: objcopy opens its output for reading too,
+    # so it would wait on a pipe for ever once cmp had seen enough.
+    if objcopy -O binary --only-section=.linux "$1" "$inside" 2>/dev/null &&
+        cmp -s -n "$(stat -c %s "$kernel")" "$inside" "$kernel"; then
+        same=0
+    fi
+    rm -f "$inside"
+    return "$same"
+}
+
+# Build beside the image and swap the new file in only once it is whole and
+# signed, so a failed build leaves the image that last worked.
+build_one() { # package, kernel version
+    local name=$1 version=$2
+    local image=$images/arch-$name.efi
+    local new=$image.new problem
+
+    echo "==> $name ($version): building $image"
+    mkdir -p "$images"
+    rm -f "$new"
+    if ! dracut --force --uefi --kver "$version" "$new"; then
+        problem="dracut failed"
+    elif ! signed "$new"; then
+        problem="dracut did not sign it with the sbctl key (secureboot.conf)"
+    else
+        sync -f "$new"
+        mv -f "$new" "$image"
+        sync -f "$image"
+        return 0
+    fi
+    rm -f "$new"
+    echo "boot-image: $name: $problem. Its old image stays as it was." >&2
+    return 1
+}
+
+# One kernel failing must not stop the next: the other image is the way back.
+build() { # packages; none means every installed kernel
+    local name version failed=0
+    local -a names=("$@")
+    need_esp
+    if ((!${#names[@]})); then
+        mapfile -t names < <(kernels | cut -d' ' -f1)
+    fi
+    if ((!${#names[@]})); then
+        echo "boot-image: no kernel is installed" >&2
+        return 1
+    fi
+    for name in "${names[@]}"; do
+        version=$(version_of "$name")
+        if [[ -z $version ]]; then
+            echo "boot-image: $name is not an installed kernel" >&2
+            failed=1
+        elif ! build_one "$name" "$version"; then
+            failed=1
+        fi
+    done
+    return "$failed"
+}
+
+prune() {
+    local image name
+    local -a left
+    need_esp
+    for image in "$images"/arch-*.efi; do
+        name=$(basename "$image" .efi)
+        name=${name#arch-}
+        if [[ -n $(version_of "$name") ]]; then
+            continue
+        fi
+        left=("$images"/arch-*.efi)
+        if ((${#left[@]} == 1)); then
+            echo "boot-image: $name is no longer installed, but $image is the only boot image, so it stays" >&2
+            continue
+        fi
+        echo "==> $name is no longer installed: removing $image"
+        rm -f "$image"
+    done
+}
+
+# ------------------------------------------------------------------- status
+problems=0
+ok() { printf '  ok    %s\n' "$1"; }
+note() { printf '  note  %s\n' "$1"; }
+fix() {
+    printf '  fix   %s\n' "$1"
+    problems=$((problems + 1))
+}
+
+# The efibootmgr command that makes a kernel's boot entry. --create-only
+# keeps the new entry out of the boot order, so an untried image never
+# becomes the default by itself.
+create_entry() { # package
+    local source disk="<disk>" part="<number>"
+    source=$(findmnt -no SOURCE "$esp" 2>/dev/null || true)
+    if [[ -b $source ]]; then
+        read -r disk part < <(lsblk -no PKNAME,PARTN "$source") || true
+    fi
+    printf "efibootmgr --create-only --disk /dev/%s --part %s --label \"Arch Linux (%s)\" --loader '%s'\n" \
+        "$disk" "$part" "$1" "\\EFI\\Linux\\arch-$1.efi"
+}
+
+status() {
+    local firmware current name version image line number place started i count=0
+    local -a order=()
+    need_esp
+    firmware=$(efibootmgr 2>/dev/null || true)
+    current=$(sed -n 's/^BootCurrent: //p' <<<"$firmware")
+    IFS=, read -ra order <<<"$(sed -n 's/^BootOrder: //p' <<<"$firmware")"
+
+    while read -r name version; do
+        count=$((count + 1))
+        echo "$name ($version)"
+
+        image=$images/arch-$name.efi
+        if [[ ! -e $image ]]; then
+            fix "image: none. Build it: boot-image build $name"
+        elif ! holds_kernel "$image" "$version"; then
+            fix "image: holds another kernel version, so its last build failed. Build it: boot-image build $name"
+        elif ! signed "$image"; then
+            fix "image: $image is not signed with the sbctl key"
+        else
+            ok "image: $image, signed"
+        fi
+
+        # The entry is the one whose path ends in this image's name.
+        line=$(grep -i -m1 -F "linux\\arch-$name.efi" <<<"$firmware" || true)
+        if [[ ! $line =~ ^Boot([0-9A-Fa-f]{4}) ]]; then
+            fix "entry: none. Add it: $(create_entry "$name")"
+            continue
+        fi
+        number=${BASH_REMATCH[1]}
+        place=
+        for i in "${!order[@]}"; do
+            if [[ ${order[i]^^} == "${number^^}" ]]; then
+                place=$((i + 1))
+            fi
+        done
+        started=
+        if [[ ${current^^} == "${number^^}" ]]; then
+            started=", started this boot"
+        fi
+        if [[ -z $place ]]; then
+            fix "entry: Boot$number$started, but it is not in the boot order. Set the order: efibootmgr --bootorder"
+        else
+            ok "entry: Boot$number, place $place in the boot order$started"
+        fi
+    done < <(kernels)
+
+    if ((count < 2)); then
+        note "one kernel is installed, so there is nothing to fall back to"
+    fi
+    return $((problems > 0))
+}
+
+case "${1:-}" in
+    "") status ;;
+    build)
+        shift
+        build "$@"
+        ;;
+    prune) prune ;;
+    hook)
+        # pacman names the pkgbase file of each kernel it installed or updated.
+        names=()
+        while read -r line; do
+            if [[ $line == usr/lib/modules/*/pkgbase && -r /$line ]]; then
+                names+=("$(<"/$line")")
+            fi
+        done
+        if ((${#names[@]})); then
+            build "${names[@]}"
+        fi
+        ;;
+    *)
+        echo "usage: boot-image [build [NAME...] | prune | hook]" >&2
+        exit 2
+        ;;
+esac

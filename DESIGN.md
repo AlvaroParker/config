@@ -209,6 +209,6 @@ into a linked folder.
   their apps, so they are edited in place rather than linked.
 - Disk identifiers in `system/etc/dracut.conf.d/cmdline.conf` are placeholders;
   see `system/README.md`.
-- `/var/lib/sbctl`: the Secure Boot keys that sign the boot image. They live
+- `/var/lib/sbctl`: the Secure Boot keys that sign the boot images. They live
   on the root volume, so a reinstall makes new ones and enrolls them; see
   `REINSTALL.md`.

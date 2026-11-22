@@ -1,10 +1,13 @@
+# After the transaction, not before it: prune removes the images of kernels
+# that are no longer installed, so the kernel has to be gone first. pacman
+# also runs this on every kernel update, because an update removes the old
+# version's files. Nothing is pruned then.
 [Trigger]
 Type = Path
 Operation = Remove
 Target = usr/lib/modules/*/pkgbase
 
 [Action]
-Description = Removing Linux EFI image
-When = PreTransaction
-Exec = /usr/local/bin/dracut-remove.sh
-NeedsTargets
+Description = Removing the boot images of removed kernels
+When = PostTransaction
+Exec = /usr/local/bin/boot-image prune

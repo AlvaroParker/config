@@ -81,6 +81,10 @@ was installed.
   `system/README.md` says how. The login screen's two files are the
   exception: `install` runs `nocturne greeter install`. Disk identifiers
   there are placeholders.
+- The machine boots with no boot loader, from one signed image per kernel
+  (`system/usr/local/bin/boot-image`; `system/README.md`, "The boot
+  images"). `linux-lts` is installed on purpose, as the way back when
+  `linux` does not start: keep two kernels.
 - The login screen (`greeter/`) runs from root-owned copies in
   `/etc/greetd/nocturne`. Preview changes with `nocturne greeter preview`;
   the user installs them with `nocturne greeter install`, which needs sudo.

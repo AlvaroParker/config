@@ -5,8 +5,8 @@ Operation = Upgrade
 Target = usr/lib/modules/*/pkgbase
 
 [Action]
-Description = Updating Linux EFI Image
+Description = Building the kernel's boot image
 When = PostTransaction
-Exec = /usr/local/bin/dracut-install.sh
+Exec = /usr/local/bin/boot-image hook
 Depends = dracut
 NeedsTargets
