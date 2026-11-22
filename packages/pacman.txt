@@ -57,6 +57,8 @@ gnome-tweaks
 gnome-themes-extra
 plymouth
 obsidian
+# Mail; thunderbird/ themes it, and install links that into its profile
+thunderbird
 hyprpolkitagent
 qemu-full
 gdb

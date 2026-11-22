@@ -88,6 +88,38 @@ if ! grep -qxF "Include = $openai_repo" /etc/pacman.conf; then
     printf '\nInclude = %s\n' "$openai_repo" | sudo tee -a /etc/pacman.conf >/dev/null
 fi
 
+# The desktop panel's weather needs a location. It is personal, so it is kept
+# outside the repo; quickshell/location.example.json shows the format. It is
+# asked here, before the long downloads, so the rest of the run needs no one.
+location_file="$HOME/.config/nocturne-location.json"
+if [ ! -f "$location_file" ] && [ -t 0 ]; then
+    if read -r -p "City for the desktop weather (leave empty to skip): " city && [[ -n "$city" ]]; then
+        # The lookup reads JSON with jq, which a fresh system does not have yet.
+        if ! command -v jq >/dev/null; then
+            sudo pacman -Syu --needed --noconfirm jq
+        fi
+        # Open-Meteo's geocoder. Names repeat across countries, so list the
+        # matches and let the user pick. Coordinates are rounded to about 1 km.
+        matches=$(curl -fsS --get "https://geocoding-api.open-meteo.com/v1/search" \
+            --data-urlencode "name=$city" --data "count=5" |
+            jq -c '[.results[]? | {name, area: ([.admin1, .country] | map(select(.)) | join(", ")),
+                latitude: ((.latitude * 100 | round) / 100),
+                longitude: ((.longitude * 100 | round) / 100), timezone}]') || matches='[]'
+        count=$(jq length <<<"${matches:-[]}")
+        if [ "$count" -gt 0 ]; then
+            jq -r 'to_entries[] | "  \(.key + 1)) \(.value.name), \(.value.area)"' <<<"$matches"
+            if read -r -p "Which one? [1-$count]: " choice &&
+               [[ "$choice" =~ ^[1-5]$ ]] && (( choice <= count )); then
+                mkdir -p "$(dirname "$location_file")"
+                jq ".[$((choice - 1))] | del(.area)" <<<"$matches" >"$location_file"
+                echo "Saved the weather location to $location_file"
+            fi
+        else
+            echo "No match for '$city'. Copy quickshell/location.example.json to $location_file and fill it in."
+        fi
+    fi
+fi
+
 mapfile -t packages < <(
     read_list packages/pacman.txt
     for list in $(gpu_lists); do read_list "$list"; done
@@ -181,32 +213,6 @@ for plugin_dir in "${current_dir}"/herdr/plugins/*/; do
     ln -sfnT "${plugin_dir}config.toml" "$HOME/.config/herdr/plugins/config/${plugin_id}/config.toml"
 done
 
-# The desktop panel's weather needs a location. It is personal, so it is kept
-# outside the repo; quickshell/location.example.json shows the format.
-location_file="$HOME/.config/nocturne-location.json"
-if [ ! -f "$location_file" ] && [ -t 0 ]; then
-    if read -r -p "City for the desktop weather (leave empty to skip): " city && [[ -n "$city" ]]; then
-        # Open-Meteo's geocoder. Names repeat across countries, so list the
-        # matches and let the user pick. Coordinates are rounded to about 1 km.
-        matches=$(curl -fsS --get "https://geocoding-api.open-meteo.com/v1/search" \
-            --data-urlencode "name=$city" --data "count=5" |
-            jq -c '[.results[]? | {name, area: ([.admin1, .country] | map(select(.)) | join(", ")),
-                latitude: ((.latitude * 100 | round) / 100),
-                longitude: ((.longitude * 100 | round) / 100), timezone}]') || matches='[]'
-        count=$(jq length <<<"${matches:-[]}")
-        if [ "$count" -gt 0 ]; then
-            jq -r 'to_entries[] | "  \(.key + 1)) \(.value.name), \(.value.area)"' <<<"$matches"
-            if read -r -p "Which one? [1-$count]: " choice &&
-               [[ "$choice" =~ ^[1-5]$ ]] && (( choice <= count )); then
-                jq ".[$((choice - 1))] | del(.area)" <<<"$matches" >"$location_file"
-                echo "Saved the weather location to $location_file"
-            fi
-        else
-            echo "No match for '$city'. Copy quickshell/location.example.json to $location_file and fill it in."
-        fi
-    fi
-fi
-
 # The cursor named in hypr/lua/env.lua. It is not in the official repos, so it
 # comes from the project's own GitHub release: one pinned version, checked
 # against a checksum recorded here before anything is unpacked. To move to a
@@ -258,6 +264,9 @@ gsettings set org.gnome.desktop.interface icon-theme "$icon_theme"
 gsettings set org.gnome.desktop.interface cursor-theme "$cursor_theme"
 gsettings set org.gnome.desktop.interface cursor-size 20
 gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+# GTK 3 apps ignore the colour scheme, and gtk/gtk-3.0.css is written over
+# Adwaita-dark, so name it.
+gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark'
 gsettings set org.gnome.desktop.interface font-name 'IBM Plex Sans 11'
 gsettings set org.gnome.desktop.interface monospace-font-name 'Lilex Nerd Font 10'
 gsettings set org.gnome.desktop.interface accent-color 'pink'
@@ -269,8 +278,11 @@ fi
 
 # Thunderbird: link the Nocturne chrome and appearance prefs into the profile
 # it starts with, the [Install...] entry in profiles.ini. Open Thunderbird once
-# first so the profile exists.
+# first so the profile exists. Thunderbird keeps its profiles in ~/.thunderbird
+# when that folder exists, as on older installs, and otherwise in
+# ~/.config/thunderbird.
 thunderbird_root="$HOME/.thunderbird"
+[[ -d "$thunderbird_root" ]] || thunderbird_root="${XDG_CONFIG_HOME:-$HOME/.config}/thunderbird"
 if [[ -f "$thunderbird_root/profiles.ini" ]]; then
     thunderbird_profile=$(awk -F= '/^\[Install/ { found = 1 } found && /^Default=/ { print $2; exit }' "$thunderbird_root/profiles.ini")
     if [[ -n "$thunderbird_profile" && -d "$thunderbird_root/$thunderbird_profile" ]]; then
@@ -389,15 +401,18 @@ sudo systemctl enable docker.service --now
 sudo systemctl enable tailscaled.service --now
 
 # Configure virtual machines. libvirt's default network cannot start when its
-# subnet is already in use, as inside another virtual machine; that is no
-# reason to stop the rest of the install.
+# subnet is already in use, as inside another virtual machine. That is no
+# reason to stop the rest of the install, and the network is then not started
+# at boot either: there it would take the address of this machine's own
+# gateway and cut it off the network.
 sudo systemctl enable libvirtd.service --now
 active_networks=$(sudo virsh net-list --name)
-if ! grep -Fxq default <<< "$active_networks"; then
-    sudo virsh net-start default ||
-        echo "libvirt's default network did not start, so virtual machines have no network yet. See: sudo virsh net-start default" >&2
+if grep -Fxq default <<< "$active_networks" || sudo virsh net-start default; then
+    sudo virsh net-autostart default
+else
+    echo "libvirt's default network did not start, so virtual machines have no network." >&2
+    echo "Its subnet is probably in use. Change it with: sudo virsh net-edit default" >&2
 fi
-sudo virsh net-autostart default
 
 # The Nocturne login screen, through greetd. `nocturne greeter install` copies
 # it into /etc; run it again after changing the accent or the wallpaper. greetd
