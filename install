@@ -5,6 +5,19 @@ set -e -o pipefail
 
 current_dir=$(dirname -- "$(realpath -- "${BASH_SOURCE[0]}")")
 
+# What is left to do, repeated at the end, where it is not lost among the
+# installers' own output.
+summary=()
+restart_for=()
+# Apps themed inside a profile or vault, which they make on their first start.
+open_first=()
+
+# warn MESSAGE: say MESSAGE now, and again in the summary at the end.
+warn() {
+    printf '%s\n' "$1" >&2
+    summary+=("$1")
+}
+
 clone_if_missing() {
     local url=$1 destination=$2
     if [[ ! -e "$destination/.git" ]]; then
@@ -115,7 +128,7 @@ if [ ! -f "$location_file" ] && [ -t 0 ]; then
                 echo "Saved the weather location to $location_file"
             fi
         else
-            echo "No match for '$city'. Copy quickshell/location.example.json to $location_file and fill it in."
+            warn "No weather location: no match for '$city'. Copy quickshell/location.example.json to $location_file and fill it in."
         fi
     fi
 fi
@@ -140,16 +153,20 @@ else
 fi
 
 # Groups and the login shell come right after the packages that create them,
-# so a later step that fails cannot leave them out.
-sudo usermod -aG libvirt $USER
-sudo usermod -aG libvirt-qemu $USER
-sudo usermod -aG kvm $USER
-sudo usermod -aG docker $USER
-sudo usermod -aG video $USER
+# so a later step that fails cannot leave them out. Both apply from the next
+# login.
+for group in libvirt libvirt-qemu kvm docker video; do
+    if [[ " $(id -nG "$USER") " != *" $group "* ]]; then
+        sudo usermod -aG "$group" "$USER"
+        added_groups=1
+    fi
+done
+[[ -n "${added_groups:-}" ]] && restart_for+=("your new groups")
 
 # zsh as the login shell; its config is zshrc, linked below
 if [[ "$(getent passwd "$USER" | cut -d: -f7)" != */zsh ]]; then
     sudo chsh -s /usr/bin/zsh "$USER"
+    restart_for+=("zsh as your shell")
 fi
 
 # Install paru. makepkg also builds a debug package by default; only paru
@@ -233,7 +250,7 @@ install_cursor() {
     return $result
 }
 if [[ ! -d ~/.local/share/icons/$cursor_theme/cursors && ! -d /usr/share/icons/$cursor_theme/cursors ]]; then
-    install_cursor || echo "Could not install the $cursor_theme cursor. Hyprland will use the default one." >&2
+    install_cursor || warn "Could not install the $cursor_theme cursor. Hyprland will use the default one."
 fi
 
 # The icons named in rofi/config.rasi, and set for GTK and Qt apps below. They
@@ -256,7 +273,7 @@ install_icons() {
     return $result
 }
 if [[ ! -d ~/.local/share/icons/$icon_theme && ! -d /usr/share/icons/$icon_theme ]]; then
-    install_icons || echo "Could not install the $icon_theme icons. Apps will use the default ones." >&2
+    install_icons || warn "Could not install the $icon_theme icons. Apps will use the default ones."
 fi
 
 # GTK and Qt apps
@@ -291,7 +308,11 @@ if [[ -f "$thunderbird_root/profiles.ini" ]]; then
             ln -sfn "${current_dir}/thunderbird/chrome/$f" "$thunderbird_root/$thunderbird_profile/chrome/$f"
         done
         ln -sfn "${current_dir}/thunderbird/user.js" "$thunderbird_root/$thunderbird_profile/user.js"
+        thunderbird_themed=1
     fi
+fi
+if [[ -z "${thunderbird_themed:-}" ]] && command -v thunderbird >/dev/null; then
+    open_first+=(Thunderbird)
 fi
 
 # btop rewrites its own config, so only its theme is linked (links.txt). Select
@@ -310,6 +331,8 @@ vencord_settings=~/.config/vesktop/settings/settings.json
 if [[ -f "$vencord_settings" ]] && command -v jq >/dev/null; then
     jq '.enabledThemes = ((.enabledThemes // []) - ["nocturne.theme.css"] + ["nocturne.theme.css"])' \
         "$vencord_settings" >"$vencord_settings.new" && mv "$vencord_settings.new" "$vencord_settings"
+elif command -v vesktop >/dev/null; then
+    open_first+=(Vesktop)
 fi
 
 # Zen (Flatpak). The sandbox cannot see this repo, so allow read-only access
@@ -328,6 +351,8 @@ if flatpak info app.zen_browser.zen >/dev/null 2>&1; then
             ln -sfn "${current_dir}/zen/chrome/$f" "$zen_root/$zen_profile/chrome/$f"
         done
         ln -sfn "${current_dir}/zen/user.js" "$zen_root/$zen_profile/user.js"
+    else
+        open_first+=(Zen)
     fi
 fi
 
@@ -350,7 +375,11 @@ if [[ -f "$obsidian_vaults" ]]; then
         [[ -s "$appearance" ]] || echo '{}' >"$appearance"
         jq '.cssTheme = "Nocturne" | .theme = "obsidian"' "$appearance" >"$appearance.tmp" &&
             mv "$appearance.tmp" "$appearance"
+        obsidian_themed=1
     done < <(jq -r '.vaults[].path' "$obsidian_vaults")
+fi
+if [[ -z "${obsidian_themed:-}" ]] && command -v obsidian >/dev/null; then
+    open_first+=("Obsidian (with a vault)")
 fi
 
 # The wallpaper's moon follows the real one: paint tonight's now and each night
@@ -362,7 +391,8 @@ systemctl --user enable --now nocturne-moon.timer
 bat cache --build >/dev/null
 
 # Agents: Herdr writes its own hook scripts. Run `herdr integration install
-# claude` and `herdr integration install codex` on each machine.
+# claude` and `herdr integration install codex` on each machine; the summary
+# at the end says so while they are missing.
 
 # Reload font cache
 fc-cache
@@ -388,8 +418,7 @@ sudo systemctl mask systemd-rfkill.service systemd-rfkill.socket
 # one is running it is only enabled for the next boot.
 sudo systemctl enable NetworkManager.service
 if systemctl is-active --quiet iwd.service dhcpcd.service systemd-networkd.service; then
-    echo "Another network service is running, so NetworkManager was not started." >&2
-    echo "Disable that one (iwd, dhcpcd or systemd-networkd), then restart." >&2
+    warn "Another network service is running, so NetworkManager was not started. Disable that one (iwd, dhcpcd or systemd-networkd), then restart."
 else
     sudo systemctl start NetworkManager.service
 fi
@@ -410,8 +439,7 @@ active_networks=$(sudo virsh net-list --name)
 if grep -Fxq default <<< "$active_networks" || sudo virsh net-start default; then
     sudo virsh net-autostart default
 else
-    echo "libvirt's default network did not start, so virtual machines have no network." >&2
-    echo "Its subnet is probably in use. Change it with: sudo virsh net-edit default" >&2
+    warn "libvirt's default network did not start, so virtual machines have no network. Its subnet is probably in use. Change it with: sudo virsh net-edit default"
 fi
 
 # The Nocturne login screen, through greetd. `nocturne greeter install` copies
@@ -423,12 +451,12 @@ if "$current_dir/bin/nocturne" greeter install; then
     display_manager=${display_manager%.service}
     if [[ -z "$display_manager" ]]; then
         sudo systemctl enable greetd.service
+        restart_for+=("the login screen")
     elif [[ "$display_manager" != greetd ]]; then
-        echo "$display_manager is the login manager, so greetd was not enabled. To switch:" >&2
-        echo "  sudo systemctl disable $display_manager && sudo systemctl enable greetd" >&2
+        warn "$display_manager is the login manager, so greetd was not enabled. To switch: sudo systemctl disable $display_manager && sudo systemctl enable greetd"
     fi
 else
-    echo "The login screen could not be installed. Try again with: nocturne greeter install" >&2
+    warn "The login screen could not be installed. Try again with: nocturne greeter install"
 fi
 
 flatpak override --filesystem=~/.themes:ro --filesystem=~/.icons:ro --user
@@ -482,3 +510,47 @@ clone_if_missing https://github.com/joshskidmore/zsh-fzf-history-search "$plugin
 
 # Machine-specific settings and secrets go here, outside the repo.
 touch ~/.custom_zshrc
+
+# Steps install cannot take itself, each named only while it is still to do.
+if command -v herdr >/dev/null; then
+    mapfile -t herdr_missing < <(herdr integration status 2>/dev/null |
+        awk -F': ' '($1 == "claude" || $1 == "codex") && $2 !~ /^current/ { print $1 }')
+    for agent in "${herdr_missing[@]}"; do
+        summary+=("Install Herdr's $agent hooks: herdr integration install $agent")
+    done
+fi
+if ! tailscale status >/dev/null 2>&1; then
+    summary+=("Sign in to Tailscale: sudo tailscale up")
+fi
+if [[ -z "$(git config --get user.email)" ]]; then
+    summary+=("Set your git name and email in ~/.gitconfig")
+fi
+
+# join_and WORD...: the words as a list, "a, b and c".
+join_and() {
+    if (($# == 1)); then
+        printf '%s' "$1"
+    else
+        local IFS=,
+        local all="${*:1:$#-1}"
+        printf '%s and %s' "${all//,/, }" "${!#}"
+    fi
+}
+
+if ((${#open_first[@]})); then
+    if ((${#open_first[@]} == 1)); then them=it; else them=them; fi
+    summary=("Open $(join_and "${open_first[@]}") once, close $them, then run ./install again to theme $them." "${summary[@]}")
+fi
+if ((${#restart_for[@]})); then
+    summary=("Restart the computer to start using $(join_and "${restart_for[@]}")." "${summary[@]}")
+fi
+
+echo
+echo "Nocturne is installed."
+if ((${#summary[@]})); then
+    echo
+    echo "Still to do:"
+    printf '  - %s\n' "${summary[@]}"
+fi
+echo
+echo "\`nocturne doctor\` checks the result at any time."
