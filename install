@@ -9,7 +9,7 @@ current_dir=$(dirname -- "$(realpath -- "${BASH_SOURCE[0]}")")
 # installers' own output.
 summary=()
 restart_for=()
-# Apps themed inside a profile or vault, which they make on their first start.
+# Apps themed inside a vault, which only exists once the user makes one.
 open_first=()
 
 # warn MESSAGE: say MESSAGE now, and again in the summary at the end.
@@ -293,26 +293,55 @@ if [ ! -f ~/.config/qt6ct/qt6ct.conf ]; then
         "$HOME/.config/nocturne/qt6ct.conf" "$icon_theme" >~/.config/qt6ct/qt6ct.conf
 fi
 
+# Thunderbird and Zen are built on Firefox and keep their theme inside a
+# profile, which they would otherwise only make on their first start, under a
+# random name.
+#
+# prepare_profile ROOT INSTALL_DIR APP_DIR: when ROOT has no profiles yet,
+# make one for the app to start with. The app takes it as its own because
+# compatibility.ini says this install used it last; without that file it
+# would leave it alone and make another.
+prepare_profile() {
+    local root=$1 install_dir=$2 app_dir=$3 name=nocturne.default-release
+    [[ -e "$root/profiles.ini" ]] && return 0
+    mkdir -p "$root/$name"
+    printf '[General]\nStartWithLastProfile=1\nVersion=2\n\n[Profile0]\nName=default-release\nIsRelative=1\nPath=%s\nDefault=1\n' \
+        "$name" >"$root/profiles.ini"
+    printf '[Compatibility]\nLastPlatformDir=%s\nLastAppDir=%s\n' "$install_dir" "$app_dir" \
+        >"$root/$name/compatibility.ini"
+}
+
+# start_profile ROOT: the folder, inside ROOT, of the profile the app starts
+# with. That is its install's default once it has started, and the default
+# profile before that.
+start_profile() {
+    awk -F= '
+        function done_section() { if (in_profile && is_default && path != "") fallback = path }
+        /^\[/ { done_section(); in_install = /^\[Install/; in_profile = /^\[Profile/; path = ""; is_default = 0; next }
+        in_install && $1 == "Default" { print substr($0, 9); found = 1; exit }
+        in_profile && $1 == "Path" { path = substr($0, 6) }
+        in_profile && $1 == "Default" && $2 == "1" { is_default = 1 }
+        END { if (!found) { done_section(); if (fallback != "") print fallback } }
+    ' "$1/profiles.ini"
+}
+
 # Thunderbird: link the Nocturne chrome and appearance prefs into the profile
-# it starts with, the [Install...] entry in profiles.ini. Open Thunderbird once
-# first so the profile exists. Thunderbird keeps its profiles in ~/.thunderbird
-# when that folder exists, as on older installs, and otherwise in
-# ~/.config/thunderbird.
+# it starts with. Thunderbird keeps its profiles in ~/.thunderbird when that
+# folder exists, as on older installs, and otherwise in ~/.config/thunderbird.
 thunderbird_root="$HOME/.thunderbird"
 [[ -d "$thunderbird_root" ]] || thunderbird_root="${XDG_CONFIG_HOME:-$HOME/.config}/thunderbird"
+if [[ -x /usr/lib/thunderbird/thunderbird ]]; then
+    prepare_profile "$thunderbird_root" /usr/lib/thunderbird /usr/lib/thunderbird
+fi
 if [[ -f "$thunderbird_root/profiles.ini" ]]; then
-    thunderbird_profile=$(awk -F= '/^\[Install/ { found = 1 } found && /^Default=/ { print $2; exit }' "$thunderbird_root/profiles.ini")
+    thunderbird_profile=$(start_profile "$thunderbird_root")
     if [[ -n "$thunderbird_profile" && -d "$thunderbird_root/$thunderbird_profile" ]]; then
         mkdir -p "$thunderbird_root/$thunderbird_profile/chrome"
         for f in userChrome.css userContent.css variables.css nocturne.css; do
             ln -sfn "${current_dir}/thunderbird/chrome/$f" "$thunderbird_root/$thunderbird_profile/chrome/$f"
         done
         ln -sfn "${current_dir}/thunderbird/user.js" "$thunderbird_root/$thunderbird_profile/user.js"
-        thunderbird_themed=1
     fi
-fi
-if [[ -z "${thunderbird_themed:-}" ]] && command -v thunderbird >/dev/null; then
-    open_first+=(Thunderbird)
 fi
 
 # btop rewrites its own config, so only its theme is linked (links.txt). Select
@@ -325,34 +354,33 @@ else
 fi
 
 # Vesktop (Vencord) rewrites its own settings, so only the theme is linked
-# (links.txt). Select it here, keeping any other themes. Vesktop writes the
-# file on its first start, and overwrites it while running, so close it first.
+# (links.txt). Select it here, keeping any other themes. Vesktop overwrites the
+# file while running, so close it first. Before its first start there is no
+# file yet; one that only enables the theme is kept, and Vencord fills in the
+# rest.
 vencord_settings=~/.config/vesktop/settings/settings.json
 if [[ -f "$vencord_settings" ]] && command -v jq >/dev/null; then
     jq '.enabledThemes = ((.enabledThemes // []) - ["nocturne.theme.css"] + ["nocturne.theme.css"])' \
         "$vencord_settings" >"$vencord_settings.new" && mv "$vencord_settings.new" "$vencord_settings"
 elif command -v vesktop >/dev/null; then
-    open_first+=(Vesktop)
+    mkdir -p "$(dirname "$vencord_settings")"
+    echo '{"enabledThemes": ["nocturne.theme.css"]}' >"$vencord_settings"
 fi
 
 # Zen (Flatpak). The sandbox cannot see this repo, so allow read-only access
-# to the zen folder only, then link its files into the default profile.
-# Run Zen once first so the profile exists.
+# to the zen folder only, then link its files into the profile it starts
+# with. Inside the sandbox Zen is installed in /app/zen.
 if flatpak info app.zen_browser.zen >/dev/null 2>&1; then
     flatpak override --user --filesystem="${current_dir}/zen:ro" app.zen_browser.zen
     zen_root="$HOME/.var/app/app.zen_browser.zen/.zen"
-    zen_profile=""
-    if [[ -f "$zen_root/installs.ini" ]]; then
-        zen_profile=$(awk '/^Default=/ { sub(/^Default=/, ""); print; exit }' "$zen_root/installs.ini")
-    fi
+    prepare_profile "$zen_root" /app/zen /app/zen/browser
+    zen_profile=$(start_profile "$zen_root")
     if [[ -n "$zen_profile" ]]; then
         mkdir -p "$zen_root/$zen_profile/chrome"
         for f in userChrome.css userContent.css nocturne.css; do
             ln -sfn "${current_dir}/zen/chrome/$f" "$zen_root/$zen_profile/chrome/$f"
         done
         ln -sfn "${current_dir}/zen/user.js" "$zen_root/$zen_profile/user.js"
-    else
-        open_first+=(Zen)
     fi
 fi
 
