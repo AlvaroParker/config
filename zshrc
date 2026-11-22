@@ -88,7 +88,6 @@ eval "$(direnv hook zsh)"
 # so a fresh machine starts a shell without errors.
 autoload -U +X bashcompinit && bashcompinit
 if (( $+commands[terraform] )); then complete -o nospace -C "$commands[terraform]" terraform; fi
-if (( $+commands[forge] )); then eval "$(forge zsh plugin)"; fi
 # CF CLI completions
 [[ -f "$HOME/.config/cf/completions/_cf.zsh" ]] && source "$HOME/.config/cf/completions/_cf.zsh"
 
